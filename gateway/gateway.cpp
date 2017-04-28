@@ -26,6 +26,10 @@
 // Include the SX1272 and SPI library:
 #include "SX1272.h"
 #include <unistd.h>
+#include <time.h>
+
+
+#define GAMA_SENSEIT_MESSAGE_DETECTION 0x23F1DB
 
 int e;
 char my_packet[100];
@@ -60,7 +64,7 @@ void setup()
   printf("Setting Power: state %d\n", e);
 
   // Set the node address
-  e = sx1272.setNodeAddress(8);
+  e = sx1272.setNodeAddress(1);
   printf("Setting Node address: state %d\n", e);
 
   // Print a success message
@@ -68,9 +72,32 @@ void setup()
 }
 
 
+void unpackMessage(String message)
+{
+    
+}
+
+void setupSensor(uint8_t dest)
+{
+	time_t seconds;
+
+    sec = time (NULL);
+
+    long int dte_int = sec;
+	sx1272.sendPacketTimeout(dest, dte_int);
+
+}
+
+void publishToMessageBrocker(String message)
+{
+    
+}
+
+
 
 void loop(void)
 {
+
 printf("receiving Message");
   // Receive message
   e = sx1272.receivePacketTimeout(10000);
