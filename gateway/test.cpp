@@ -5,6 +5,7 @@
 #include <time.h>
 #include <sstream>
 #include <map>
+#include <cstring>
 
 #define GAMA_SENS_IT_MESSAGE_HEADER "GamaSenseIT_"
 #define GAMA_SENS_IT_MESSAGE_UPDATE_DATE_COMMAND "UPDATE_DATE_"
