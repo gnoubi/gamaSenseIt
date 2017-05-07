@@ -1,3 +1,7 @@
+
+#include "SX1272.h"
+#include <unistd.h>
+
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,6 +26,46 @@ using namespace std;
 
 
 map<int,string>* sensorName;
+int e;
+char my_packet[200];
+
+void setup()
+{
+    // Print a start message
+    printf("SX1272 module and Raspberry Pi: receive packets without ACK\n");
+    
+    // Power ON the module
+    e = sx1272.ON();
+    
+    delay(1000);
+    printf("Setting power ON: state %d\n", e);
+    
+    // Set transmission mode
+    e = sx1272.setMode(4);
+    printf("Setting Mode: state %d\n", e);
+    // Set header
+    e = sx1272.setHeaderON();
+    printf("Setting Header ON: state %d\n", e);
+    
+    // Select frequency channel
+    e = sx1272.setChannel(CH_10_868);
+    printf("Setting Channel: state %d\n", e);
+    // Set CRC
+    e = sx1272.setCRC_ON();
+    printf("Setting CRC ON: state %d\n", e);
+    
+    // Select output power (Max, High or Low)
+    e = sx1272.setPower('H');
+    printf("Setting Power: state %d\n", e);
+    
+    // Set the node address
+    e = sx1272.setNodeAddress(1);
+    printf("Setting Node address: state %d\n", e);
+    
+    // Print a success message
+    printf("SX1272 successfully configured\n\n");
+}
+
 
     bool containPrefix(string& s, string & prefix)
     {
@@ -166,6 +210,7 @@ map<int,string>* sensorName;
 
 int main(int argc, char *argv[])
 {
+    setup();
     sensorName = new map<int,string>();
     sentDate(8);
     
