@@ -118,11 +118,11 @@ void waitAndReceiveMessage(string& message, int& source)
             sender =sx1272.packet_received.src;
             for (unsigned int i = 0; i < sx1272.packet_received.length; i++)
             {
-                receivedMessage += (char)sx1272.packet_received.data[i];
+                tmpReceivedMessage += (char)sx1272.packet_received.data[i];
             }
             cout<<"reception message brute "<<receivedMessage<<endl;
 
-            if(containPrefix(receivedMessage,prefix))
+            if(containPrefix(tmpReceivedMessage,prefix))
             {
                 receivedMessage = extractData(tmpReceivedMessage);
                 
