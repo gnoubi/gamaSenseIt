@@ -117,8 +117,6 @@ void waitAndReceiveMessage(string& message, int& source)
             {
                 tmpReceivedMessage += (char)sx1272.packet_received.data[i];
             }
-            cout<<"reception message brute "<<receivedMessage<<endl;
-
             if(containPrefix(tmpReceivedMessage,prefix))
             {
                 receivedMessage = extractData(tmpReceivedMessage);
@@ -143,7 +141,6 @@ void waitAndReceiveMessage(string& message, int& source)
         time_t timer;
         time(&timer);
         unsigned long tt = timer;
-        cout <<tt<<endl;
         return tt;
     }
     
@@ -196,7 +193,7 @@ void waitAndReceiveMessage(string& message, int& source)
         string datePrefix = GAMA_SENS_IT_MESSAGE_DATE;
         string valuePrefix = GAMA_SENS_IT_MESSAGE_VALUE;
         
-        cout << "donnees arrivees"<<message;
+        cout << "donnees arrivees"<<message<<endl;
         
         int dateFound = message.find(GAMA_SENS_IT_MESSAGE_DATE);
         if(dateFound==std::string::npos)
@@ -213,7 +210,7 @@ void waitAndReceiveMessage(string& message, int& source)
         int dataIndex =dataFound + sizeof(GAMA_SENS_IT_MESSAGE_VALUE);
         string data = message.substr(dataIndex);
         
-        cout<<"date:"<< sensorDate << "  data :"<<data<<endl;
+        cout<<"date:"<< sensorDate << endl<<"  data :"<<data<<endl;
         return 0;
     }
 
@@ -270,7 +267,6 @@ void loop()
        string msg = "";
        int source = -1;
        waitAndReceiveMessage(msg,source);
-       cout<<"reception message "<<msg<<endl;
        computeMessage(msg,source);
    }
 }
