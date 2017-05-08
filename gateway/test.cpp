@@ -77,9 +77,8 @@ void setupLora()
             {
                 return false;
             }
-            cout<<"comparaison "<<s[i]<< " " <<prefix[i]<<endl;
         }
-        
+        cout<<"comparaison OK"<<endl;
         return true;
     }
     
@@ -98,6 +97,7 @@ void setupLora()
 string extractData(string message)
 {
     string prefix = GAMA_SENS_IT_MESSAGE_HEADER;
+    cout <<"message "<<message<<" "<< prefix.size();
     string result=message.substr(prefix.size());
     return result;
 }
