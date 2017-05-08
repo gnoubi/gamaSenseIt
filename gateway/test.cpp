@@ -70,6 +70,7 @@ void setupLora()
 
     bool containPrefix(string s, string  prefix)
     {
+        cout<< "taill"<<prefix.size()<<endl;
         for(int i=0; i<prefix.size() && i < s.size(); i++)
         {
             if(s[i] != prefix[i])
