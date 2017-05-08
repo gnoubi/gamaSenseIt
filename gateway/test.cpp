@@ -104,6 +104,7 @@ void waitAndReceiveMessage(string& message, int& source)
     int sender = 0;
     string prefix = GAMA_SENS_IT_MESSAGE_HEADER;
     string receivedMessage = "";
+    cout <<"debut réception"<<endl;
     do
     {
         string tmpReceivedMessage = "";
@@ -115,6 +116,8 @@ void waitAndReceiveMessage(string& message, int& source)
             {
                 receivedMessage += (char)sx1272.packet_received.data[i];
             }
+            cout<<"reception message brute "<<receivedMessage<<endl;
+
             if(containPrefix(receivedMessage,prefix))
             {
                 receivedMessage = extractData(tmpReceivedMessage);
@@ -265,6 +268,7 @@ void loop()
        string msg = "";
        int source = -1;
        waitAndReceiveMessage(msg,source);
+       cout<<"reception message "<<msg<<endl;
        computeMessage(msg,source);
    }
 }
