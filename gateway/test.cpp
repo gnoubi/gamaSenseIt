@@ -126,7 +126,7 @@ void waitAndReceiveMessage(string& message, int& source)
             }
         }
         else {
-            cout<<"..";
+            cout<<".."<<endl;
             // Serial.println(e, DEC);
         }
     }while(cc);
