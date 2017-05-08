@@ -29,7 +29,7 @@ map<int,string>* sensorName;
 int e;
 char my_packet[200];
 
-void setup()
+void setupLora()
 {
     // Print a start message
     printf("SX1272 module and Raspberry Pi: receive packets without ACK\n");
@@ -67,7 +67,8 @@ void setup()
 }
 
 
-    bool containPrefix(string& s, string & prefix)
+
+    bool containPrefix(string s, string  prefix)
     {
         for(int i=0; i<prefix.size() && i < s.size(); i++)
         {
@@ -88,16 +89,51 @@ void setup()
         {
             dtToSend[j]=toSend[j];
         }
-        
-        cout<< "message to send ";
-        for(int j = 0; j < sizeof(dtToSend); j++)
-            cout<<dtToSend[j];
-        
-        
-        cout<<"  "<<toSend.size()<<endl;
-        
+        e = sx1272.sendPacketTimeout(receiverAddress, dtToSend);
     }
+string extractData(string message)
+{
+    string prefix = GAMA_SENS_IT_MESSAGE_HEADER;
+    string result=message.substr(prefix.size());
+    return result;
+}
+
+void waitAndReceiveMessage(string& message, int& source)
+{
+    boolean cc = true;
+    int sender = 0;
+    string prefix = GAMA_SENS_IT_MESSAGE_HEADER;
+    string receivedMessage = "";
+    do
+    {
+        string tmpReceivedMessage = "";
+        e = sx1272.receivePacketTimeout(10000);
+        if ( e == 0 )
+        {
+            sender =sx1272.packet_received.src;
+            for (unsigned int i = 0; i < sx1272.packet_received.length; i++)
+            {
+                receivedMessage += (char)sx1272.packet_received.data[i];
+            }
+            if(containPrefix(receivedMessage,prefix))
+            {
+                receivedMessage = extractData(tmpReceivedMessage);
+                
+                cc = false;
+            }
+        }
+        else {
+            cout<<"..";
+            // Serial.println(e, DEC);
+        }
+    }while(cc);
+    message  =receivedMessage;
+    source = sender;
     
+    //return 0;
+}
+
+
     unsigned long getdate()
     {
         time_t timer;
@@ -107,7 +143,7 @@ void setup()
         return tt;
     }
     
-    void sentDate(int receiverAddress)
+    void sendDate(int receiverAddress)
     {
         unsigned long mdate =getdate();
         stringstream ss;
@@ -115,22 +151,11 @@ void setup()
         string sdate = ss.str();
         string data = GAMA_SENS_IT_MESSAGE_UPDATE_DATE_COMMAND;
         data = data + sdate;
-        
-        sendToSensor(data,1);
+        sendToSensor(data,receiverAddress);
     }
     
     
-    string extractData(char message[], int messageSize)
-    {
-        string prefix = GAMA_SENS_IT_MESSAGE_HEADER;
-        string result="";
-        for(int i = prefix.size(); i<messageSize;i++)
-        {
-            result += message[i];
-        }
-        return result;
-    }
-    
+
     int messageCommand(string message)
     {
         int found = message.find(GAMA_SENS_IT_MESSAGE_CAPTURE_COMMAND);
@@ -162,16 +187,36 @@ void setup()
         return tailString;
     }
 
-    void computeCaptureCommand(string message, int senderAddress)
+    int computeCaptureCommand(string message, int senderAddress)
     {
+        string datePrefix = GAMA_SENS_IT_MESSAGE_DATE;
+        string valuePrefix = GAMA_SENS_IT_MESSAGE_VALUE;
         
+        
+        int dateFound = message.find(GAMA_SENS_IT_MESSAGE_DATE);
+        if(dateFound==std::string::npos)
+            return -1;
+        int dataFound = message.find(GAMA_SENS_IT_MESSAGE_VALUE);
+        if(dataFound==std::string::npos)
+            return -1;
+        int sensorDate;
+        
+        
+        int dateIndex =dateFound + sizeof(GAMA_SENS_IT_MESSAGE_DATE);
+        int dateSize =dataFound -dateIndex ;
+        istringstream( message.substr(dateIndex,dateSize)) >> sensorDate;
+        int dataIndex =dateFound + sizeof(GAMA_SENS_IT_MESSAGE_VALUE);
+        string data = message.substr(dataIndex);
+        
+        cout<<"date:"<< sensorDate << "  data :"<<data;
+        return 0;
     }
 
     void computeRegisterCommand(string message, int senderAddress)
     {
         string senderName = messageContents(message);
         sensorName->insert(make_pair(senderAddress,senderName));
-        sentDate(senderAddress);
+        sendDate(senderAddress);
     }
 
     void computeMessage(string message, int senderAddress)
@@ -207,17 +252,31 @@ void setup()
     }
 
 
+void setup()
+{
+    sensorName = new map<int,string>();
+    setupLora();
+}
 
+void loop()
+{
+   while(true)
+   {
+       string msg = "";
+       int source = -1;
+       waitAndReceiveMessage(msg,source);
+       computeMessage(msg,source);
+   }
+}
 int main(int argc, char *argv[])
 {
     setup();
-    sensorName = new map<int,string>();
-    sentDate(8);
     
+    sendDate(8);
     string tmp = buildCaptureMessage();
     char tab2[tmp.size()];
     strcpy(tab2, tmp.c_str());
-    string dts = extractData(tab2,sizeof(tab2));
+    string dts = extractData(tmp);
     cout<<dts<<"  "<<messageCommand(dts)<<" "<<messageContents(dts)<<endl;
     return 0;
 }
