@@ -73,7 +73,10 @@ void setupLora()
         for(int i=0; i<prefix.size() && i < s.size(); i++)
         {
             if(s[i] != prefix[i])
+            {
                 return false;
+            }
+            cout<<"comparaison "<<s[i]<< " " <<prefix[i]<<endl;
         }
         
         return true;
