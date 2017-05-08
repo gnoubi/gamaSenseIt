@@ -78,7 +78,6 @@ void setupLora()
                 return false;
             }
         }
-        cout<<"comparaison OK"<<endl;
         return true;
     }
     
@@ -97,7 +96,6 @@ void setupLora()
 string extractData(string message)
 {
     string prefix = GAMA_SENS_IT_MESSAGE_HEADER;
-    cout <<"message "<<message<<" "<< prefix.size();
     string result=message.substr(prefix.size());
     return result;
 }
@@ -108,7 +106,6 @@ void waitAndReceiveMessage(string& message, int& source)
     int sender = 0;
     string prefix = GAMA_SENS_IT_MESSAGE_HEADER;
     string receivedMessage = "";
-    cout <<"debut réception"<<endl;
     do
     {
         string tmpReceivedMessage = "";
@@ -199,6 +196,7 @@ void waitAndReceiveMessage(string& message, int& source)
         string datePrefix = GAMA_SENS_IT_MESSAGE_DATE;
         string valuePrefix = GAMA_SENS_IT_MESSAGE_VALUE;
         
+        cout << "donnees arrivees"<<message;
         
         int dateFound = message.find(GAMA_SENS_IT_MESSAGE_DATE);
         if(dateFound==std::string::npos)
@@ -212,10 +210,10 @@ void waitAndReceiveMessage(string& message, int& source)
         int dateIndex =dateFound + sizeof(GAMA_SENS_IT_MESSAGE_DATE);
         int dateSize =dataFound -dateIndex ;
         istringstream( message.substr(dateIndex,dateSize)) >> sensorDate;
-        int dataIndex =dateFound + sizeof(GAMA_SENS_IT_MESSAGE_VALUE);
+        int dataIndex =dataFound + sizeof(GAMA_SENS_IT_MESSAGE_VALUE);
         string data = message.substr(dataIndex);
         
-        cout<<"date:"<< sensorDate << "  data :"<<data;
+        cout<<"date:"<< sensorDate << "  data :"<<data<<endl;
         return 0;
     }
 
