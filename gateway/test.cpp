@@ -278,5 +278,6 @@ int main(int argc, char *argv[])
     strcpy(tab2, tmp.c_str());
     string dts = extractData(tmp);
     cout<<dts<<"  "<<messageCommand(dts)<<" "<<messageContents(dts)<<endl;
+    loop();
     return 0;
 }
