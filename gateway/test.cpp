@@ -277,6 +277,7 @@ void loop()
        int source = -1;
        waitAndReceiveMessage(msg,source);
        computeMessage(msg,source);
+       cout<<"emetteur"<<source<<endl;
    }
 }
 int main(int argc, char *argv[])
