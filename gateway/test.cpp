@@ -70,7 +70,6 @@ void setupLora()
 
     bool containPrefix(string s, string  prefix)
     {
-        cout<< "taill"<<prefix.size()<<endl;
         for(int i=0; i<prefix.size() && i < s.size(); i++)
         {
             if(s[i] != prefix[i])
@@ -117,11 +116,21 @@ void waitAndReceiveMessage(string& message, int& source)
             {
                 tmpReceivedMessage += (char)sx1272.packet_received.data[i];
             }
+            cout<< endl<<"message recu :"<<endl;
+            cout<< endl<<tmpReceivedMessage<<endl;
+            cout<< endl<<endl;
+            
             if(containPrefix(tmpReceivedMessage,prefix))
             {
                 receivedMessage = extractData(tmpReceivedMessage);
                 
                 cc = false;
+                
+                cout<< endl<<"donnees extraites :"<<endl;
+                cout<< endl<<receivedMessage<<endl;
+                cout<< endl<<endl;
+                
+                
             }
         }
         else {
