@@ -112,7 +112,7 @@ void waitAndReceiveMessage(string& message, int& source)
         if ( e == 0 )
         {
             sender =sx1272.packet_received.src;
-            for (unsigned int i = 0; i < sx1272.packet_received.length; i++)
+            for (unsigned int i = 0; i < sx1272.packet_received.length+1; i++)
             {
                 tmpReceivedMessage += (char)sx1272.packet_received.data[i];
             }
