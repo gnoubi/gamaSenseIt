@@ -85,11 +85,8 @@ void setupLora()
         string prefix = GAMA_SENS_IT_MESSAGE_HEADER;
         
         string toSend = prefix + data;
-        char dtToSend [toSend.size()];
-        for(int j = 0; j < toSend.size(); j++)
-        {
-            dtToSend[j]=toSend[j];
-        }
+        char dtToSend[toSend.size()+1];//as 1 char space for null is also required
+        strcpy(dtToSend, toSend.c_str());
         e = sx1272.sendPacketTimeout(receiverAddress, dtToSend);
     }
 string extractData(string message)
@@ -112,7 +109,7 @@ void waitAndReceiveMessage(string& message, int& source)
         if ( e == 0 )
         {
             sender =sx1272.packet_received.src;
-            for (unsigned int i = 0; i < sx1272.packet_received.length+1; i++)
+            for (unsigned int i = 0; i < sx1272.packet_received.length; i++)
             {
                 tmpReceivedMessage += (char)sx1272.packet_received.data[i];
             }
