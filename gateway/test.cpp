@@ -204,10 +204,10 @@ void waitAndReceiveMessage(string& message, int& source)
         int sensorDate;
         
         
-        int dateIndex =dateFound + sizeof(GAMA_SENS_IT_MESSAGE_DATE);
-        int dateSize =dataFound -dateIndex ;
+        int dateIndex =dateFound + datePrefix.size();
+        int dateSize =dataFound - dateIndex ;
         istringstream( message.substr(dateIndex,dateSize)) >> sensorDate;
-        int dataIndex =dataFound + sizeof(GAMA_SENS_IT_MESSAGE_VALUE);
+        int dataIndex =dataFound + valuePrefix.size();
         string data = message.substr(dataIndex);
         
         cout<<"date:"<< sensorDate << endl<<"  data :"<<data<<endl;
