@@ -129,6 +129,9 @@ void waitAndReceiveMessage(string& message, int& source)
                 cout<< endl<<"donnees extraites :"<<endl;
                 cout<< endl<<receivedMessage<<endl;
                 cout<< endl<<endl;
+                cout<< endl<<endl;
+                cout<< endl<<endl;
+                cout<< endl<<endl;
                 
                 
             }
