@@ -240,8 +240,10 @@ void waitAndReceiveMessage(string& message, int& source)
         string data = message.substr(dataIndex);
         
         string ssender = sensorName->find(senderAddress)->second;
-        outFile<< string(sensorDate) << ";"<<ssender<<";"<<data<<"\n";
+        string date = new string(sensorDate);
+        outFile<< date << ";"<<ssender<<";"<<data<<"\n";
         int sending = sendToBrocker(data,  ssender,  sensorDate);
+        delete date;
         return sending;
     }
 
