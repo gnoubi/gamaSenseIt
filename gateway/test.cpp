@@ -294,7 +294,7 @@ void waitAndReceiveMessage(string& message, int& source)
 void setupOutFile(string outf)
 {
     outFile = new ofstream();
-    outFile->open(outf);
+    outFile->open(outf.c_str());
 }
 void setup()
 {
