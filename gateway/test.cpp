@@ -189,9 +189,9 @@ void waitAndReceiveMessage(string& message, int& source)
     {
         switch(messageCommand(message))
         {
-            case CAPTURE_COMMAND : { return sizeof(GAMA_SENS_IT_MESSAGE_CAPTURE_COMMAND);}
-            case DATE_UPDATE_COMMAND : { return sizeof(GAMA_SENS_IT_MESSAGE_UPDATE_DATE_COMMAND);}
-            case REGISTER_COMMAND : { return sizeof(GAMA_SENS_IT_MESSAGE_REGISTER_COMMAND);}
+            case CAPTURE_COMMAND : { return strlen(GAMA_SENS_IT_MESSAGE_CAPTURE_COMMAND);}
+            case DATE_UPDATE_COMMAND : { return strlen(GAMA_SENS_IT_MESSAGE_UPDATE_DATE_COMMAND);}
+            case REGISTER_COMMAND : { return strlen(GAMA_SENS_IT_MESSAGE_REGISTER_COMMAND);}
         }
         return -1;
     }
@@ -262,7 +262,6 @@ void waitAndReceiveMessage(string& message, int& source)
     void computeMessage(string message, int senderAddress)
     {
         int command = messageCommand(message);
-        
         switch(command)
         {
             case CAPTURE_COMMAND : {
