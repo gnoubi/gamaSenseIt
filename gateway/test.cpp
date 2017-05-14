@@ -26,9 +26,8 @@
 #define ADDRESS     "192.168.1.71"
 #define ADDRESS_PROTOCOL     "tcp://"
 #define ADDRESS_PORT     ":1883"
-#define CLIENTID    "ExampleClientPub"
-#define TOPIC       "MQTT Examples"
-#define PAYLOAD     "Hello World!"
+#define CLIENTID    "GATEWAY"
+#define DEFAULT_FILE_NAME "sensorLogFile.csv"
 #define QOS         1
 #define TIMEOUT     10000L
 
@@ -44,7 +43,11 @@ MQTTClient_message pubmsg = MQTTClient_message_initializer;
 MQTTClient_deliveryToken token;
 
 ofstream * outFile;
-
+char* gatewayName = CLIENTID;
+string brokerAddress = ADDRESS;
+bool useBroker = false;
+bool saveInFile = false;
+string fileName = DEFAULT_FILE_NAME;
 void setupLora()
 {
     // Print a start message
@@ -201,19 +204,18 @@ void waitAndReceiveMessage(string& message, int& source)
 
     int sendToBrocker(string message, string sender, int sensorDate)
     {
-    	char csender[sender.length()+1];
-    	strcpy(csender, sender.c_str());
-    	char  msg[message.length() + 1];
-    	strcpy(msg, message.c_str());
+    	string data = to_string(sensorDate)+";"+sender+";"+message;
+    	char  msg[data.length() + 1];
+    	strcpy(msg, data.c_str());
     	int rc;
     	pubmsg.payload = msg;
         pubmsg.payloadlen = message.length();
         pubmsg.qos = QOS;
         pubmsg.retained = 0;
-        MQTTClient_publishMessage(client, csender, &pubmsg, &token);
+        MQTTClient_publishMessage(client, gatewayName, &pubmsg, &token);
         printf("Waiting for up to %d seconds for publication of %s\n"
                 "on topic %s for client with ClientID: %s\n",
-                (int)(TIMEOUT/1000), PAYLOAD, TOPIC, CLIENTID);
+                (int)(TIMEOUT/1000), msg, gatewayName, CLIENTID);
         rc = MQTTClient_waitForCompletion(client, token, TIMEOUT);
         printf("Message with delivery token %d delivered\n", token);
         return rc;
@@ -301,7 +303,14 @@ void setup()
 {
     sensorName = new map<int,string>();
     setupLora();
-    setupMQTT(ADDRESS,CLIENTID);
+    if(useBroker == true)
+    {
+        setupMQTT(brokerAddress,gatewayName);
+    }
+    if(saveInFile == true)
+    {
+    	setupOutFile(fileName);
+    }
 
 
 }
@@ -316,8 +325,33 @@ void loop()
        computeMessage(msg,source);
     }
 }
+void analyseParameter(string cmd, string value)
+{
+	if (cmd.compare("-broker") == 0)
+	{
+		useBroker = true;
+		brokerAddress = value;
+	}
+	if (cmd.compare("-name") == 0)
+	{
+		gatewayName = new char[value.length()+1];
+		strcpy(gatewayName, value.c_str());
+	}
+	if (cmd.compare("-file") == 0)
+	{
+		saveInFile = true;
+		fileName = value;
+	}
+}
 int main(int argc, char *argv[])
 {
+	for(int i = 1; i+1<argc; i=i+2 )
+	{
+		string cmd(argv[i]);
+		string val(argv[i+1]);
+		cout <<"command: "<<cmd<<" value: "<<val<<endl;
+		analyseParameter(cmd,val);
+	}
 
     setup();
     loop();
