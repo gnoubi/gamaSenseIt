@@ -242,8 +242,9 @@ void waitAndReceiveMessage(string& message, int& source)
         int dataIndex =dataFound + valuePrefix.size();
         string data = message.substr(dataIndex);
         string ssender = sensorName->find(senderAddress)->second;
-        (*outFile) <<  sensorDate << ";"<<ssender<<";"<<data<<"\n";
-        int sending = sendToBrocker(data,  ssender,  sensorDate);
+        if(saveInFile == true)
+        	(*outFile) <<  sensorDate << ";"<<ssender<<";"<<data<<"\n";
+        int sending = useBroker==false?0:sendToBrocker(data,  ssender,  sensorDate);
         return sending;
     }
 
