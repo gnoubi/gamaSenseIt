@@ -273,8 +273,7 @@ void waitAndReceiveMessage(string& message, int& source)
     	string pro = ADDRESS_PROTOCOL;
     	string port = ADDRESS_PORT;
 
-    	char * tcpAddress;
-    	tcpAddress=malloc(pro.length()+port.length()+1+sizeof(address));
+    	char  tcpAddress[pro.length()+port.length()+1+strlen(address)];
     	strcpy(tcpAddress,pro.c_str());
     	strcat(tcpAddress,address);
     	strcat(tcpAddress,pro.c_str());
