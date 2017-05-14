@@ -43,7 +43,7 @@ MQTTClient_message pubmsg = MQTTClient_message_initializer;
 MQTTClient_deliveryToken token;
 
 ofstream * outFile;
-char* gatewayName = CLIENTID;
+char* gatewayName = string(CLIENTID).c_str();
 string brokerAddress = ADDRESS;
 bool useBroker = false;
 bool saveInFile = false;
@@ -204,7 +204,8 @@ void waitAndReceiveMessage(string& message, int& source)
 
     int sendToBrocker(string message, string sender, int sensorDate)
     {
-    	string data = to_string(sensorDate)+";"+sender+";"+message;
+    	string dte = std::to_string(sensorDate);
+    	string data =""+ dte+";"+sender+";"+message;
     	char  msg[data.length() + 1];
     	strcpy(msg, data.c_str());
     	int rc;
