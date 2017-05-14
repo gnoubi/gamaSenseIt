@@ -268,18 +268,20 @@ void waitAndReceiveMessage(string& message, int& source)
         }
     }
 
-    void setupMQTT(char* address, char* clientID)
+    void setupMQTT(string address, string clientID)
     {
     	string pro = ADDRESS_PROTOCOL;
     	string port = ADDRESS_PORT;
 
-    	char  tcpAddress[pro.length()+port.length()+1+strlen(address)];
+    	char  tcpAddress[pro.length()+port.length()+1+address.length()];
     	strcpy(tcpAddress,pro.c_str());
-    	strcat(tcpAddress,address);
+    	strcat(tcpAddress,address.c_str());
     	strcat(tcpAddress,pro.c_str());
     	int rc;
 
-        MQTTClient_create(&client, address, clientID,
+    	char id_c[clientID.length()+1];
+    	strcpy(id_c,clientID.c_str());
+        MQTTClient_create(&client, tcpAddress, id_c,
             MQTTCLIENT_PERSISTENCE_NONE, NULL);
         conn_opts.keepAliveInterval = 20;
         conn_opts.cleansession = 1;
