@@ -23,7 +23,7 @@
 #define DATE_UPDATE_COMMAND 2
 #define REGISTER_COMMAND 3
 
-#define ADDRESS     "tcp://192.168.1.71:1883"
+#define ADDRESS     "192.168.1.71"
 #define ADDRESS_PROTOCOL     "tcp://"
 #define ADDRESS_PORT     ":1883"
 #define CLIENTID    "ExampleClientPub"
@@ -240,7 +240,7 @@ void waitAndReceiveMessage(string& message, int& source)
         string data = message.substr(dataIndex);
         
         string ssender = sensorName->find(senderAddress)->second;
-        outFile<< sensorDate << ";"<<ssender<<";"<<data<<"\n";
+        outFile<< string(sensorDate) << ";"<<ssender<<";"<<data<<"\n";
         int sending = sendToBrocker(data,  ssender,  sensorDate);
         return sending;
     }
@@ -318,6 +318,7 @@ void loop()
 }
 int main(int argc, char *argv[])
 {
+
     setup();
     loop();
     return 0;
