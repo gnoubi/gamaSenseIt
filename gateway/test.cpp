@@ -284,6 +284,8 @@ void waitAndReceiveMessage(string& message, int& source)
 
     	char id_c[clientID.length()+1];
     	strcpy(id_c,clientID.c_str());
+
+    	cout<<"address server "<<tcpAddress<<endl;
         MQTTClient_create(&client, tcpAddress, id_c,
             MQTTCLIENT_PERSISTENCE_NONE, NULL);
         conn_opts.keepAliveInterval = 20;
