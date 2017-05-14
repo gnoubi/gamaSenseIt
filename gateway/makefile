@@ -1,15 +1,9 @@
 include radio.makefile
-test: test.o arduPi.o SX1272.o
-	g++ -lrt -lpthread -lpaho-mqtt3c  test.o arduPi.o SX1272.o -o test
+gamaSenseIt: test.o arduPi.o SX1272.o
+	g++ -std=c++11 -lrt -lpthread -lpaho-mqtt3c  test.o arduPi.o SX1272.o -o gamaSenseIt
 
 test.o: test.cpp
-	gcc $(CFLAGS) -DRASPBERRY -DIS_RCV_GATEWAY -c test.cpp -o test.o
-
-gateway: gateway.o arduPi.o SX1272.o
-	g++ -lrt -lpthread gateway.o arduPi.o SX1272.o -o gateway	
-
-gamaSenseIt: gamaSenseIt.o main.o arduPi.o SX1272.o
-	g++ -lrt -lpthread gamaSenseIt.o main.o arduPi.o SX1272.o -o gamaSenseIt	
+	gcc -std=c++11 $(CFLAGS) -DRASPBERRY -DIS_RCV_GATEWAY -c test.cpp -o test.o
 
 gateway.o: gateway.cpp
 	gcc $(CFLAGS) -DRASPBERRY -DIS_RCV_GATEWAY -c gateway.cpp -o gateway.o
