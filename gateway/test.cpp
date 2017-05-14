@@ -279,7 +279,7 @@ void waitAndReceiveMessage(string& message, int& source)
     	char  tcpAddress[pro.length()+port.length()+1+address.length()];
     	strcpy(tcpAddress,pro.c_str());
     	strcat(tcpAddress,address.c_str());
-    	strcat(tcpAddress,pro.c_str());
+    	strcat(tcpAddress,port.c_str());
     	int rc;
 
     	char id_c[clientID.length()+1];
