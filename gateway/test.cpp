@@ -43,7 +43,7 @@ MQTTClient_message pubmsg = MQTTClient_message_initializer;
 MQTTClient_deliveryToken token;
 
 ofstream * outFile;
-char* gatewayName = string(CLIENTID).c_str();
+char* gatewayName ;
 string brokerAddress = ADDRESS;
 bool useBroker = false;
 bool saveInFile = false;
@@ -346,6 +346,9 @@ void analyseParameter(string cmd, string value)
 }
 int main(int argc, char *argv[])
 {
+	string id = CLIENTID;
+	gatewayName = new char[id.length()+1];
+	strcpy(gatewayName,id.c_str());
 	for(int i = 1; i+1<argc; i=i+2 )
 	{
 		string cmd(argv[i]);
