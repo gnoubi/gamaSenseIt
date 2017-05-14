@@ -243,7 +243,10 @@ void waitAndReceiveMessage(string& message, int& source)
         string data = message.substr(dataIndex);
         string ssender = sensorName->find(senderAddress)->second;
         if(saveInFile == true)
-        	(*outFile) <<  sensorDate << ";"<<ssender<<";"<<data<<"\n";
+        {
+        	(*outFile) <<  sensorDate << ";"<<ssender<<";"<<data<<"\r\n";
+        	outFile->flush();
+        }
         int sending = useBroker==false?0:sendToBrocker(data,  ssender,  sensorDate);
         return sending;
     }
