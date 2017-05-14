@@ -124,7 +124,7 @@ void waitAndReceiveMessage(string& message, int& source)
     do
     {
         string tmpReceivedMessage = "";
-        e = sx1272.receivePacketTimeout(10000);
+        e = sx1272.receivePacketTimeout(100);
         if ( e == 0 )
         {
             sender =sx1272.packet_received.src;
