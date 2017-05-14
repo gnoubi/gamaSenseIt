@@ -271,14 +271,14 @@ void waitAndReceiveMessage(string& message, int& source)
 
     void setupMQTT(char* address, char* clientID)
     {
-    	char * pro = ADDRESS_PROTOCOL;
-    	char * port = ADDRESS_PORT;
+    	string pro = ADDRESS_PROTOCOL;
+    	string port = ADDRESS_PORT;
 
     	char * tcpAddress;
-    	tcpAddress=malloc(strlen(pro)+strlen(port)+1+strlen(address));
-    	strcpy(tcpAddress,pro);
+    	tcpAddress=malloc(pro.length()+port.length()+1+strlen(address));
+    	strcpy(tcpAddress,pro.c_str());
     	strcat(tcpAddress,address);
-    	strcat(tcpAddress,port);
+    	strcat(tcpAddress,pro.c_str());
     	int rc;
 
         MQTTClient_create(&client, address, clientID,
