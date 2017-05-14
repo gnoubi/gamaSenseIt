@@ -7,9 +7,11 @@
 #include <stdlib.h>
 #include <string>
 #include <time.h>
+#include <fstream>
 #include <sstream>
 #include <map>
 #include <cstring>
+#include "MQTTClient.h"
 
 #define GAMA_SENS_IT_MESSAGE_HEADER "GamaSenseIT_"
 #define GAMA_SENS_IT_MESSAGE_UPDATE_DATE_COMMAND "UPDATE_DATE_"
@@ -21,13 +23,27 @@
 #define DATE_UPDATE_COMMAND 2
 #define REGISTER_COMMAND 3
 
+#define ADDRESS     "tcp://192.168.1.71:1883"
+#define ADDRESS_PROTOCOL     "tcp://"
+#define ADDRESS_PORT     ":1883"
+#define CLIENTID    "ExampleClientPub"
+#define TOPIC       "MQTT Examples"
+#define PAYLOAD     "Hello World!"
+#define QOS         1
+#define TIMEOUT     10000L
 
 using namespace std;
 
 
 map<int,string>* sensorName;
 int e;
-char my_packet[200];
+
+MQTTClient client;
+MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
+MQTTClient_message pubmsg = MQTTClient_message_initializer;
+MQTTClient_deliveryToken token;
+
+ofstream * outFile;
 
 void setupLora()
 {
@@ -113,25 +129,12 @@ void waitAndReceiveMessage(string& message, int& source)
             {
                 tmpReceivedMessage += (char)sx1272.packet_received.data[i];
             }
-            cout<< endl<<"message recu :"<<endl;
-            cout<< endl<<tmpReceivedMessage<<endl;
-            cout<< endl<<endl;
-            
             if(containPrefix(tmpReceivedMessage,prefix))
             {
                 receivedMessage = extractData(tmpReceivedMessage);
                 
                 cc = false;
-                
-                cout<< endl<<"donnees extraites :"<<endl;
-                cout<< endl<<receivedMessage<<endl;
-                cout<< endl<<endl;
-                cout<< endl<<endl;
-                cout<< endl<<endl;
-                cout<< endl<<endl;
-                
-                
-            }
+             }
         }
         else {
             cout<<".."<<endl;
@@ -143,7 +146,6 @@ void waitAndReceiveMessage(string& message, int& source)
     
     //return 0;
 }
-
 
     unsigned long getdate()
     {
@@ -197,12 +199,30 @@ void waitAndReceiveMessage(string& message, int& source)
         return tailString;
     }
 
+    int sendToBrocker(string message, string sender, int sensorDate)
+    {
+    	char csender[sender.length()+1];
+    	strcpy(csender, sender.c_str());
+    	char  msg[message.length() + 1];
+    	strcpy(msg, message.c_str());
+    	int rc;
+    	pubmsg.payload = msg;
+        pubmsg.payloadlen = message.length();
+        pubmsg.qos = QOS;
+        pubmsg.retained = 0;
+        MQTTClient_publishMessage(client, csender, &pubmsg, &token);
+        printf("Waiting for up to %d seconds for publication of %s\n"
+                "on topic %s for client with ClientID: %s\n",
+                (int)(TIMEOUT/1000), PAYLOAD, TOPIC, CLIENTID);
+        rc = MQTTClient_waitForCompletion(client, token, TIMEOUT);
+        printf("Message with delivery token %d delivered\n", token);
+        return rc;
+    }
+
     int computeCaptureCommand(string message, int senderAddress)
     {
         string datePrefix = GAMA_SENS_IT_MESSAGE_DATE;
         string valuePrefix = GAMA_SENS_IT_MESSAGE_VALUE;
-        
-        cout << "donnees arrivees"<<message<<endl;
         
         int dateFound = message.find(GAMA_SENS_IT_MESSAGE_DATE);
         if(dateFound==std::string::npos)
@@ -219,8 +239,10 @@ void waitAndReceiveMessage(string& message, int& source)
         int dataIndex =dataFound + valuePrefix.size();
         string data = message.substr(dataIndex);
         
-        cout<<"date:"<< sensorDate << endl<<"  data :"<<data<<endl;
-        return 0;
+        string ssender = sensorName->find(senderAddress)->second;
+        outFile<< sensorDate << ";"<<ssender<<";"<<data<<"\n";
+        int sending = sendToBrocker(data,  ssender,  sensorDate);
+        return sending;
     }
 
     void computeRegisterCommand(string message, int senderAddress)
@@ -247,26 +269,41 @@ void waitAndReceiveMessage(string& message, int& source)
         }
     }
 
-    string buildCaptureMessage()
+    void setupMQTT(char* address, char* clientID)
     {
-        unsigned long mdate =getdate();
-        stringstream ss;
-        ss << mdate;
-        string sdate = ss.str();
-        string message = GAMA_SENS_IT_MESSAGE_HEADER ;
-        message+=GAMA_SENS_IT_MESSAGE_CAPTURE_COMMAND;
-        message+=GAMA_SENS_IT_MESSAGE_DATE;
-        message+=sdate;
-        message+=GAMA_SENS_IT_MESSAGE_VALUE;
-        message+="oyé";
-        return message;
+    	char * pro = ADDRESS_PROTOCOL;
+    	char * port = ADDRESS_PORT;
+
+    	char * tcpAddress;
+    	tcpAddress=malloc(strlen(pro)+strlen(port)+1+strlen(address));
+    	strcpy(tcpAddress,pro);
+    	strcat(tcpAddress,address);
+    	strcat(tcpAddress,port);
+    	int rc;
+
+        MQTTClient_create(&client, address, clientID,
+            MQTTCLIENT_PERSISTENCE_NONE, NULL);
+        conn_opts.keepAliveInterval = 20;
+        conn_opts.cleansession = 1;
+
+        if ((rc = MQTTClient_connect(client, &conn_opts)) != MQTTCLIENT_SUCCESS)
+        {
+            printf("Failed to connect, return code %d\n", rc);
+            exit(-1);
+        }
     }
-
-
+void setupOutFile(string outf)
+{
+    outFile = new ofstream();
+    outFile->open(outf);
+}
 void setup()
 {
     sensorName = new map<int,string>();
     setupLora();
+    setupMQTT(ADDRESS,CLIENTID);
+
+
 }
 
 void loop()
@@ -277,19 +314,11 @@ void loop()
        int source = -1;
        waitAndReceiveMessage(msg,source);
        computeMessage(msg,source);
-       cout<<"emetteur"<<source<<endl; 
-   }
+    }
 }
 int main(int argc, char *argv[])
 {
     setup();
-    
-    sendDate(8);
-    string tmp = buildCaptureMessage();
-    char tab2[tmp.size()];
-    strcpy(tab2, tmp.c_str());
-    string dts = extractData(tmp);
-    cout<<dts<<"  "<<messageCommand(dts)<<" "<<messageContents(dts)<<endl;
     loop();
     return 0;
 }
