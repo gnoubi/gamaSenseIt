@@ -238,9 +238,9 @@ void waitAndReceiveMessage(string& message, int& source)
         istringstream( message.substr(dateIndex,dateSize)) >> sensorDate;
         int dataIndex =dataFound + valuePrefix.size();
         string data = message.substr(dataIndex);
-        
+        string strDate = message.substr(dateIndex,dateSize);
         string ssender = sensorName->find(senderAddress)->second;
-        outFile<< message.substr(dateIndex,dateSize) << ";"<<ssender<<";"<<data<<"\n";
+        outFile<< strDate << ";"<<ssender<<";"<<data<<"\n";
         int sending = sendToBrocker(data,  ssender,  sensorDate);
         return sending;
     }
