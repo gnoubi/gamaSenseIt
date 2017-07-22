@@ -84,7 +84,7 @@ void GamaSenseIT::sendToSensor(string data,int receiverAddress)
 
 #ifdef WITH_ACK
   int n_retry=NB_RETRIES;
-
+  cout<<"message "<<dtToSend <<endl;
   do {
     e = sx1272.sendPacketTimeoutACKRetries(receiverAddress, dtToSend);
 

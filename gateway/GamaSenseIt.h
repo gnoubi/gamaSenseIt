@@ -86,6 +86,6 @@ public:
     void loop();
 };
 
-extern GamaSenseIT* gamaSenseIt;
+
 
 #endif
