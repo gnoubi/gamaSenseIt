@@ -84,9 +84,9 @@ void GamaSenseIT::sendToSensor(string data,int receiverAddress)
 
 #ifdef WITH_ACK
   int n_retry=NB_RETRIES;
-  cout<<"envoi message "<<receiverAddress<<"  :"<<dtToSend <<":"<<endl;
   do {
-    e = sx1272.sendPacketTimeoutACKRetries(receiverAddress, dtToSend);
+	  cout<<"envoi message "<<receiverAddress<<"  :"<<dtToSend <<":"<<endl;
+	  e = loraConnector.sendPacketTimeoutACKRetries(receiverAddress, dtToSend);
 
     n_retry--;
 
