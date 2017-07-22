@@ -161,6 +161,9 @@ void GamaSenseIT::sendDate(int receiverAddress)
     string sdate = ss.str();
     string data = GAMA_SENS_IT_MESSAGE_UPDATE_DATE_COMMAND;
     data = data + sdate;
+
+    cout<<"envoi register "<<receiverAddress<<" "<<data<<endl;
+
     sendToSensor(data,receiverAddress);
 }
 
