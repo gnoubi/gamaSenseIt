@@ -6,7 +6,7 @@ test.o: test.cpp
 	gcc -std=c++11 $(CFLAGS) -DRASPBERRY -DIS_RCV_GATEWAY -c test.cpp -o test.o
 
 gamaSenseIt.o: GamaSenseIt.cpp GamaSenseIt.h
-	gcc -std=c++11 $(CFLAGS) -DRASPBERRY -DIS_RCV_GATEWAY -c GamaSenseIt.cpp -o GamaSenseIt.o	
+	gcc -std=c++11 $(CFLAGS) -DRASPBERRY -DIS_RCV_GATEWAY -c GamaSenseIt.cpp -o gamaSenseIt.o	
 
 message.o: Message.cpp Message.h
 	gcc -c Message.cpp -o message.o	
