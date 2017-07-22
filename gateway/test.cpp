@@ -13,6 +13,10 @@
 #include <cstring>
 #include "MQTTClient.h"
 
+
+#define NB_RETRIES 10
+#define WITH_ACK
+
 #define GAMA_SENS_IT_MESSAGE_HEADER "GamaSenseIT_"
 #define GAMA_SENS_IT_MESSAGE_UPDATE_DATE_COMMAND "UPDATE_DATE_"
 #define GAMA_SENS_IT_MESSAGE_REGISTER_COMMAND "REGISTER_"
@@ -51,7 +55,7 @@ string fileName = DEFAULT_FILE_NAME;
 void setupLora()
 {
     // Print a start message
-    printf("SX1272 module and Raspberry Pi: receive packets without ACK\n");
+    printf("SX1272 module and Raspberry Pi: receive packets with ACK\n");
     
     // Power ON the module
     e = sx1272.ON();
@@ -106,14 +110,33 @@ void setupLora()
         string toSend = prefix + data;
         char dtToSend[toSend.size()+1];//as 1 char space for null is also required
         strcpy(dtToSend, toSend.c_str());
+
+
+#ifdef WITH_ACK
+      int n_retry=NB_RETRIES;
+
+      do {
         e = sx1272.sendPacketTimeoutACK(receiverAddress, dtToSend);
+
+        if (e==3)
+          cout<<"No ACK"<<endl;
+        n_retry--;
+
+        if (n_retry)
+          Serial.print("Retry");
+        else
+         cout<<"Abort"<<endl;
+      } while (e && n_retry);
+#else
+      e = sx1272.sendPacketTimeout(receiverAddress, dtToSend);
+#endif
     }
-string extractData(string message)
-{
-    string prefix = GAMA_SENS_IT_MESSAGE_HEADER;
-    string result=message.substr(prefix.size());
-    return result;
-}
+	string extractData(string message)
+	{
+		string prefix = GAMA_SENS_IT_MESSAGE_HEADER;
+		string result=message.substr(prefix.size());
+		return result;
+	}
 
 void waitAndReceiveMessage(string& message, int& source)
 {
@@ -136,13 +159,13 @@ void waitAndReceiveMessage(string& message, int& source)
             if(containPrefix(tmpReceivedMessage,prefix))
             {
                 receivedMessage = extractData(tmpReceivedMessage);
-cout <<"message founded";
-cout << tmpReceivedMessage<<endl;                
+                cout <<"message founded";
+                cout << tmpReceivedMessage<<endl;
                 cc = false;
              }
         }
         else {
-            cout<<".."<<endl;
+    //        cout<<".."<<endl;
             // Serial.println(e, DEC);
         }
     }while(cc);
