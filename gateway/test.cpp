@@ -118,14 +118,11 @@ void setupLora()
       do {
         e = sx1272.sendPacketTimeoutACKRetries(receiverAddress, dtToSend);
 
-        if (e==3)
-          cout<<"No ACK"<<endl;
         n_retry--;
 
-        if (n_retry)
-          Serial.print("Retry");
-        else
-         cout<<"Abort"<<endl;
+        if (n_retry == 0)
+            cout<<"Abort message to "<<receiverAddress<<endl;
+        	cout<<"contents "<<dtToSend<<endl;
       } while (e && n_retry);
 #else
       e = sx1272.sendPacketTimeout(receiverAddress, dtToSend);
@@ -216,7 +213,7 @@ void waitAndReceiveMessage(string& message, int& source)
         {
             case CAPTURE_COMMAND : { return strlen(GAMA_SENS_IT_MESSAGE_CAPTURE_COMMAND);}
             case DATE_UPDATE_COMMAND : { return strlen(GAMA_SENS_IT_MESSAGE_UPDATE_DATE_COMMAND);}
-            case REGISTER_COMMAND : {cout<<"regis "<<endl; return strlen(GAMA_SENS_IT_MESSAGE_REGISTER_COMMAND);}
+            case REGISTER_COMMAND : { return strlen(GAMA_SENS_IT_MESSAGE_REGISTER_COMMAND);}
         }
         return -1;
     }

@@ -6657,15 +6657,15 @@ void SX1272::CarrierSense() {
 
                 if (!e) {
 
-                    printf("--> RSSI ");
-                    printf("%d\n",_RSSI);
+                 //   printf("--> RSSI ");
+                  //  printf("%d\n",_RSSI);
 
                     while (_RSSI > -90 && rssi_retry_count) {
 
                         delay(1);
                         getRSSI();
-                        printf("--> RSSI ");
-                        printf("%d\n",_RSSI);
+                    //    printf("--> RSSI ");
+                     //   printf("%d\n",_RSSI);
                         rssi_retry_count--;
                     }
                 }
