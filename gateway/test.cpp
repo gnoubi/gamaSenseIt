@@ -71,7 +71,7 @@ void setupLora()
     printf("Setting Header ON: state %d\n", e);
     
     // Select frequency channel
-    e = sx1272.setChannel(CH_10_868);
+    e = sx1272.setChannel(CH_09_868);
     printf("Setting Channel: state %d\n", e);
     // Set CRC
     e = sx1272.setCRC_ON();
@@ -148,7 +148,7 @@ void waitAndReceiveMessage(string& message, int& source)
     {
     	e = 0;
         string tmpReceivedMessage = "";
-        e = sx1272.receivePacketTimeoutACK(1000);
+        e = sx1272.receivePacketTimeoutACK(10000);
         if ( e == 0 )
         {
             sender =sx1272.packet_received.src;
