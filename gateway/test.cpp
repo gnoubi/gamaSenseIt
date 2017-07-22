@@ -144,6 +144,7 @@ void waitAndReceiveMessage(string& message, int& source)
     int sender = 0;
     string prefix = GAMA_SENS_IT_MESSAGE_HEADER;
     string receivedMessage = "";
+    cout<<"waiting message."<<endl;
     do
     {
     	e = 0;
@@ -159,19 +160,18 @@ void waitAndReceiveMessage(string& message, int& source)
             if(containPrefix(tmpReceivedMessage,prefix))
             {
                 receivedMessage = extractData(tmpReceivedMessage);
-                cout <<"message founded";
-                cout << tmpReceivedMessage<<endl;
                 cc = false;
              }
         }
         else {
-            cout<<"Receive packet with ACK and retries"<<e<<endl;
+            cout<<".";
             // Serial.println(e, DEC);
         }
     }while(cc);
     message  =receivedMessage;
     source = sender;
-    
+    cout<<"receiving message from : "<<source<<endl;
+    cout<<"contents : "<<message<<endl;
     //return 0;
 }
 
