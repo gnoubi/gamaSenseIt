@@ -42,7 +42,7 @@ void GamaSenseIT::setupLora()
     printf("Setting Header ON: state %d\n", e);
     
     // Select frequency channel
-    e = loraConnector.setChannel(CH_09_868);
+    e = loraConnector.setChannel(CH_11_868);
     printf("Setting Channel: state %d\n", e);
     // Set CRC
     e = loraConnector.setCRC_ON();
@@ -134,7 +134,6 @@ void GamaSenseIT::waitAndReceiveMessage(string& message, int& source)
         }
         else {
             cout<<".";
-            // Serial.println(e, DEC);
         }
     }while(cc);
     message  =receivedMessage;
