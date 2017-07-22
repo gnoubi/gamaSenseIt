@@ -106,7 +106,7 @@ void setupLora()
         string toSend = prefix + data;
         char dtToSend[toSend.size()+1];//as 1 char space for null is also required
         strcpy(dtToSend, toSend.c_str());
-        e = sx1272.sendPacketTimeout(receiverAddress, dtToSend);
+        e = sx1272.sendPacketTimeoutACK(receiverAddress, dtToSend);
     }
 string extractData(string message)
 {
@@ -125,7 +125,7 @@ void waitAndReceiveMessage(string& message, int& source)
     {
     	e = 0;
         string tmpReceivedMessage = "";
-        e = sx1272.receivePacketTimeout(20000);
+        e = sx1272.receivePacketTimeoutACK(20000);
         if ( e == 0 )
         {
             sender =sx1272.packet_received.src;
@@ -136,7 +136,8 @@ void waitAndReceiveMessage(string& message, int& source)
             if(containPrefix(tmpReceivedMessage,prefix))
             {
                 receivedMessage = extractData(tmpReceivedMessage);
-                
+cout <<"message founded";
+cout << tmpReceivedMessage<<endl;                
                 cc = false;
              }
         }
@@ -192,7 +193,7 @@ void waitAndReceiveMessage(string& message, int& source)
         {
             case CAPTURE_COMMAND : { return strlen(GAMA_SENS_IT_MESSAGE_CAPTURE_COMMAND);}
             case DATE_UPDATE_COMMAND : { return strlen(GAMA_SENS_IT_MESSAGE_UPDATE_DATE_COMMAND);}
-            case REGISTER_COMMAND : { return strlen(GAMA_SENS_IT_MESSAGE_REGISTER_COMMAND);}
+            case REGISTER_COMMAND : {cout<<"regis "<<endl; return strlen(GAMA_SENS_IT_MESSAGE_REGISTER_COMMAND);}
         }
         return -1;
     }
