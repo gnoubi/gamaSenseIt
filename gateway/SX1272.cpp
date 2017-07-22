@@ -6604,13 +6604,8 @@ void SX1272::CarrierSense() {
                 e = doCAD(_send_cad_number);
                 _endDoCad=millis();
 
-                printf("--> CAD duration ");
-                printf("%d\n", _endDoCad-_startDoCad);
-
                 if (!e) {
-                    printf("OK1\n");
-
-                    if (_extendedIFS)  {
+                       if (_extendedIFS)  {
                         // wait for random number of CAD
                         uint8_t w = rand() % 8 + 1;
 
