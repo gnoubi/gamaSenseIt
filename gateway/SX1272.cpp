@@ -3841,7 +3841,7 @@ uint8_t SX1272::setACK()
         writeRegister(REG_FIFO, ACK.data[0]);	// Writing the ACK in FIFO
         writeRegister(REG_FIFO, ACK.data[1]);	// Writing the ACK in FIFO
 
-        //#if (SX1272_debug_mode > 0)
+        #if (SX1272_debug_mode > 0)
         printf("## ACK set and written in FIFO ##\n");
         // Print the complete ACK if debug_mode
         printf("## ACK to send:\n");
@@ -3859,7 +3859,7 @@ uint8_t SX1272::setACK()
         printf("%d\n", _SNR);
         printf(" ##\n");
         printf("\n");
-        //#endif
+        #endif
 
         state = 0;
         _reception = CORRECT_PACKET;		// Updating value to next packet
