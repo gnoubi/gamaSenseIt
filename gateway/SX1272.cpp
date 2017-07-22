@@ -6086,8 +6086,8 @@ uint8_t SX1272::getACK(uint16_t wait)
                             if( ACK.data[0] == CORRECT_PACKET )
                             {
                                 state = 0;
-                                //#if (SX1272_debug_mode > 0)
-                                // Printing the received ACK
+                                #if (SX1272_debug_mode > 0)
+                                 Printing the received ACK
                                 printf("## ACK received:\n");
                                 printf("Destination: ");
                                 printf("%d\n", ACK.dst);			 	// Printing destination
@@ -6118,7 +6118,7 @@ uint8_t SX1272::getACK(uint16_t wait)
                                 printf("%d\n", _rcv_snr_in_ack);
                                 printf(" ##\n");
                                 printf("\n");
-                                //#endif
+                                #endif
                             }
                             else
                             {
