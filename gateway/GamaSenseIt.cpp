@@ -85,14 +85,15 @@ void GamaSenseIT::sendToSensor(string data,int receiverAddress)
 #ifdef WITH_ACK
   int n_retry=NB_RETRIES;
   do {
-	  cout<<"envoi message "<<receiverAddress<<"  :"<<dtToSend <<":"<<endl;
 	  e = loraConnector.sendPacketTimeoutACKRetries(receiverAddress, dtToSend);
 
     n_retry--;
 
     if (n_retry == 0)
-        cout<<"Abort message to "<<receiverAddress<<endl;
+    {
+    	cout<<"Abort message to "<<receiverAddress<<endl;
     	cout<<"contents "<<dtToSend<<endl;
+    }
   } while (e && n_retry);
 #else
   e = loraConnector.sendPacketTimeout(receiverAddress, dtToSend);
@@ -161,9 +162,6 @@ void GamaSenseIT::sendDate(int receiverAddress)
     string sdate = ss.str();
     string data = GAMA_SENS_IT_MESSAGE_UPDATE_DATE_COMMAND;
     data = data + sdate;
-
-    cout<<"envoi register "<<receiverAddress<<" "<<data<<endl;
-
     sendToSensor(data,receiverAddress);
 }
 
@@ -250,7 +248,6 @@ int GamaSenseIT::computeCaptureCommand(string message, int senderAddress)
 void GamaSenseIT::computeRegisterCommand(string message, int senderAddress)
 {
     string senderName = messageContents(message);
-    cout <<"sender name" <<senderName <<endl;
     sensorName->insert(make_pair(senderAddress,senderName));
     sendDate(senderAddress);
 }
@@ -359,7 +356,6 @@ int main(int argc, char *argv[])
 	{
 		string cmd(argv[i]);
 		string val(argv[i+1]);
-		cout <<"command: "<<cmd<<" value: "<<val<<endl;
 		gamaSenseIt->analyseParameter(cmd,val);
 	}
 
