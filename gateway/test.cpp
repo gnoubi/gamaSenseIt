@@ -116,7 +116,7 @@ void setupLora()
       int n_retry=NB_RETRIES;
 
       do {
-        e = sx1272.sendPacketTimeoutACK(receiverAddress, dtToSend);
+        e = sx1272.sendPacketTimeoutACKRetries(receiverAddress, dtToSend);
 
         if (e==3)
           cout<<"No ACK"<<endl;
@@ -148,7 +148,7 @@ void waitAndReceiveMessage(string& message, int& source)
     {
     	e = 0;
         string tmpReceivedMessage = "";
-        e = sx1272.receivePacketTimeoutACK(20000);
+        e = sx1272.receivePacketTimeoutACK(1000);
         if ( e == 0 )
         {
             sender =sx1272.packet_received.src;
@@ -165,7 +165,7 @@ void waitAndReceiveMessage(string& message, int& source)
              }
         }
         else {
-            cout<<" wait receiver "<<e<<endl;
+            cout<<"Receive packet with ACK and retries"<<e<<endl;
             // Serial.println(e, DEC);
         }
     }while(cc);
