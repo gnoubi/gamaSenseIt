@@ -351,7 +351,7 @@ void GamaSenseIT::loop()
 
 int main(int argc, char *argv[])
 {
-	gamaSenseIt = new GamaSenseIT(sx1272);
+	 GamaSenseIT* gamaSenseIt;gamaSenseIt = new GamaSenseIT(sx1272);
 
 	for(int i = 1; i+1<argc; i=i+2 )
 	{
