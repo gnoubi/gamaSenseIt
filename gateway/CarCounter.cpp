@@ -70,12 +70,22 @@ CarCounter::~CarCounter() {
 
 int main(int argc, char *argv[])
 {
-    if (!bcm2835_init()) return 1;
-      
+	setup();
+
+   // if (!bcm2835_init()) return 1;
+	// Turn it on
+	pinMode(9, Pinmode(OUTPUT));
+while(true)
+{
+	  digitalWrite(9, HIGH);
+	  delay(1000);
+	  digitalWrite(9, LOW);
+	  delay(1000);
+}
 
 
-        pinMode(8, Pinmode(INPUT));
-	pinMode(6, Pinmode(OUTPUT));
+
+
         
         attachInterrupt(8,interrupt2,Digivalue(FALLING));
 
