@@ -11,29 +11,6 @@ using namespace unistd;
 
 CarCounter* counter;
 
-void interrupt2()
-{
-        cout<<"coucou"<<endl;
-}
-
-
-void interrupt()
-{
-	counter->distanceDetected();
-}
-
-void CarCounter::distanceDetected()
-{
-	cout<<"coucou1"<<endl;
-		std::chrono::high_resolution_clock::time_point current = std::chrono::high_resolution_clock::now();
-		while(digitalRead(activationPin) == LOW);
-cout <<"coucou2"<<endl;		
-auto elapsed = std::chrono::high_resolution_clock::now() - current ;
-		lastTimeUpdade = current;
-		chrono::microseconds microseconds = chrono::duration_cast<std::chrono::microseconds> (elapsed);
-		lastMeasure = microseconds.count() / 10;
-}
-
 int CarCounter::getDistance()
 {
 	while(digitalRead(activationPin) == LOW);
@@ -53,18 +30,10 @@ CarCounter::CarCounter(int pin) {
 
 }
 
-void CarCounter::start()
-{
-	attachInterrupt(activationPin,interrupt,Digivalue(RISING));
-}
-
-
-
 void CarCounter::stop()
 {
 	detachInterrupt(activationPin);
 }
-
 
 int CarCounter::getLastDistance()
 {
@@ -72,43 +41,21 @@ int CarCounter::getLastDistance()
 }
 
 CarCounter::~CarCounter() {
-	// TODO Auto-generated destructor stub
+	
 }
 
 
 int main(int argc, char *argv[])
 {
 
-   // if (!bcm2835_init()) return 1;
-	// Turn it on
-	cout<<"pin " << raspberryPinNumber(9)<<endl;
+   cout<<"pin " << raspberryPinNumber(9)<<endl;
 #ifdef RASPBERRY2
 	cout<< "coucou "<<endl;
 
 #endif
 
 	pinMode(9, Pinmode(INPUT));
-/*while(true)
-{
-	  digitalWrite(9, HIGH);
-	  delay(1000);
-	  digitalWrite(9, LOW);
-	  delay(1000);
-}*/
-
-
-
-
-        
-  //      attachInterrupt(9,interrupt2,Digivalue(FALLING));
-
-//while(true);
-
-    // GPIO begin if specified    
-
-
 	counter= new CarCounter(9);
-	counter->start();
 	while(true)
 	{
 		int dst = counter->getLastDistance();

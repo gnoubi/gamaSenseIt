@@ -5,8 +5,8 @@
  *      Author: nicolas
  */
 
-#ifndef CARCOUNTER_H_
-#define CARCOUNTER_H_
+#ifndef LIDAR_H_
+#define LIDAR_H_
 
 #include "arduPi_pi2.h"
 #include <iostream>
@@ -14,7 +14,7 @@
 
 using namespace std;
 
-class CarCounter {
+class Lidar {
 
 private:
 	int activationPin;
@@ -22,18 +22,17 @@ private:
 	std::chrono::high_resolution_clock::time_point lastTimeUpdade;
 	int lastMeasure;
 
-
-
-
 public:
 	void start();
 	void stop();
 	int getDistance();
 	int getLastDistance();
 	void distanceDetected();
-	CarCounter(int pin);
-	virtual ~CarCounter();
+	Lidar(int pin);
+	virtual ~Lidar();
 };
 
 
-#endif /* CARCOUNTER_H_ */
+
+
+#endif /* LIDAR_H_ */
