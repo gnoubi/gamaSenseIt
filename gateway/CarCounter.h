@@ -18,7 +18,6 @@ class CarCounter {
 
 private:
 	int activationPin;
-	int lastDistance;
 	int currentDistance;
 	std::chrono::high_resolution_clock::time_point lastTimeUpdade;
 	int lastMeasure;
@@ -30,6 +29,7 @@ public:
 	void start();
 	void stop();
 	int getDistance();
+	int getLastDistance();
 	void distanceDetected();
 	CarCounter(int pin);
 	virtual ~CarCounter();
