@@ -210,16 +210,4 @@ void loop()
     }
 }
 
-int main(int argc, char *argv[])
-{
-    setup();
-    
-    sendDate(8);
-    string tmp = buildCaptureMessage();
-    char tab2[tmp.size()];
-    strcpy(tab2, tmp.c_str());
-    string dts = extractData(tmp);
-    cout<<dts<<"  "<<messageCommand(dts)<<" "<<messageContents(dts)<<endl;
-    loop();
-    return 0;
-}
+
