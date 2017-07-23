@@ -74,25 +74,31 @@ int main(int argc, char *argv[])
 
    // if (!bcm2835_init()) return 1;
 	// Turn it on
-	pinMode(9, Pinmode(OUTPUT));
-while(true)
+	cout<<"pin " << raspberryPinNumber(9)<<endl;
+#ifdef RASPBERRY2
+	cout<< "coucou "<<endl;
+
+#endif
+
+	pinMode(9, Pinmode(INPUT));
+/*while(true)
 {
 	  digitalWrite(9, HIGH);
 	  delay(1000);
 	  digitalWrite(9, LOW);
 	  delay(1000);
-}
+}*/
 
 
 
 
         
-        attachInterrupt(8,interrupt2,Digivalue(FALLING));
+        attachInterrupt(9,interrupt2,Digivalue(FALLING));
 
 while(true);
 
     // GPIO begin if specified    
-   cout<<"pin " << raspberryPinNumber(8)<<endl;
+
 /*
 	counter= new CarCounter(8);
 	while(true)
