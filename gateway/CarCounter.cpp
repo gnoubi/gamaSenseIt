@@ -50,11 +50,12 @@ CarCounter::CarCounter(int pin) {
 	lastDistance = 0;
 	currentDistance = 0;
 	lastTimeUpdade = std::chrono::high_resolution_clock::now();
+	pinMode(activationPin, Pinmode(INPUT));
+
 }
 
 void CarCounter::start()
 {
-	pinMode(activationPin, Pinmode(INPUT));
 	attachInterrupt(activationPin,interrupt,Digivalue(FALLING));
 }
 
@@ -92,19 +93,19 @@ int main(int argc, char *argv[])
 
 
         
-        attachInterrupt(9,interrupt2,Digivalue(FALLING));
+  //      attachInterrupt(9,interrupt2,Digivalue(FALLING));
 
-while(true);
+//while(true);
 
     // GPIO begin if specified    
 
-/*
-	counter= new CarCounter(8);
+
+	counter= new CarCounter(9);
 	while(true)
 	{
-interrupt2		int dst = counter->getDistance();
+		int dst = counter->getDistance();
 		cout<<"distance "<<dst<<endl;
 	}
-*/
+
 }
 
