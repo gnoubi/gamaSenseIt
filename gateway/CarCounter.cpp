@@ -108,10 +108,10 @@ int main(int argc, char *argv[])
 
 
 	counter= new CarCounter(9);
-	counter->start();
+	//counter->start();
 	while(true)
 	{
-		int dst = counter->getLastDistance();
+		int dst = counter->getDistance();
 		cout<<"distance "<<dst<<endl;
 	}
 
