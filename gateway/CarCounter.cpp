@@ -36,9 +36,9 @@ auto elapsed = std::chrono::high_resolution_clock::now() - current ;
 
 int CarCounter::getDistance()
 {
-	while(digitalRead(activationPin) == HIGH);  	
-auto current = std::chrono::high_resolution_clock::now();
 	while(digitalRead(activationPin) == LOW);
+auto current = std::chrono::high_resolution_clock::now();
+	while(digitalRead(activationPin) == HIGH);
 auto elapsed = std::chrono::high_resolution_clock::now() - current ;
 	chrono::microseconds microseconds = chrono::duration_cast<std::chrono::microseconds> (elapsed);
 	return microseconds.count() / 10;
@@ -55,7 +55,7 @@ CarCounter::CarCounter(int pin) {
 
 void CarCounter::start()
 {
-	attachInterrupt(activationPin,interrupt,Digivalue(FALLING));
+	attachInterrupt(activationPin,interrupt,Digivalue(RISING));
 }
 
 
