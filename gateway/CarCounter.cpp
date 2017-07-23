@@ -47,7 +47,6 @@ auto elapsed = std::chrono::high_resolution_clock::now() - current ;
 CarCounter::CarCounter(int pin) {
 	activationPin = pin;
 	lastMeasure = 0;
-	lastDistance = 0;
 	currentDistance = 0;
 	lastTimeUpdade = std::chrono::high_resolution_clock::now();
 	pinMode(activationPin, Pinmode(INPUT));
@@ -59,9 +58,17 @@ void CarCounter::start()
 	attachInterrupt(activationPin,interrupt,Digivalue(FALLING));
 }
 
+
+
 void CarCounter::stop()
 {
 	detachInterrupt(activationPin);
+}
+
+
+int CarCounter::getLastDistance()
+{
+	return this->lastMeasure;
 }
 
 CarCounter::~CarCounter() {
@@ -101,9 +108,10 @@ int main(int argc, char *argv[])
 
 
 	counter= new CarCounter(9);
+	counter->start();
 	while(true)
 	{
-		int dst = counter->getDistance();
+		int dst = counter->getLastDistance();
 		cout<<"distance "<<dst<<endl;
 	}
 
