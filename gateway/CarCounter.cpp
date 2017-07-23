@@ -9,6 +9,13 @@
 
 using namespace unistd;
 
+CarCounter* counter;
+
+void interrupt()
+{
+	counter->distanceDetected();
+}
+
 void CarCounter::distanceDetected()
 {
 		std::chrono::high_resolution_clock::time_point current = std::chrono::high_resolution_clock::now();
@@ -40,7 +47,7 @@ CarCounter::CarCounter(int pin) {
 void CarCounter::start()
 {
 	pinMode(activationPin, Pinmode(INPUT));
-	attachInterrupt(activationPin,distanceDetected,Digivalue(FALLING));
+	attachInterrupt(activationPin,interrupt,Digivalue(FALLING));
 }
 
 void CarCounter::stop()
@@ -55,7 +62,7 @@ CarCounter::~CarCounter() {
 
 int main(int argc, char *argv[])
 {
-	CarCounter* counter= new CarCounter(14);
+	counter= new CarCounter(14);
 
 	while(true)
 	{
