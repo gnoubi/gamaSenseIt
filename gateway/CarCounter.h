@@ -24,7 +24,7 @@ private:
 	int activationPin;
 	int lastDistance;
 	int currentDistance;
-	std::chrono::high_resolution_clock lastTimeUpdade;
+	std::chrono::high_resolution_clock::time_point lastTimeUpdade;
 	int lastMeasure;
 
 

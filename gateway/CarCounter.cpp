@@ -11,7 +11,7 @@ using namespace unistd;
 
 void CarCounter::distanceDetected()
 {
-		std::chrono::high_resolution_clock current = std::chrono::high_resolution_clock::now();
+		std::chrono::high_resolution_clock::time_point current = std::chrono::high_resolution_clock::now();
 		while(digitalRead(activationPin) == LOW);
 		auto elapsed = std::chrono::high_resolution_clock::now() - current ;
 		lastTimeUpdade = current;
