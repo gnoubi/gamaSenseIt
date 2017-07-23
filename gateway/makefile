@@ -3,7 +3,7 @@ gamaSenseIt: gamaSenseIt.o arduPi.o SX1272.o
 	g++ -std=c++11 -lrt -lpthread -lpaho-mqtt3c  gamaSenseIt.o arduPi.o SX1272.o -o gamaSenseIt
 
 carCounter: CarCounter.o arduPi.o SX1272.o
-	g++ -std=c++11 -lrt -lpthread -lpaho-mqtt3c  CarCounter.o arduPi.o SX1272.o -o carCounter
+	g++ -std=c++11 -lrt -lpthread -lpaho-mqtt3c  CarCounter.o arduPi.o SX1272.o arduPi.o -o carCounter
 
 test.o: test.cpp
 	gcc -std=c++11 $(CFLAGS) -DRASPBERRY -DIS_RCV_GATEWAY -c test.cpp -o test.o
