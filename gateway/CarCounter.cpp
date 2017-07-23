@@ -55,7 +55,7 @@ CarCounter::~CarCounter() {
 
 int main(int argc, char *argv[])
 {
-	CarCounter* counter= new CarCounter(GPFSEL5);
+	CarCounter* counter= new CarCounter(14);
 
 	while(true)
 	{
