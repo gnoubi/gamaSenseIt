@@ -8,11 +8,7 @@
 #ifndef CARCOUNTER_H_
 #define CARCOUNTER_H_
 
-#ifdef RASPBERRY2
 #include "arduPi_pi2.h"
-#else
-#include "arduPi.h"
-#endif
 #include <iostream>
 #include <chrono>
 

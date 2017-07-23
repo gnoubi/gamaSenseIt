@@ -127,7 +127,7 @@ void setupLora()
 #else
       e = sx1272.sendPacketTimeout(receiverAddress, dtToSend);
 #endif
-    }
+ }
 	string extractData(string message)
 	{
 		string prefix = GAMA_SENS_IT_MESSAGE_HEADER;

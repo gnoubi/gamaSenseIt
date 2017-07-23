@@ -5782,7 +5782,7 @@ uint8_t SX1272::sendPacketTimeoutACK(uint8_t dest, char *payload)
     if( state == 0 )
     {
         // added by C. Pham
-        printf("wait for ACK\n");
+    //    printf("wait for ACK\n");
 
         if( availableData() )
         {
