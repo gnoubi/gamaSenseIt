@@ -70,7 +70,6 @@ CarCounter::~CarCounter() {
 
 int main(int argc, char *argv[])
 {
-SPIPi.begin();
 
    // if (!bcm2835_init()) return 1;
 	// Turn it on
