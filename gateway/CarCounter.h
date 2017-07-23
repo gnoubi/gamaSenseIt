@@ -28,14 +28,13 @@ private:
 	int lastMeasure;
 
 
-	void distanceDetected();
 
 
 public:
 	void start();
 	void stop();
 	int getDistance();
-
+	void distanceDetected();
 	CarCounter(int pin);
 	virtual ~CarCounter();
 };
