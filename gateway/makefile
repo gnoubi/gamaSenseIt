@@ -6,10 +6,10 @@ carCounter: CarCounter.o arduPi.o SX1272.o
 	g++ -std=c++11 -lrt -lpthread -lpaho-mqtt3c  CarCounter.o arduPi.o SX1272.o -o carCounter
 
 test.o: test.cpp
-	gcc -std=c++11 $(CFLAGS) -DRASPBERRY -DIS_RCV_GATEWAY -c test.cpp -o test.o
+	gcc -std=c++11 $(CFLAGS) -DRASPBERRY2 -DIS_RCV_GATEWAY -c test.cpp -o test.o
 
 gamaSenseIt.o: GamaSenseIt.cpp GamaSenseIt.h
-	gcc -std=c++11 $(CFLAGS) -DRASPBERRY -DIS_RCV_GATEWAY -c GamaSenseIt.cpp -o gamaSenseIt.o	
+	gcc -std=c++11 $(CFLAGS) -DRASPBERRY2 -DIS_RCV_GATEWAY -c GamaSenseIt.cpp -o gamaSenseIt.o	
 
 CarCounter.o: CarCounter.cpp CarCounter.h
 	gcc -std=c++11 $(CFLAGS) -DRASPBERRY2 -DIS_RCV_GATEWAY -c CarCounter.cpp -o CarCounter.o	
