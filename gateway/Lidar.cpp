@@ -5,13 +5,13 @@
  *      Author: nicolas
  */
 
-#include "CarCounter.h"
+#include "Lidar.h"
 
 using namespace unistd;
 
-CarCounter* counter;
+Lidar* counter;
 
-int CarCounter::getDistance()
+int Lidar::getDistance()
 {
 	while(digitalRead(activationPin) == LOW);
 auto current = std::chrono::high_resolution_clock::now();
@@ -21,7 +21,7 @@ auto elapsed = std::chrono::high_resolution_clock::now() - current ;
 	return microseconds.count() / 10;
 }
 
-CarCounter::CarCounter(int pin) {
+Lidar::Lidar(int pin) {
 	activationPin = pin;
 	lastMeasure = 0;
 	currentDistance = 0;
@@ -30,17 +30,17 @@ CarCounter::CarCounter(int pin) {
 
 }
 
-void CarCounter::stop()
+void Lidar::stop()
 {
 	detachInterrupt(activationPin);
 }
 
-int CarCounter::getLastDistance()
+int Lidar::getLastDistance()
 {
 	return this->lastMeasure;
 }
 
-CarCounter::~CarCounter() {
+Lidar::~Lidar() {
 	
 }
 
@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
 #endif
 
 	pinMode(9, Pinmode(INPUT));
-	counter= new CarCounter(9);
+	counter= new Lidar(9);
 	while(true)
 	{
 		int dst = counter->getLastDistance();
