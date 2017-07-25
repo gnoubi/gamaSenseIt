@@ -10,8 +10,9 @@
 
 #include <mutex>
 #include <thread>
+#include <iostream>
 
-
+using namespace unistd;
 CarCounter::CarCounter() {
 	endOfWay = 0;
 	lastDistance = 0;
@@ -87,7 +88,8 @@ int main()
 	CarCounter car;
 
 	std::thread t1([&car]() {
-		car.start();
+		//car.start();
+		cout <<" dfdsq "<<endl;
 	});
 	std::thread t2([&car]() {
 		while(true)
@@ -95,8 +97,8 @@ int main()
 			if(car.hasMoreDistanceData())
 			{
 				MeasuredDistance m = car.getDistanceData();
-				chrono::microseconds microseconds = std::chrono::duration_cast<std::chrono::microseconds>(m.captureDate);
-				cout <<microseconds.count()<<"  "<<m.distance;
+				long long tmp = m.captureDate.time_since_epoch().count();
+				cout <<tmp<<"  "<<m.distance<<endl;
 			}
 
 		}
