@@ -107,7 +107,7 @@ int main()
 			Lidar* counter2= new Lidar(9);
 			while(true)
 			{
-				int dst = counter2->getLastDistance();
+				int dst = counter2->getDistance();
 				int res = digitalRead(9);
 				cout<<"distance "<<dst<<" "<<res<<endl;
 			}
