@@ -13,6 +13,8 @@
 #include "Lidar.h"
 
 using namespace unistd;
+using namespace std;
+
 CarCounter::CarCounter() {
 	endOfWay = 0;
 	lastDistance = 0;
