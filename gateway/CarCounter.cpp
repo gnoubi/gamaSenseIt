@@ -17,7 +17,7 @@ using namespace unistd;
 using namespace std;
 
 CarCounter::CarCounter() {
-	endOfWay = 0;////s
+	endOfWay = 10000;////s
 	lastDistance = 0;
 	mesuredDistance = new MeasuredDistance[BUFFER_SIZE];
 	this->carArrival = new CarArrival[BUFFER_SIZE];
@@ -47,14 +47,9 @@ bool CarCounter::hasMoreDistanceData()
 
 void CarCounter::pushDistanceData(int distance)
 {
-	//cout<<"push 1"<<endl;
 	this->mesuredDistance[(measureWriterIndex++)%BUFFER_SIZE].distance = distance;
 	this->mesuredDistance[(measureWriterIndex++)%BUFFER_SIZE].captureDate =  std::chrono::high_resolution_clock::now();
-//	cout<<"push 2 "<<endl;
 	measureWriterIndex++;
-//	this->mesuredDistance[measureWriterIndex].distance = distance;
-//	this->mesuredDistance[measureWriterIndex].captureDate =  std::chrono::high_resolution_clock::now();
-//	measureWriterIndex++;
 }
 
 
@@ -78,17 +73,14 @@ void CarCounter::stop()
 void CarCounter::start()
 {
 
-//	cout<<"c1"<<endl;
 	Lidar* counter= new Lidar(9);
-//	cout<<"c2"<<endl;
 	isStarting = true;
-//	cout<<"c3"<<endl;
 	while(isStarting)
 	{
-//		cout<<"c4"<<endl;
 		int dst = counter->getLastDistance();
 		if(dst < this->lastDistance - BUFFER_DISTANCE && dst > this->lastDistance + BUFFER_DISTANCE)
 		{
+			cout <<"distance "<<dst<<"\t"<< this->lastDistance <<endl;
 			this->lastDistance = dst;
 			this->pushDistanceData(dst);
 		}
