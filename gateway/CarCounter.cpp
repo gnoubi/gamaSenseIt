@@ -11,6 +11,7 @@
 #include <mutex>
 #include <thread>
 #include "Lidar.h"
+#include <exception>
 
 using namespace unistd;
 using namespace std;
