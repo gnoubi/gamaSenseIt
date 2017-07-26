@@ -85,24 +85,29 @@ void CarCounter::start()
 
 int main()
 {
+
 	CarCounter car;
 
 	std::thread t1([&car]() {
-		//car.start();
-		cout <<" dfdsq "<<endl;
+		car.start();
+		//cout <<" dfdsq "<<endl;
 	});
 	std::thread t2([&car]() {
+		std::ofstream dictionary;
+		dictionary.open("data.csv");
+
 		while(true)
 		{
 			if(car.hasMoreDistanceData())
 			{
 				MeasuredDistance m = car.getDistanceData();
 				long long tmp = m.captureDate.time_since_epoch().count();
+				dictionary <<tmp<<"\t"<<m.distance<<endl;
 				cout <<tmp<<"  "<<m.distance<<endl;
 			}
 
 		}
-
+		dictionary.close(); //explicite
 	});
 }
 
