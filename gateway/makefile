@@ -14,7 +14,7 @@ gamaSenseIt.o: GamaSenseIt.cpp GamaSenseIt.h
 CarCounter.o: CarCounter.cpp CarCounter.h  Lidar.h
 	g++ -std=c++11 $(CFLAGS) -lrt -lbcm2835 -lpthread -DRASPBERRY2 -DIS_RCV_GATEWAY -c CarCounter.cpp -o CarCounter.o	
 
-lidar.o: Lidar.cpp Lidar.h
+Lidar.o: Lidar.cpp Lidar.h
 	g++ -std=c++11 -DRASPBERRY2  $(CFLAGS) -lrt -lpthread -lbcm2835 -DRASPBERRY2 -DIS_RCV_GATEWAY -c Lidar.cpp -o Lidar.o	
 
 message.o: Message.cpp Message.h
