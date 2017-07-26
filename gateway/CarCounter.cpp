@@ -17,7 +17,7 @@ using namespace unistd;
 using namespace std;
 
 CarCounter::CarCounter() {
-	endOfWay = 0;////
+	endOfWay = 0;////s
 	lastDistance = 0;
 	mesuredDistance = new MeasuredDistance[BUFFER_SIZE];
 	this->carArrival = new CarArrival[BUFFER_SIZE];
@@ -108,15 +108,15 @@ int main()
 				MeasuredDistance m = car.getDistanceData();
 				long long tmp = m.captureDate.time_since_epoch().count();
 				dictionary <<tmp<<"\t"<<m.distance<<endl;
-				cout <<tmp<<"  "<<m.distance<<endl;
+				std::cout <<tmp<<"  "<<m.distance<<endl;
 			}
 
 		}
 		dictionary.close(); //explicite
 	});
-	} catch( exception& e)
+	} catch( std::exception& e)
 	{
-		cout <<"error" << e <<endl;
+		std::cout <<"error" << e <<endl;
 	}
 }
 
