@@ -113,9 +113,9 @@ int main()
 		}
 		dictionary.close(); //explicite
 	});
-	} catch( const exception& e)
+	} catch( exception& e)
 	{
-		cout<<"eereur "<<e<<endl;
+		cout <<"error" << e <<endl;
 	}
 }
 
