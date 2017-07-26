@@ -108,7 +108,8 @@ int main()
 			while(true)
 			{
 				int dst = counter2->getLastDistance();
-				cout<<"distance "<<dst<<endl;
+				int res = digitalRead(9);
+				cout<<"distance "<<dst<<" "<<res<<endl;
 			}
 
 
