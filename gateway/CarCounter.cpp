@@ -17,7 +17,7 @@ using namespace unistd;
 using namespace std;
 
 CarCounter::CarCounter() {
-	endOfWay = 0;
+	endOfWay = 0;////
 	lastDistance = 0;
 	mesuredDistance = new MeasuredDistance[BUFFER_SIZE];
 	this->carArrival = new CarArrival[BUFFER_SIZE];
