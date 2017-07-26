@@ -10,8 +10,7 @@
 
 #include <mutex>
 #include <thread>
-#include <iostream>
-#include <fstream>
+#include "Lidar.h"
 
 using namespace unistd;
 CarCounter::CarCounter() {
@@ -89,6 +88,8 @@ int main()
 
 	CarCounter car;
 
+	try
+	{
 	std::thread t1([&car]() {
 		car.start();
 		//cout <<" dfdsq "<<endl;
@@ -110,5 +111,9 @@ int main()
 		}
 		dictionary.close(); //explicite
 	});
+	} catch( const std::exception& e)
+	{
+		cout<<"eereur "<<e<<endl;
+	}
 }
 
