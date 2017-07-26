@@ -12,7 +12,10 @@
 #define BUFFER_DISTANCE 30
 
 #include<chrono>
+#include <iostream>
+#include <fstream>
 #include"Lidar.h"
+
 
 using namespace std;
 
