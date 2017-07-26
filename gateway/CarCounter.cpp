@@ -11,6 +11,7 @@
 #include <mutex>
 #include <thread>
 #include <iostream>
+#include <fstream>
 
 using namespace unistd;
 CarCounter::CarCounter() {
