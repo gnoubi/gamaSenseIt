@@ -96,24 +96,6 @@ int main()
 
 
 
-	cout<<"pin " << raspberryPinNumber(9)<<endl;
-		   cout<<"pin " << raspberryPinNumber(9)<<endl;
-		#ifdef RASPBERRY2
-			cout<< "coucou "<<endl;
-
-		#endif
-
-			pinMode(9, Pinmode(INPUT));
-			Lidar* counter2= new Lidar(9);
-			while(true)
-			{
-				int dst = counter2->getDistance();
-				int res = digitalRead(9);
-				cout<<"distance "<<dst<<" "<<res<<endl;
-			}
-
-
-
 
 
 
