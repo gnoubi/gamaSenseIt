@@ -95,7 +95,7 @@ int main()
 	{
 	std::thread t1([&car]() {
 		car.start();
-		//cout <<" dfdsq "<<endl;
+		cout <<" dfdsq "<<endl;
 	});
 	std::thread t2([&car]() {
 		ofstream dictionary;
@@ -108,15 +108,18 @@ int main()
 				MeasuredDistance m = car.getDistanceData();
 				long long tmp = m.captureDate.time_since_epoch().count();
 				dictionary <<tmp<<"\t"<<m.distance<<endl;
-				std::cout <<tmp<<"  "<<m.distance<<endl;
+				std::cout<<tmp<<"  "<<m.distance<<endl;
 			}
 
 		}
 		dictionary.close(); //explicite
 	});
+	t1.join();
+	t2.join();
 	} catch( std::exception& e)
 	{
-		std::cout <<"error" << e <<endl;
+		std::cout<<"error"<<e<<endl;
 	}
+
 }
 
