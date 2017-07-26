@@ -93,7 +93,7 @@ int main()
 		//cout <<" dfdsq "<<endl;
 	});
 	std::thread t2([&car]() {
-		std::ofstream dictionary;
+		ofstream dictionary;
 		dictionary.open("data.csv");
 
 		while(true)
