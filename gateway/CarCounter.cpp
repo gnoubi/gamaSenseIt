@@ -47,9 +47,14 @@ bool CarCounter::hasMoreDistanceData()
 
 void CarCounter::pushDistanceData(int distance)
 {
-	this->mesuredDistance[measureWriterIndex].distance = distance;
-	this->mesuredDistance[measureWriterIndex].captureDate =  std::chrono::high_resolution_clock::now();
+	//cout<<"push 1"<<endl;
+	this->mesuredDistance[(measureWriterIndex++)%BUFFER_SIZE].distance = distance;
+	this->mesuredDistance[(measureWriterIndex++)%BUFFER_SIZE].captureDate =  std::chrono::high_resolution_clock::now();
+//	cout<<"push 2 "<<endl;
 	measureWriterIndex++;
+//	this->mesuredDistance[measureWriterIndex].distance = distance;
+//	this->mesuredDistance[measureWriterIndex].captureDate =  std::chrono::high_resolution_clock::now();
+//	measureWriterIndex++;
 }
 
 
@@ -72,12 +77,17 @@ void CarCounter::stop()
 
 void CarCounter::start()
 {
+
+//	cout<<"c1"<<endl;
 	Lidar* counter= new Lidar(9);
+//	cout<<"c2"<<endl;
 	isStarting = true;
+//	cout<<"c3"<<endl;
 	while(isStarting)
 	{
+//		cout<<"c4"<<endl;
 		int dst = counter->getLastDistance();
-		if(dst < this->lastDistance + BUFFER_DISTANCE && dst > this->lastDistance - BUFFER_DISTANCE)
+		if(dst < this->lastDistance - BUFFER_DISTANCE && dst > this->lastDistance + BUFFER_DISTANCE)
 		{
 			this->lastDistance = dst;
 			this->pushDistanceData(dst);
@@ -94,8 +104,9 @@ int main()
 	try
 	{
 	std::thread t1([&car]() {
+//		std::cout<<"sfdsfdsgfgdfgfdgfds"<<endl;
 		car.start();
-		cout <<" dfdsq "<<endl;
+//		cout <<" dfdsq "<<endl;
 	});
 	std::thread t2([&car]() {
 		ofstream dictionary;
@@ -118,7 +129,12 @@ int main()
 	t2.join();
 	} catch( std::exception& e)
 	{
-		std::cout<<"error"<<e<<endl;
+		 ofstream edictionary;
+                edictionary.open("edata.csv");
+		edictionary<<e.what()<<endl;
+		edictionary.close();
+		std::cout<<"error"<<e.what()<<endl;
+	//	std::cout<<"error"<<e<<endl;
 	}
 
 }
