@@ -111,7 +111,7 @@ int main()
 		}
 		dictionary.close(); //explicite
 	});
-	} catch( const std::exception& e)
+	} catch( const exception& e)
 	{
 		cout<<"eereur "<<e<<endl;
 	}
