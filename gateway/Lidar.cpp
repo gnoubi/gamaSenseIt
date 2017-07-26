@@ -13,11 +13,13 @@ Lidar* counter;
 
 int Lidar::getDistance()
 {
-	while(digitalRead(activationPin) == LOW);
+	int c = 0, d = 0;
+	while(digitalRead(activationPin) == LOW) c++;
 auto current = std::chrono::high_resolution_clock::now();
-	while(digitalRead(activationPin) == HIGH);
+	while(digitalRead(activationPin) == HIGH) d++;
 auto elapsed = std::chrono::high_resolution_clock::now() - current ;
 	chrono::microseconds microseconds = chrono::duration_cast<std::chrono::microseconds> (elapsed);
+	cout<<"c"<<c<<" d "<<d<<endl;
 	return microseconds.count() / 10;
 }
 
