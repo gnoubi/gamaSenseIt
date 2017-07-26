@@ -72,20 +72,6 @@ void CarCounter::stop()
 
 void CarCounter::start()
 {
-	cout<<"pin " << raspberryPinNumber(9)<<endl;
-	   cout<<"pin " << raspberryPinNumber(9)<<endl;
-	#ifdef RASPBERRY2
-		cout<< "coucou "<<endl;
-
-	#endif
-
-		pinMode(9, Pinmode(INPUT));
-		Lidar* counter2= new Lidar(9);
-		while(true)
-		{
-			int dst = counter2->getLastDistance();
-			cout<<"distance "<<dst<<endl;
-		}
 
 
 	Lidar* counter= new Lidar(9);
@@ -107,6 +93,28 @@ void CarCounter::start()
 
 int main()
 {
+
+
+
+	cout<<"pin " << raspberryPinNumber(9)<<endl;
+		   cout<<"pin " << raspberryPinNumber(9)<<endl;
+		#ifdef RASPBERRY2
+			cout<< "coucou "<<endl;
+
+		#endif
+
+			pinMode(9, Pinmode(INPUT));
+			Lidar* counter2= new Lidar(9);
+			while(true)
+			{
+				int dst = counter2->getLastDistance();
+				cout<<"distance "<<dst<<endl;
+			}
+
+
+
+
+
 
 	CarCounter car;
 
