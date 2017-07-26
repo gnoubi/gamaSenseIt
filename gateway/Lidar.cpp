@@ -44,7 +44,7 @@ Lidar::~Lidar() {
 	
 }
 
-
+/*
 int main(int argc, char *argv[])
 {
 
@@ -62,5 +62,5 @@ int main(int argc, char *argv[])
 		cout<<"distance "<<dst<<endl;
 	}
 
-}
+}*/
 
