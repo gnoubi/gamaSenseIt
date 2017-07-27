@@ -115,8 +115,20 @@ int main(int argc, char *argv[])
 			{
 				MeasuredDistance m = car.getDistanceData();
 				long long tmp = m.captureDate.time_since_epoch().count();
-				dictionary <<tmp<<"\t"<<m.distance<<endl;
-				cout<<"mesure "<<tmp<<"  "<<m.distance<<endl;
+
+					std::chrono::system_clock::duration tp = m.captureDate.time_since_epoch();
+				    std::chrono::hours h = std::chrono::duration_cast<std::chrono::hours>(tp);
+				    tp -= h;
+				    std::chrono::minutes g = std::chrono::duration_cast<std::chrono::minutes>(tp);
+				    tp -= g;
+				    std::chrono::seconds s = std::chrono::duration_cast<std::chrono::seconds>(tp);
+				    tp -= s;
+
+
+
+
+//				dictionary <<tmp<<"\t"<<m.distance<<endl;
+				cout<<"mesure: "<<tmp<<"  "<<h<<"keure "<<g<<"min "<<s<<"sec "<<endl;
 			}
 
 		}
