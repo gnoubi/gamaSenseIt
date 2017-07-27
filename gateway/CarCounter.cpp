@@ -82,7 +82,6 @@ void CarCounter::start()
 //		cout <<"distance "<<dst<<" "<<lastDistance<<endl;
 		if(dst < this->lastDistance - BUFFER_DISTANCE || dst > this->lastDistance + BUFFER_DISTANCE)
 		{
-			cout <<"************distance "<<dst<<"\t"<< this->lastDistance <<endl;
 			this->lastDistance = dst;
 			this->pushDistanceData(dst);
 		}
@@ -116,7 +115,7 @@ int main()
 				MeasuredDistance m = car.getDistanceData();
 				long long tmp = m.captureDate.time_since_epoch().count();
 				dictionary <<tmp<<"\t"<<m.distance<<endl;
-			//	std::cout<<tmp<<"  "<<m.distance<<endl;
+				cout<<"mesure"<<tmp<<"  "<<m.distance<<endl;
 			}
 
 		}

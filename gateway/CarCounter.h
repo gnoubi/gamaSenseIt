@@ -9,7 +9,7 @@
 #define CARCOUNTER_H_
 
 #define BUFFER_SIZE 200
-#define BUFFER_DISTANCE 30
+#define BUFFER_DISTANCE 50
 
 #include<chrono>
 #include <iostream>
