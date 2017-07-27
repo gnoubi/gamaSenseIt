@@ -128,7 +128,7 @@ int main(int argc, char *argv[])
 
 
 //				dictionary <<tmp<<"\t"<<m.distance<<endl;
-				cout<<"mesure: "<<tmp<<"  "<<h<<"keure "<<g<<"min "<<s<<"sec "<<endl;
+				cout<<"mesure: "<<tmp<<"  "<<h.count()<<"keure "<<g.count()<<"min "<<s.count()<<"sec "<<endl;
 			}
 
 		}
