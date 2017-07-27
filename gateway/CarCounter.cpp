@@ -115,7 +115,7 @@ int main()
 				MeasuredDistance m = car.getDistanceData();
 				long long tmp = m.captureDate.time_since_epoch().count();
 				dictionary <<tmp<<"\t"<<m.distance<<endl;
-				cout<<"mesure"<<tmp<<"  "<<m.distance<<endl;
+				cout<<"mesure "<<tmp<<"  "<<m.distance<<endl;
 			}
 
 		}
