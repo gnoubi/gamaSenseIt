@@ -106,7 +106,8 @@ int main()
 	});
 	std::thread t2([&car]() {
 		ofstream dictionary;
-		dictionary.open("data.csv");
+		dictionary.open("data.csv",std::ios_base::app | std::ios_base::out);
+
 
 		while(true)
 		{
