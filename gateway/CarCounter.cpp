@@ -89,7 +89,7 @@ void CarCounter::start()
 	}
 }
 
-int main()
+int main(int argc, char *argv[])
 {
 
 
@@ -98,15 +98,15 @@ int main()
 
 
 	CarCounter car;
-
+	string cmd=argv[1];
 	std::thread t1([&car]() {
 //		std::cout<<"sfdsfdsgfgdfgfdgfds"<<endl;
 		car.start();
 //		cout <<" dfdsq "<<endl;
 	});
-	std::thread t2([&car]() {
+	std::thread t2([&car,&cmd]() {
 		ofstream dictionary;
-		dictionary.open("data.csv",std::ios_base::app | std::ios_base::out);
+		dictionary.open(cmd,std::ios_base::app | std::ios_base::out);
 
 
 		while(true)
