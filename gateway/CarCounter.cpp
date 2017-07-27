@@ -79,7 +79,7 @@ void CarCounter::start()
 	while(isStarting)
 	{
 		int dst = counter->getDistance();
-		cout <<"distance"<<endl;
+		cout <<"distance "<<dst<<" "<<lastDistance<<endl;
 		if(dst < this->lastDistance - BUFFER_DISTANCE && dst > this->lastDistance + BUFFER_DISTANCE)
 		{
 			cout <<"************distance "<<dst<<"\t"<< this->lastDistance <<endl;
