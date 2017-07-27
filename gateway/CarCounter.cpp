@@ -47,8 +47,8 @@ bool CarCounter::hasMoreDistanceData()
 
 void CarCounter::pushDistanceData(int distance)
 {
-	this->mesuredDistance[(measureWriterIndex++)%BUFFER_SIZE].distance = distance;
-	this->mesuredDistance[(measureWriterIndex++)%BUFFER_SIZE].captureDate =  std::chrono::high_resolution_clock::now();
+	this->mesuredDistance[(measureWriterIndex)%BUFFER_SIZE].distance = distance;
+	this->mesuredDistance[(measureWriterIndex)%BUFFER_SIZE].captureDate =  std::chrono::high_resolution_clock::now();
 	measureWriterIndex++;
 }
 
@@ -100,8 +100,6 @@ int main()
 
 	CarCounter car;
 
-	try
-	{
 	std::thread t1([&car]() {
 //		std::cout<<"sfdsfdsgfgdfgfdgfds"<<endl;
 		car.start();
@@ -118,7 +116,7 @@ int main()
 				MeasuredDistance m = car.getDistanceData();
 				long long tmp = m.captureDate.time_since_epoch().count();
 				dictionary <<tmp<<"\t"<<m.distance<<endl;
-				std::cout<<tmp<<"  "<<m.distance<<endl;
+			//	std::cout<<tmp<<"  "<<m.distance<<endl;
 			}
 
 		}
@@ -126,15 +124,7 @@ int main()
 	});
 	t1.join();
 	t2.join();
-	} catch( std::exception& e)
-	{
-		 ofstream edictionary;
-                edictionary.open("edata.csv");
-		edictionary<<e.what()<<endl;
-		edictionary.close();
-		std::cout<<"error"<<e.what()<<endl;
-	//	std::cout<<"error"<<e<<endl;
-	}
+
 
 }
 
