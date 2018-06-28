@@ -1,31 +1,30 @@
 #include "PMS.h"
 #include <SoftwareSerial.h>
-#define SENSOR_NAME "SENSOR_3"
-
-#include <SPI.h>
+#define SENSOR_NAME "SENSOR_1"
 #include <SD.h>
 #include "RTClib.h"
 
 RTC_DS1307 rtc;
 File myFile;
 
-//#define TINY_GSM_MODEM_A7
-#define SerialMon Serial
-//#define TINY_GSM_DEBUG SerialMon
-
  float p1 = 0, p10 = 0,  p25 = 0;
 //Dust sensor configuration
-SoftwareSerial SerialPMS(12, 13);
+SoftwareSerial SerialPMS(5,6); //(12, 13);
 PMS pms(SerialPMS);
 PMS::DATA data;
 
-//Gsm sending configuration
-SoftwareSerial SerialAT(7, 8); 
-
 void setup() {
-  Serial.begin(115200);
+  pinMode(2, OUTPUT);
+  digitalWrite(2, HIGH);
+  pinMode(3, OUTPUT);
+  digitalWrite(3, LOW);
+  Serial.begin(9600);
   while(!Serial);
  
+ if (! rtc.begin()) {
+    Serial.println("Couldn't find RTC");
+ }
+ delay(1000);
  
  Serial.println("start SD");
   setupSD();
@@ -37,7 +36,19 @@ void setup() {
     
     
     Serial.println("start measure");
-    
+    digitalWrite(2, LOW);
+}
+
+void showError()
+{
+   while(true)
+    {
+      digitalWrite(2, LOW);
+      delay(100);
+      digitalWrite(2, HIGH);
+      delay(100);
+    }
+
 }
 
 void setupSD()
@@ -46,9 +57,16 @@ void setupSD()
 
   if (!SD.begin(10)) {
     Serial.println("initialization failed!");
+   showError();
     return;
   }
-  Serial.println("initialization done.");
+  myFile =  SD.open("datalog.txt", FILE_WRITE);
+  if (SD.exists("datalog.txt")) {
+    Serial.println("datalog.txt exists.");
+  } else {
+    showError();
+  }
+  Serial.print("initialization done." );
 
 }
 
@@ -73,16 +91,44 @@ void collectData()
 
 void publishData()
 {
-  myFile = SD.open("DataLog.txt", FILE_WRITE);
-
-    DateTime now = rtc.now();
-    String message = String(SENSOR_NAME )+";"+now.unixtime()+";"+now.year()+"/"+now.month()+"/"+now.day()+" "+now.hour()+":"+now.minute()+":"+now.second()+";"+String(p1)+";"+String(p25)+";"+String(p10);
-    Serial.println("Writing to DataLog.txt...   "+message);
-    myFile.println(message);
-   
-    // close the file:
-    myFile.close();
-    Serial.println("done.");
+  
+    //if(!myFile)
+   // {
+        digitalWrite(2, HIGH);
+        DateTime now = rtc.now();
+      Serial.print("Writing to DataLog.txt...   ");
+       myFile.print(SENSOR_NAME);
+       myFile.print(';');
+       myFile.print(now.unixtime(), DEC);
+       myFile.print(';');  
+       myFile.print(now.year(), DEC);
+       myFile.print('/');
+       myFile.print(now.month(), DEC);
+          myFile.print('/');
+       myFile.print(now.day(), DEC);
+       myFile.print(' ');
+       myFile.print(now.hour(), DEC);
+       myFile.print(':');
+       myFile.print(now.minute(), DEC);
+       myFile.print(':');
+       myFile.print(now.second(), DEC);
+     myFile.print(';');
+       myFile.print(p1, DEC);
+      myFile.print(';');
+      myFile.print(p25, DEC);
+      myFile.print(';');
+      myFile.println(p10, DEC);
+       myFile.flush();
+        delay(1000);
+        digitalWrite(2, LOW);
+        Serial.println("done.");
+        myFile.flush();
+       // myFile.close();
+   /* }
+    else
+    {
+       showError();
+    }*/
 
 }
 
