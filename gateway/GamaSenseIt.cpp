@@ -13,7 +13,6 @@ GamaSenseIT::GamaSenseIT(SX1272 &loraConnection)
 	gatewayName = new char[id.length()+1];
 	strcpy(gatewayName,id.c_str());
 	this->loraConnector = loraConnection;
-	sensorName = new map<int,string>();
 	brokerAddress = ADDRESS;
 	useBroker = false;
 	saveInFile = false;
@@ -237,39 +236,44 @@ int GamaSenseIT::sendToBrocker(string message, string sender, int sensorDate)
 
 int GamaSenseIT::computeCaptureCommand(string message, int senderAddress)
 {
-    string datePrefix = GAMA_SENS_IT_MESSAGE_DATE;
+    string datePrefix = GAMA_SENS_IT_SENDER_NAME;
     string valuePrefix = GAMA_SENS_IT_MESSAGE_VALUE;
 
-    int dateFound = message.find(GAMA_SENS_IT_MESSAGE_DATE);
+    int dateFound = message.find(GAMA_SENS_IT_SENDER_NAME);
     if(dateFound==std::string::npos)
         return -1;
+	
+	cout <<" pos name "<<dateFound<<endl;
     int dataFound = message.find(GAMA_SENS_IT_MESSAGE_VALUE);
     if(dataFound==std::string::npos)
         return -1;
-    int sensorDate;
 
+	cout <<" pos data "<<dataFound<<endl;
 
     int dateIndex =dateFound + datePrefix.size();
     int dateSize =dataFound - dateIndex ;
-    istringstream( message.substr(dateIndex,dateSize)) >> sensorDate;
+
+	string sensorName = message.substr(dateIndex,dateSize));
+	cout <<" name "<<sensorName<<endl;
+
+
     int dataIndex =dataFound + valuePrefix.size();
     string data = message.substr(dataIndex);
-    string ssender = sensorName->find(senderAddress)->second;
-    if(saveInFile == true)
+	cout <<" data "<<data<<endl;
+
+	int sensorDate = 0;
+
+	cout <<  sensorDate << ";"<<sensorName<<";"<<data<<"\r\n";
+   /* if(saveInFile == true)
     {
     	(*outFile) <<  sensorDate << ";"<<ssender<<";"<<data<<"\r\n";
     	outFile->flush();
     }
-    int sending = useBroker==false?0:sendToBrocker(data,  ssender,  sensorDate);
+
+    int sending = useBroker==false?0:sendToBrocker(data,  ssender,  sensorDate);*/
     return sending;
 }
 
-void GamaSenseIT::computeRegisterCommand(string message, int senderAddress)
-{
-    string senderName = messageContents(message);
-    sensorName->insert(make_pair(senderAddress,senderName));
-    sendDate(senderAddress);
-}
 
 void GamaSenseIT::computeMessage(string message, int senderAddress)
  {
@@ -277,11 +281,8 @@ void GamaSenseIT::computeMessage(string message, int senderAddress)
      switch(command)
      {
          case CAPTURE_COMMAND : {
+			 cout<<"message à traiter "<<message<<endl;
              computeCaptureCommand(message,senderAddress);
-             break;
-         }
-         case REGISTER_COMMAND : {
-             computeRegisterCommand(message,senderAddress);
              break;
          }
      }
