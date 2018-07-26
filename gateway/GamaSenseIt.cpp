@@ -239,7 +239,8 @@ int GamaSenseIT::sendToBrocker(string message, string sender, string mid, unsign
  {
 	 for(int i = 0; i < 1000; i++)
 	 {
-		 this-> sendToBrocker("message "+i,"truc","bidule",1);
+		 string msg = "message "+i;
+		 this-> sendToBrocker(msg,"truc","bidule",1);
 	 }
 	
  }
@@ -330,7 +331,6 @@ void GamaSenseIT::setupMQTT(string address, string clientID)
 	char id_c[clientID.length()+1];
 	strcpy(id_c,clientID.c_str());
 
-	cout<< "mqtt address: "<<tcpAddress<<endl;
 	 MQTTClient_create(&client, tcpAddress, id_c,
         MQTTCLIENT_PERSISTENCE_NONE, NULL);
     conn_opts.keepAliveInterval = 4000;
