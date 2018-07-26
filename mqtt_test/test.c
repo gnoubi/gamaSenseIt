@@ -3,7 +3,7 @@
 #include "string.h"
 #include "MQTTClient.h"
 
-#define ADDRESS     "tcp://vmpams.mpl.ird.fr:1935"
+#define ADDRESS     "tcp://vmpams.mpl.ird.fr:1935/gama"
 #define CLIENTID    "ExampleClientPub"
 #define TOPIC       "MQTTR"
 #define PAYLOAD     "Hello World!"
