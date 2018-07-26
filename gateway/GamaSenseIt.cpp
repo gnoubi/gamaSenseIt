@@ -220,6 +220,7 @@ int GamaSenseIT::sendToBrocker(string message, string sender, string mid, unsign
  	string data =""+ dte+";"+sender+";"+mid+";"+message;
  	char  msg[data.length() + 1];
  	strcpy(msg, data.c_str());
+	cout<<"messagfe "<<message<<endl;
  	int rc;
  	pubmsg.payload = msg;
      pubmsg.payloadlen = message.length();
@@ -313,9 +314,7 @@ void GamaSenseIT::computeMessage(string message, int senderAddress)
 
 void GamaSenseIT::setupMQTT(string address, string clientID)
 {
-	string pro = ADDRESS_PROTOCOL;
-	string port = ADDRESS_PORT;
-
+	
 	/*char  tcpAddress[pro.length()+port.length()+1+address.length()];
 	strcpy(tcpAddress,pro.c_str());
 	strcat(tcpAddress,address.c_str());
@@ -331,6 +330,7 @@ void GamaSenseIT::setupMQTT(string address, string clientID)
 	char id_c[clientID.length()+1];
 	strcpy(id_c,clientID.c_str());
 
+	cout<< "mqtt address: "<<tcpAddress<<endl;
 	 MQTTClient_create(&client, tcpAddress, id_c,
         MQTTCLIENT_PERSISTENCE_NONE, NULL);
     conn_opts.keepAliveInterval = 4000;
@@ -398,44 +398,10 @@ void GamaSenseIT::loop()
     }
 }
 
-int truc()
-{
-    MQTTClient client;
-    MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
-    MQTTClient_message pubmsg = MQTTClient_message_initializer;
-    MQTTClient_deliveryToken token;
-    int rc;
-    MQTTClient_create(&client, "vmpams.mpl.ird.fr:1935/gama/", "CLIENTID",
-        MQTTCLIENT_PERSISTENCE_NONE, NULL);
-    conn_opts.keepAliveInterval = 20;
-    conn_opts.cleansession = 1;
-	conn_opts.username="gama_demo"; 
-	conn_opts.password="gama_demo"; 
-    MQTTClient_setCallbacks(client, NULL, connlost, msgarrvd, delivered);
-    if ((rc = MQTTClient_connect(client, &conn_opts)) != MQTTCLIENT_SUCCESS)
-    {
-        printf("Failed to connect, return code %d\n", rc);
-        exit(EXIT_FAILURE);
-    }
-    pubmsg.payload = PAYLOAD;
-    pubmsg.payloadlen = strlen(PAYLOAD);
-    pubmsg.qos = QOS;
-    pubmsg.retained = 0;
-    deliveredtoken = 0;
-    MQTTClient_publishMessage(client, TOPIC, &pubmsg, &token);
-    printf("Waiting for publication of %s\n"
-            "on topic %s for client with ClientID: %s\n",
-            PAYLOAD, TOPIC, CLIENTID);
-    while(deliveredtoken != token);
-    MQTTClient_disconnect(client, 10000);
-    MQTTClient_destroy(&client);
-	
-}
 
 int main(int argc, char *argv[])
 {
-	truc();
-/*	 GamaSenseIT* gamaSenseIt;
+	 GamaSenseIT* gamaSenseIt;
 	 gamaSenseIt = new GamaSenseIT(sx1272);
 
 	for(int i = 1; i+1<argc; i=i+2 )
@@ -447,7 +413,7 @@ int main(int argc, char *argv[])
 
 	gamaSenseIt->setup();
 	gamaSenseIt->testMQTT();
-	gamaSenseIt->loop();*/
+	gamaSenseIt->loop();
     return 0;
 }
 
