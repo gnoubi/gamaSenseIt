@@ -216,7 +216,8 @@ string GamaSenseIT::messageContents(string message)
 
 int GamaSenseIT::sendToBrocker(string message, string sender, int sensorDate)
  {
- 	string dte = to_string(sensorDate);
+	 cout<<"send messgage"<<endl;
+	string dte = to_string(sensorDate);
  	string data =""+ dte+";"+sender+";"+message;
  	char  msg[data.length() + 1];
  	strcpy(msg, data.c_str());
@@ -308,7 +309,7 @@ void GamaSenseIT::setupMQTT(string address, string clientID)
 
 	 MQTTClient_create(&client, tcpAddress, id_c,
         MQTTCLIENT_PERSISTENCE_NONE, NULL);
-    conn_opts.keepAliveInterval = 20;
+    conn_opts.keepAliveInterval = 4000;
     conn_opts.cleansession = 1;
 	conn_opts.username ="gama_demo";
 	conn_opts.password = "gama_demo";
