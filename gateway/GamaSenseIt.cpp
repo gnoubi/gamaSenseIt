@@ -237,6 +237,7 @@ int GamaSenseIT::sendToBrocker(string message, string sender, int sensorDate)
 int GamaSenseIT::computeCaptureCommand(string message, int senderAddress)
 {
     string datePrefix = GAMA_SENS_IT_SENDER_NAME;
+    string MIDPrefix = GAMA_SENS_IT_MESSAGE_ID;
     string valuePrefix = GAMA_SENS_IT_MESSAGE_VALUE;
 
     int dateFound = message.find(GAMA_SENS_IT_SENDER_NAME);
@@ -244,26 +245,38 @@ int GamaSenseIT::computeCaptureCommand(string message, int senderAddress)
         return -1;
 	
 	cout <<" pos name "<<dateFound<<endl;
-    int dataFound = message.find(GAMA_SENS_IT_MESSAGE_VALUE);
+    
+    int midFound = message.find(GAMA_SENS_IT_MESSAGE_ID);
+    if(dataFound==std::string::npos)
+        return -1;
+	
+	
+	int dataFound = message.find(GAMA_SENS_IT_MESSAGE_VALUE);
     if(dataFound==std::string::npos)
         return -1;
 
 	cout <<" pos data "<<dataFound<<endl;
 
     int dateIndex =dateFound + datePrefix.size();
-    int dateSize =dataFound - dateIndex ;
+    int dateSize =midFound - dateIndex ;
 
 	string sensorName = message.substr(dateIndex,dateSize);
 	cout <<" name "<<sensorName<<endl;
 
 
+    int midIndex =midFound + MIDPrefix.size();
+    int midSize =dataFound - midIndex ;
+
+	string mid = message.substr(midIndex,midSize);
+	cout <<" mid "<<mid<<endl;
+
     int dataIndex =dataFound + valuePrefix.size();
     string data = message.substr(dataIndex);
 	cout <<" data "<<data<<endl;
 
-	int sensorDate = 0;
+	
 
-	cout <<  sensorDate << ";"<<sensorName<<";"<<data<<"\r\n";
+	cout <<  mid << ";"<<sensorName<<";"<<data<<"\r\n";
    /* if(saveInFile == true)
     {
     	(*outFile) <<  sensorDate << ";"<<ssender<<";"<<data<<"\r\n";
