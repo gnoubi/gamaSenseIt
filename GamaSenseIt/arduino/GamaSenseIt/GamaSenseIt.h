@@ -3,7 +3,7 @@
 
 #include "SX1272.h"
 
-#define GAMA_SENSE_IT_DEBUG_MODE 0
+#define GAMA_SENSE_IT_DEBUG_MODE 4
 
 #define WITH_ACK 
 #define NB_RETRIES 10
@@ -21,8 +21,16 @@
 #define GATEWAY_ADDRESS  1
 
 
+#define PRINTLN                   Serial.println("")
+#define PRINT_CSTSTR(fmt,param)   Serial.print(F(param))
+#define PRINT_STR(fmt,param)      Serial.print(param)
+#define PRINT_VALUE(fmt,param)    Serial.print(param)
+#define FLUSHOUTPUT               Serial.flush();
 
+#define PABOOST
+#define LORAMODE  1
 
+#define MAX_DBM 20
 
 using namespace std;
 
@@ -35,7 +43,8 @@ class GamaSenseIt
     void sendToGateway(String message);
     String waitAndReceiveMessage();
     int registerToGateway();
-
+    uint32_t DEFAULT_CHANNEL; //=CH_10_868
+	int loraMode;
 
  private :
     String myName;

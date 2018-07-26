@@ -1,7 +1,9 @@
 #include "GamaSenseIt.h"
 
 GamaSenseIt::GamaSenseIt()
-{}
+{
+	loraMode=LORAMODE;
+}
 
 int GamaSenseIt::configure(String nm, int addr)
 {
@@ -19,6 +21,68 @@ int GamaSenseIt::setupLora()
   // Print a start message
   Serial.println(F("SX1272 module and Arduino: send packets without ACK"));
  #endif 
+
+#if(GAMA_SENSE_IT_DEBUG_MODE > 0)
+ // Print a start message
+  PRINT_CSTSTR("%s","Welcome to the gamaSenseIt Network\n");  
+#ifdef ARDUINO_AVR_PRO
+  PRINT_CSTSTR("%s","Arduino Pro Mini detected\n");  
+#endif
+#ifdef ARDUINO_AVR_NANO
+  PRINT_CSTSTR("%s","Arduino Nano detected\n");   
+#endif
+#ifdef ARDUINO_AVR_MINI
+  PRINT_CSTSTR("%s","Arduino MINI/Nexus detected\n");  
+#endif
+#ifdef ARDUINO_AVR_MEGA2560
+  PRINT_CSTSTR("%s","Arduino Mega2560 detected\n");  
+#endif
+#ifdef ARDUINO_SAM_DUE
+  PRINT_CSTSTR("%s","Arduino Due detected\n");  
+#endif
+#ifdef __MK66FX1M0__
+  PRINT_CSTSTR("%s","Teensy36 MK66FX1M0 detected\n");
+#endif
+#ifdef __MK64FX512__
+  PRINT_CSTSTR("%s","Teensy35 MK64FX512 detected\n");
+#endif
+#ifdef __MK20DX256__
+  PRINT_CSTSTR("%s","Teensy31/32 MK20DX256 detected\n");
+#endif
+#ifdef __MKL26Z64__
+  PRINT_CSTSTR("%s","TeensyLC MKL26Z64 detected\n");
+#endif
+#if defined ARDUINO_SAMD_ZERO && not defined ARDUINO_SAMD_FEATHER_M0
+  PRINT_CSTSTR("%s","Arduino M0/Zero detected\n");
+#endif
+#ifdef ARDUINO_AVR_FEATHER32U4 
+  PRINT_CSTSTR("%s","Adafruit Feather32U4 detected\n"); 
+#endif
+#ifdef  ARDUINO_SAMD_FEATHER_M0
+  PRINT_CSTSTR("%s","Adafruit FeatherM0 detected\n");
+#endif
+
+// See http://www.nongnu.org/avr-libc/user-manual/using_tools.html
+// for the list of define from the AVR compiler
+
+#ifdef __AVR_ATmega328P__
+  PRINT_CSTSTR("%s","ATmega328P detected\n");
+#endif 
+#ifdef __AVR_ATmega32U4__
+  PRINT_CSTSTR("%s","ATmega32U4 detected\n");
+#endif 
+#ifdef __AVR_ATmega2560__
+  PRINT_CSTSTR("%s","ATmega2560 detected\n");
+#endif 
+#ifdef __SAMD21G18A__ 
+  PRINT_CSTSTR("%s","SAMD21G18A ARM Cortex-M0+ detected\n");
+#endif
+#ifdef __SAM3X8E__ 
+  PRINT_CSTSTR("%s","SAM3X8E ARM Cortex-M3 detected\n");
+#endif
+ #endif 
+
+  
   // Power ON the module
   e = sx1272.ON();
  #if(GAMA_SENSE_IT_DEBUG_MODE > 0)
@@ -26,13 +90,16 @@ int GamaSenseIt::setupLora()
   Serial.println(e, DEC);
  #endif 
   // Set transmission mode and print the result
-  e |= sx1272.setMode(4);
+  e = sx1272.setMode(loraMode);
 #if(GAMA_SENSE_IT_DEBUG_MODE > 0)
    Serial.print(F("Setting Mode: state "));
   Serial.println(e, DEC);
-#endif  
+#endif 
+  
+  sx1272._enableCarrierSense=true;
+   
   // Set header
-  e |= sx1272.setHeaderON();
+/*  e |= sx1272.setHeaderON();
 #if(GAMA_SENSE_IT_DEBUG_MODE > 0)
   Serial.print(F("Setting Header ON: state "));
   Serial.println(e, DEC);
@@ -42,26 +109,52 @@ int GamaSenseIt::setupLora()
 #if(GAMA_SENSE_IT_DEBUG_MODE > 0)
   Serial.print(F("Setting Channel: state "));
   Serial.println(e, DEC);
-#endif  
+#endif  */
   // Set CRC
-  e |= sx1272.setCRC_ON();
+/*  e |= sx1272.setCRC_ON();
 
 #if(GAMA_SENSE_IT_DEBUG_MODE > 0)
   Serial.print(F("Setting CRC ON: state "));
   Serial.println(e, DEC);
-#endif  
-  // Select output power (Max, High or Low)
-  e |= sx1272.setPower('H');
-#if(GAMA_SENSE_IT_DEBUG_MODE > 0)
-  Serial.print(F("Setting Power: state "));
-  Serial.println(e, DEC);
-#endif  
-  // Set the node address and print the result
-  e |= sx1272.setNodeAddress(this->address);
-#if(GAMA_SENSE_IT_DEBUG_MODE > 0)
-  Serial.print(F("Setting node address: state "));
-  Serial.println(e, DEC);
+#endif  */
   
+    e = sx1272.setChannel(DEFAULT_CHANNEL);
+#if(GAMA_SENSE_IT_DEBUG_MODE > 0)
+    PRINT_CSTSTR("%s","Setting Channel: state ");
+    PRINT_VALUE("%d", e);
+    PRINTLN;
+#endif
+
+  // Select amplifier line; PABOOST or RFO
+#ifdef PABOOST
+  sx1272._needPABOOST=true;
+  // previous way for setting output power
+  // powerLevel='x';
+#else
+  // previous way for setting output power
+  // powerLevel='M';  
+#endif
+  
+  
+  e = sx1272.setPowerDBM((uint8_t)MAX_DBM); 
+#if(GAMA_SENSE_IT_DEBUG_MODE > 0)
+  PRINT_CSTSTR("%s","Setting Power: state ");
+  PRINT_VALUE("%d", e);
+  PRINTLN;
+#endif 
+  
+  // Set the node address and print the result
+  e = sx1272.setNodeAddress(this->address);
+#if(GAMA_SENSE_IT_DEBUG_MODE > 0)
+  PRINT_CSTSTR("%s","Setting node addr: state ");
+  PRINT_VALUE("%d", e);
+  PRINTLN;
+  
+  PRINT_CSTSTR("%s","Lora network adress is : ");
+  PRINT_VALUE("%d", this->address);
+  PRINTLN;
+  
+
   // Print a success message
   if (e == 0)
     Serial.println(F("SX1272 successfully configured"));
