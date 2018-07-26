@@ -320,6 +320,7 @@ void GamaSenseIT::setupOutFile(string outf)
 
 void  GamaSenseIT::analyseParameter(string cmd, string value)
 {
+	cout<< "command: "<<cmd<<" value"<<value<<endl;
 	if (cmd.compare("-broker") == 0)
 	{
 		useBroker = true;
