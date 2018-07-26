@@ -239,7 +239,7 @@ int GamaSenseIT::sendToBrocker(string message, string sender, string mid, unsign
  {
 	 for(int i = 0; i < 1000; i++)
 	 {
-		 string msg = string("message ")+i;
+		 string msg = "message xxxxx";
 		 this-> sendToBrocker(msg,string("truc"),string("bidule"),1);
 	 }
 	
