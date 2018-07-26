@@ -223,7 +223,7 @@ int GamaSenseIT::sendToBrocker(string message, string sender, string mid, unsign
 	cout<<"message.  e "<<msg<<endl;
  	int rc;
  	pubmsg.payload = msg;
-     pubmsg.payloadlen = data.length();
+     pubmsg.payloadlen = data.length()+1;
      pubmsg.qos = QOS;
      pubmsg.retained = 0;
      MQTTClient_publishMessage(client, gatewayName, &pubmsg, &token);
