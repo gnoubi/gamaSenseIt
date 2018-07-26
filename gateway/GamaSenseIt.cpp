@@ -412,7 +412,7 @@ int main(int argc, char *argv[])
 	}
 
 	gamaSenseIt->setup();
-	gamaSenseIt->testMQTT();
+	//gamaSenseIt->testMQTT();
 	gamaSenseIt->loop();
     return 0;
 }
