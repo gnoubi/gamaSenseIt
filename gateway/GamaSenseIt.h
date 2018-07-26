@@ -73,7 +73,7 @@ private:
     int messageCommand(string message);
     int offsetMessageContent(string message);
     string messageContents(string message);
-    int sendToBrocker(string message, string sender, int mid, unsigned long sensorDate);
+    int sendToBrocker(string message, string sender, string mid, unsigned long sensorDate);
     int computeCaptureCommand(string message, int senderAddress);
     void computeRegisterCommand(string message, int senderAddress);
     void computeMessage(string message, int senderAddress);
