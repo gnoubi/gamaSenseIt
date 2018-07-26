@@ -247,7 +247,7 @@ int GamaSenseIT::computeCaptureCommand(string message, int senderAddress)
 	cout <<" pos name "<<dateFound<<endl;
     
     int midFound = message.find(GAMA_SENS_IT_MESSAGE_ID);
-    if(dataFound==std::string::npos)
+    if(midFound==std::string::npos)
         return -1;
 	
 	
