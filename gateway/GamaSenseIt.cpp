@@ -40,7 +40,10 @@ void GamaSenseIT::setupLora()
     e = loraConnector.setMode(loraMode);
     printf("Setting Mode: state %d\n", e);
 
-
+    // Set header
+    e = loraConnector.setHeaderON();
+    printf("Setting Header ON: state %d\n", e);
+	
 	loraConnector._enableCarrierSense=true;
     printf("Setting Header ON: state %d\n", e);
     
@@ -48,6 +51,9 @@ void GamaSenseIT::setupLora()
 	
 	e = loraConnector.setChannel(DEFAULT_CHANNEL);
     printf("Setting Channel: state %d\n", e);
+    // Set CRC
+    e = loraConnector.setCRC_ON();
+    printf("Setting CRC ON: state %d\n", e);
 	
 #ifdef PABOOST
   	loraConnector._needPABOOST=true;
