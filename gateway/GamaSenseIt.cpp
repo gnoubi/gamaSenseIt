@@ -234,6 +234,16 @@ int GamaSenseIT::sendToBrocker(string message, string sender, string mid, unsign
      return rc;
  }
 
+ void GamaSenseIT::testMQTT()
+ {
+	 for(int i = 0; i < 100; i++)
+	 {
+		 this-> sendToBrocker("message "+i,"truc","bidule",1);
+	 }
+	
+ }
+
+
 int GamaSenseIT::computeCaptureCommand(string message, int senderAddress)
 {
     string datePrefix = GAMA_SENS_IT_SENDER_NAME;
@@ -392,7 +402,8 @@ void GamaSenseIT::loop()
 
 int main(int argc, char *argv[])
 {
-	 GamaSenseIT* gamaSenseIt;gamaSenseIt = new GamaSenseIT(sx1272);
+	 GamaSenseIT* gamaSenseIt;
+	 gamaSenseIt = new GamaSenseIT(sx1272);
 
 	for(int i = 1; i+1<argc; i=i+2 )
 	{
@@ -402,6 +413,11 @@ int main(int argc, char *argv[])
 	}
 
 	gamaSenseIt->setup();
+	
+	
+	gamaSenseIt->testMQTT();
+	
+	
 	gamaSenseIt->loop();
     return 0;
 }
