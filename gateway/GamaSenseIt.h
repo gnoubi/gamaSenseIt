@@ -83,7 +83,7 @@ private:
 
 public:
 	int loraMode;
-	
+	uint32_t DEFAULT_CHANNEL;
     GamaSenseIT(SX1272 &loraConnection);
     
     void sendToSensor(string data,int receiverAddress);
