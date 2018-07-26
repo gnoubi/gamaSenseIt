@@ -283,7 +283,7 @@ int GamaSenseIT::computeCaptureCommand(string message, int senderAddress)
     	outFile->flush();
     }
 
-    int sending = useBroker==false?0:sendToBrocker(data,  sensorName, mid,  sensorDate);*/
+    int sending = useBroker==false?0:sendToBrocker(data,  sensorName, mid,  sensorDate);
     return 1;
 }
 
