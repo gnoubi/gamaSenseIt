@@ -18,6 +18,7 @@ GamaSenseIT::GamaSenseIT(SX1272 &loraConnection)
 	useBroker = false;
 	saveInFile = false;
 	fileName = DEFAULT_FILE_NAME;
+	loraMode=LORAMODE;
 
 
 }
@@ -35,21 +36,29 @@ void GamaSenseIT::setupLora()
     printf("Setting power ON: state %d\n", e);
     
     // Set transmission mode
-    e = loraConnector.setMode(4);
+    e = loraConnector.setMode(loraMode);
     printf("Setting Mode: state %d\n", e);
-    // Set header
-    e = loraConnector.setHeaderON();
+
+
+	loraConnector._enableCarrierSense=true;
     printf("Setting Header ON: state %d\n", e);
     
     // Select frequency channel
-    e = loraConnector.setChannel(CH_11_868);
+	
+	e = loraConnector.setChannel(DEFAULT_CHANNEL);
     printf("Setting Channel: state %d\n", e);
-    // Set CRC
-    e = loraConnector.setCRC_ON();
-    printf("Setting CRC ON: state %d\n", e);
-    
-    // Select output power (Max, High or Low)
-    e = loraConnector.setPower('H');
+	
+#ifdef PABOOST
+  	loraConnector._needPABOOST=true;
+  // previous way for setting output power
+  // powerLevel='x';
+#else
+  // previous way for setting output power
+  // powerLevel='M';  
+#endif
+  
+	
+    e = loraConnector.setPowerDBM((uint8_t)MAX_DBM); 
     printf("Setting Power: state %d\n", e);
     
     // Set the node address

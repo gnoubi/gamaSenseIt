@@ -36,6 +36,13 @@
 #define QOS         1
 #define TIMEOUT     10000L
 
+
+#define PABOOST
+#define LORAMODE  1
+
+#define MAX_DBM 20
+
+
 using namespace std;
 
 
@@ -75,6 +82,8 @@ private:
 
 
 public:
+	int loraMode;
+	
     GamaSenseIT(SX1272 &loraConnection);
     
     void sendToSensor(string data,int receiverAddress);
