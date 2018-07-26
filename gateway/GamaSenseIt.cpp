@@ -275,11 +275,11 @@ int GamaSenseIT::computeCaptureCommand(string message, int senderAddress)
 	cout <<" data "<<data<<endl;
 
 	
-
+	unsigned long sensorDate  = time(NULL);
 	cout <<  mid << ";"<<sensorName<<";"<<data<<"\r\n";
-   /* if(saveInFile == true)
+   if(saveInFile == true)
     {
-    	(*outFile) <<  sensorDate << ";"<<ssender<<";"<<data<<"\r\n";
+    	(*outFile) <<  sensorDate << ";"<<ssender<<";"<<mid<<";"<<data<<"\r\n";
     	outFile->flush();
     }
 
