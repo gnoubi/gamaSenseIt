@@ -61,6 +61,7 @@ void GamaSenseIT::setupLora()
 	
     e = loraConnector.setPowerDBM((uint8_t)MAX_DBM); 
     printf("Setting Power: state %d\n", e);
+    printf("select power in DBM : %d\n", MAX_DBM);
     
     // Set the node address
     e = loraConnector.setNodeAddress(1);
@@ -137,6 +138,7 @@ void GamaSenseIT::waitAndReceiveMessage(string& message, int& source)
             {
                 tmpReceivedMessage += (char)loraConnector.packet_received.data[i];
             }
+			cout<<"pre contents : "<<tmpReceivedMessage<<endl;
             if(containPrefix(tmpReceivedMessage,prefix))
             {
                 receivedMessage = extractData(tmpReceivedMessage);
