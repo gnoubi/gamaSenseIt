@@ -19,7 +19,7 @@ GamaSenseIT::GamaSenseIT(SX1272 &loraConnection)
 	saveInFile = false;
 	fileName = DEFAULT_FILE_NAME;
 	loraMode=LORAMODE;
-	  DEFAULT_CHANNEL = CH_10_868;
+	DEFAULT_CHANNEL = CH_10_868;
 
 
 }
@@ -310,6 +310,8 @@ void GamaSenseIT::setupMQTT(string address, string clientID)
         MQTTCLIENT_PERSISTENCE_NONE, NULL);
     conn_opts.keepAliveInterval = 20;
     conn_opts.cleansession = 1;
+	conn_opts.username ="gama_demo";
+	conn_opts.password = "gama_demo"
 
     if ((rc = MQTTClient_connect(client, &conn_opts)) != MQTTCLIENT_SUCCESS)
     {
