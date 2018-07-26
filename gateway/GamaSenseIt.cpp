@@ -223,7 +223,7 @@ int GamaSenseIT::sendToBrocker(string message, string sender, string mid, unsign
 	cout<<"message.  e "<<msg<<endl;
  	int rc;
  	pubmsg.payload = msg;
-     pubmsg.payloadlen = message.length();
+     pubmsg.payloadlen = data.length();
      pubmsg.qos = QOS;
      pubmsg.retained = 0;
      MQTTClient_publishMessage(client, gatewayName, &pubmsg, &token);
@@ -291,7 +291,7 @@ int GamaSenseIT::computeCaptureCommand(string message, int senderAddress)
 	cout <<  mid << ";"<<sensorName<<";"<<data<<"\r\n";
    if(saveInFile == true)
     {
-    	(*outFile) <<  sensorDate << ";"<<sensorName<<";"<<mid<<";"<<data<<"\r\n";
+    	(*outFile) <<  sensorDate << ";"<<sensorName<<";"<<mid<<";"<<data<<endl;
     	outFile->flush();
     }
 
