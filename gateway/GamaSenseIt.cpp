@@ -220,7 +220,7 @@ int GamaSenseIT::sendToBrocker(string message, string sender, string mid, unsign
  	string data =""+ dte+";"+sender+";"+mid+";"+message;
  	char  msg[data.length() + 1];
  	strcpy(msg, data.c_str());
-	cout<<"messagfe "<<message<<endl;
+	cout<<"message.  e "<<msg<<endl;
  	int rc;
  	pubmsg.payload = msg;
      pubmsg.payloadlen = message.length();
@@ -239,8 +239,8 @@ int GamaSenseIT::sendToBrocker(string message, string sender, string mid, unsign
  {
 	 for(int i = 0; i < 1000; i++)
 	 {
-		 string msg = "message "+i;
-		 this-> sendToBrocker(msg,"truc","bidule",1);
+		 string msg = string("message ")+i;
+		 this-> sendToBrocker(msg,string("truc"),string("bidule"),1);
 	 }
 	
  }
