@@ -3,9 +3,9 @@
 #include "string.h"
 #include "MQTTClient.h"
 
-#define ADDRESS     "tcp://192.168.1.71:1883"
+#define ADDRESS     "tcp://vmpams.mpl.ird.fr:1935"
 #define CLIENTID    "ExampleClientPub"
-#define TOPIC       "MQTT Examples"
+#define TOPIC       "MQTTR"
 #define PAYLOAD     "Hello World!"
 #define QOS         1
 #define TIMEOUT     10000L
