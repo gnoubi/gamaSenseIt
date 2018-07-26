@@ -213,11 +213,11 @@ string GamaSenseIT::messageContents(string message)
     return tailString;
 }
 
-int GamaSenseIT::sendToBrocker(string message, string sender, int sensorDate)
+int GamaSenseIT::sendToBrocker(string message, string sender, string mid, unsigned long sensorDate)
  {
 	 cout<<"send messgage to broker"<<endl;
 	string dte = to_string(sensorDate);
- 	string data =""+ dte+";"+sender+";"+message;
+ 	string data =""+ dte+";"+sender+";"+mid+";"+message;
  	char  msg[data.length() + 1];
  	strcpy(msg, data.c_str());
  	int rc;
@@ -279,11 +279,11 @@ int GamaSenseIT::computeCaptureCommand(string message, int senderAddress)
 	cout <<  mid << ";"<<sensorName<<";"<<data<<"\r\n";
    if(saveInFile == true)
     {
-    	(*outFile) <<  sensorDate << ";"<<ssender<<";"<<mid<<";"<<data<<"\r\n";
+    	(*outFile) <<  sensorDate << ";"<<sensorName<<";"<<mid<<";"<<data<<"\r\n";
     	outFile->flush();
     }
 
-    int sending = useBroker==false?0:sendToBrocker(data,  ssender,  sensorDate);*/
+    int sending = useBroker==false?0:sendToBrocker(data,  sensorName, mid,  sensorDate);*/
     return 1;
 }
 
