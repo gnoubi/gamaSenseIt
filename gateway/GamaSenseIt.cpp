@@ -291,10 +291,16 @@ void GamaSenseIT::setupMQTT(string address, string clientID)
 	string pro = ADDRESS_PROTOCOL;
 	string port = ADDRESS_PORT;
 
-	char  tcpAddress[pro.length()+port.length()+1+address.length()];
+	/*char  tcpAddress[pro.length()+port.length()+1+address.length()];
 	strcpy(tcpAddress,pro.c_str());
 	strcat(tcpAddress,address.c_str());
 	strcat(tcpAddress,port.c_str());
+	*/
+	
+	char  tcpAddress[1+address.length()];
+	strcpy(tcpAddress,address.c_str());
+	//strcat(tcpAddress,address.c_str());
+	//strcat(tcpAddress,port.c_str());
 	int rc;
 
 	char id_c[clientID.length()+1];
