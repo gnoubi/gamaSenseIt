@@ -253,7 +253,7 @@ int GamaSenseIT::computeCaptureCommand(string message, int senderAddress)
     int dateIndex =dateFound + datePrefix.size();
     int dateSize =dataFound - dateIndex ;
 
-	string sensorName = message.substr(dateIndex,dateSize));
+	string sensorName = message.substr(dateIndex,dateSize);
 	cout <<" name "<<sensorName<<endl;
 
 
@@ -271,7 +271,7 @@ int GamaSenseIT::computeCaptureCommand(string message, int senderAddress)
     }
 
     int sending = useBroker==false?0:sendToBrocker(data,  ssender,  sensorDate);*/
-    return sending;
+    return 1;
 }
 
 
