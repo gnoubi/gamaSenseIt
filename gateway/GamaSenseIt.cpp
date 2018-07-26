@@ -217,7 +217,7 @@ int GamaSenseIT::sendToBrocker(string message, string sender, string mid, unsign
  {
 	 cout<<"send messgage to broker"<<endl;
 	string dte = to_string(sensorDate);
- 	string data =""
+ 	string data ="";
 		data.append(dte);
 	data.append(";");
 	data.append(sender);
