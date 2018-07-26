@@ -31,7 +31,6 @@ void setup() {
 
 void loop() {
   i++;
-  String message = "Bonjour le monde
   //envoi d'un message à la gateway
   gamaSenseIt.sendToGateway("Bonjour le Monde " + String(i));
 }
