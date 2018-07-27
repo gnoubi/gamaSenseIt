@@ -33,7 +33,8 @@
 #define ADDRESS_PROTOCOL     "tcp://"
 #define MQTT_USER_NAME "gamasenseit"
 #define MQTT_PASSWORD "gamasenseit"
-#define CLIENTID    "GATEWAY"
+#define MQTT_TOPIC "gamasenseit"
+
 #define DEFAULT_FILE_NAME "sensorLogFile.csv"
 #define QOS         1
 #define TIMEOUT     10000L
