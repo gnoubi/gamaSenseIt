@@ -13,14 +13,14 @@ GamaSenseIT::GamaSenseIT(SX1272 &loraConnection)
 	gatewayName = new char[id.length()+1];
 	strcpy(gatewayName,id.c_str());
 	this->loraConnector = loraConnection;
+	this->username= MQTT_USER_NAME;
+	this->password= MQTT_PASSWORD;
 	brokerAddress = ADDRESS;
 	useBroker = false;
 	saveInFile = false;
 	fileName = DEFAULT_FILE_NAME;
 	loraMode=LORAMODE;
 	DEFAULT_CHANNEL = CH_10_868;
-
-
 }
 
 void GamaSenseIT::setupLora()
@@ -230,7 +230,7 @@ int GamaSenseIT::sendToBrocker(string message, string sender, string mid, unsign
 	cout<<"message.  e "<<msg<<endl;
  	int rc;
  	pubmsg.payload = msg;
-     pubmsg.payloadlen = strlen(msg); //data.size();
+     pubmsg.payloadlen = strlen(msg); 
      pubmsg.qos = QOS;
      pubmsg.retained = 0;
      MQTTClient_publishMessage(client, gatewayName, &pubmsg, &token);
@@ -342,8 +342,8 @@ void GamaSenseIT::setupMQTT(string address, string clientID)
         MQTTCLIENT_PERSISTENCE_NONE, NULL);
     conn_opts.keepAliveInterval = 4000;
     conn_opts.cleansession = 1;
-	conn_opts.username ="gama_demo";
-	conn_opts.password = "gama_demo";
+	conn_opts.username =this->username;
+	conn_opts.password =this->password;
 
     if ((rc = MQTTClient_connect(client, &conn_opts)) != MQTTCLIENT_SUCCESS)
     {
@@ -360,16 +360,36 @@ void GamaSenseIT::setupOutFile(string outf)
 
 void  GamaSenseIT::analyseParameter(string cmd, string value)
 {
-	cout<< "command: "<<cmd<<" value"<<value<<endl;
 	if (cmd.compare("-broker") == 0)
 	{
 		useBroker = true;
-		brokerAddress = value;
+		if (cmd.compare("autoconf") == 0)
+		{
+			cout<<"using default broker configuration"<<endl;
+		}
+		else
+		{
+			brokerAddress = value;
+		}
+	
 	}
-	if (cmd.compare("-name") == 0)
+	if (cmd.compare("-username") == 0)
+	{
+		this->username =value;
+		cout<<"username :"<<this->username<<endl;
+	}
+	if (cmd.compare("-password") == 0)
+	{
+		this->password =value;
+		cout<<"password :"<<this->password<<endl;
+	}
+	
+	if (cmd.compare("-topicname") == 0)
 	{
 		gatewayName = new char[value.length()+1];
 		strcpy(gatewayName, value.c_str());
+		cout<<"topicname :"<<this->gatewayName<<endl;
+		
 	}
 	if (cmd.compare("-file") == 0)
 	{
@@ -419,7 +439,6 @@ int main(int argc, char *argv[])
 	}
 
 	gamaSenseIt->setup();
-	//gamaSenseIt->testMQTT();
 	gamaSenseIt->loop();
     return 0;
 }

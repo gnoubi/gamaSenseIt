@@ -29,9 +29,10 @@
 #define DATE_UPDATE_COMMAND 2
 #define REGISTER_COMMAND 3
 
-#define ADDRESS     "192.168.1.71"
+#define ADDRESS     "vmpams.mpl.ird.fr:1935/gamasenseit/"
 #define ADDRESS_PROTOCOL     "tcp://"
-#define ADDRESS_PORT     ":1883"
+#define MQTT_USER_NAME "gamasenseit"
+#define MQTT_PASSWORD "gamasenseit"
 #define CLIENTID    "GATEWAY"
 #define DEFAULT_FILE_NAME "sensorLogFile.csv"
 #define QOS         1
@@ -65,6 +66,8 @@ private:
 	bool useBroker;
 	bool saveInFile;
 	string fileName;
+	string username;
+	string password;
 
     
     void setupLora();
