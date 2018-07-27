@@ -344,7 +344,7 @@ void GamaSenseIT::setupMQTT(string address, string clientID)
     conn_opts.cleansession = 1;
 	conn_opts.username =(this->username).c_str();
 	conn_opts.password =(this->password).c_str();
-	cout<<"username "<<this->username).c_str()<<endl;
+	cout<<"username "<<(this->username).c_str()<<endl;
 
     if ((rc = MQTTClient_connect(client, &conn_opts)) != MQTTCLIENT_SUCCESS)
     {
