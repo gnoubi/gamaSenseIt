@@ -1,5 +1,24 @@
 #include <GamaSenseIt.h>
 
+// for aduino UNO
+//       Arduino      Radio module
+//          GND----------GND   (ground in)
+//          3V3----------3.3V  (3.3V in)
+//   SS pin D10----------NSS   (CS chip select in)
+//  SCK pin D13----------SCK   (SPI clock in)
+// MOSI pin D11----------MOSI  (SPI Data in)
+// MISO pin D12----------MISO  (SPI Data out)
+
+// for aduino MEGA
+//       Arduino      Radio module
+//          GND----------GND   (ground in)
+//          3V3----------3.3V  (3.3V in)
+//   SS pin D10----------NSS   (CS chip select in)
+//  SCK pin D52----------SCK   (SPI clock in)
+// MOSI pin D51----------MOSI  (SPI Data in)
+// MISO pin D50----------MISO  (SPI Data out)
+
+
 int i = 0;
 
 void setup() {
