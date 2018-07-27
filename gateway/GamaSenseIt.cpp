@@ -236,7 +236,7 @@ int GamaSenseIT::sendToBrocker(string message, string sender, string mid, unsign
      MQTTClient_publishMessage(client, gatewayName, &pubmsg, &token);
      printf("Waiting for up to %d seconds for publication of %s\n"
              "on topic %s for client with ClientID: %s\n",
-             (int)(TIMEOUT/1000), msg, gatewayName, CLIENTID);
+             (int)(TIMEOUT/1000), msg, gatewayName, gatewayName);
      rc = MQTTClient_waitForCompletion(client, token, TIMEOUT);
      printf("Message with delivery token %d delivered\n", token);
      return rc;
