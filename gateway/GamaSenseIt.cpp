@@ -342,8 +342,8 @@ void GamaSenseIT::setupMQTT(string address, string clientID)
         MQTTCLIENT_PERSISTENCE_NONE, NULL);
     conn_opts.keepAliveInterval = 4000;
     conn_opts.cleansession = 1;
-	conn_opts.username =this->username;
-	conn_opts.password =this->password;
+	conn_opts.username =(this->username).c_str();
+	conn_opts.password =(this->password).c_str();
 
     if ((rc = MQTTClient_connect(client, &conn_opts)) != MQTTCLIENT_SUCCESS)
     {
