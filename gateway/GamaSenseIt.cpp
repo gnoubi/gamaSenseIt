@@ -240,15 +240,6 @@ int GamaSenseIT::sendToBrocker(string message, string sender, string mid, unsign
      return rc;
  }
 
- void GamaSenseIT::testMQTT()
- {
-	 for(int i = 0; i < 1000; i++)
-	 {
-		 this-> sendToBrocker(msg,string("truc"),string("bidule"),1);
-	 }
-	
- }
-
 
 int GamaSenseIT::computeCaptureCommand(string message, int senderAddress)
 {

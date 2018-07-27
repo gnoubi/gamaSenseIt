@@ -98,7 +98,6 @@ public:
     unsigned long getdate();
     void setup();
     void loop();
-	void testMQTT();
 };
 
 
