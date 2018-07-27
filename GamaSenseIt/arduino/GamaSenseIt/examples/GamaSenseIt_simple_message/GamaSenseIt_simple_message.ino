@@ -1,5 +1,4 @@
-#include"./GamaSenseIt.h"
-
+#include <GamaSenseIt.h>
 
 int i = 0;
 
