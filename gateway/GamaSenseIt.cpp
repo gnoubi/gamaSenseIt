@@ -215,7 +215,6 @@ string GamaSenseIT::messageContents(string message)
 
 int GamaSenseIT::sendToBrocker(string message, string sender, string mid, unsigned long sensorDate)
  {
-	 cout<<"send messgage to broker"<<endl;
 	string dte = to_string(sensorDate);
  	string data ="";
 		data.append(dte);
@@ -227,7 +226,6 @@ int GamaSenseIT::sendToBrocker(string message, string sender, string mid, unsign
 	data.append(message);
  	char  msg[data.size() ];
  	strcpy(msg, data.c_str());
-	cout<<"message.  e "<<msg<<endl;
  	int rc;
  	pubmsg.payload = msg;
      pubmsg.payloadlen = strlen(msg); 
@@ -246,7 +244,6 @@ int GamaSenseIT::sendToBrocker(string message, string sender, string mid, unsign
  {
 	 for(int i = 0; i < 1000; i++)
 	 {
-		 string msg = "message xxxxx";
 		 this-> sendToBrocker(msg,string("truc"),string("bidule"),1);
 	 }
 	
@@ -274,28 +271,17 @@ int GamaSenseIT::computeCaptureCommand(string message, int senderAddress)
     if(dataFound==std::string::npos)
         return -1;
 
-	cout <<" pos data "<<dataFound<<endl;
-
     int dateIndex =dateFound + datePrefix.size();
     int dateSize =midFound - dateIndex ;
 
 	string sensorName = message.substr(dateIndex,dateSize);
-	cout <<" name "<<sensorName<<endl;
-
-
     int midIndex =midFound + MIDPrefix.size();
     int midSize =dataFound - midIndex ;
 
 	string mid = message.substr(midIndex,midSize);
-	cout <<" mid "<<mid<<endl;
-
     int dataIndex =dataFound + valuePrefix.size();
     string data = message.substr(dataIndex);
-	cout <<" data "<<data<<endl;
-
-	
 	unsigned long sensorDate  = time(NULL);
-	cout <<  mid << ";"<<sensorName<<";"<<data<<"\r\n";
    if(saveInFile == true)
     {
     	(*outFile) <<  sensorDate << ";"<<sensorName<<";"<<mid<<";"<<data<<endl;
@@ -313,7 +299,6 @@ void GamaSenseIT::computeMessage(string message, int senderAddress)
      switch(command)
      {
          case CAPTURE_COMMAND : {
-			 cout<<"message à traiter "<<message<<endl;
              computeCaptureCommand(message,senderAddress);
              break;
          }
@@ -366,7 +351,13 @@ void  GamaSenseIT::analyseParameter(string cmd, string value)
 		useBroker = true;
 		if (value.compare("autoconf") == 0)
 		{
-			cout<<"using default broker configuration"<<endl;
+			cout<<"****************************************************"<<endl;
+			cout<<"*       using default broker configuration         *"<<endl;
+			cout<<"*   broker:  vmpams.mpl.ird.fr:1935/gamaSenseIt    *"<<endl;
+			cout<<"*    login:  gamasenseit                           *"<<endl;
+			cout<<"* password:  gamasenseit                           *"<<endl;
+			cout<<"*    topic:  gamasenseit                           *"<<endl;
+			cout<<"****************************************************"<<endl;
 		}
 		else
 		{

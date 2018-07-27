@@ -29,7 +29,7 @@
 #define DATE_UPDATE_COMMAND 2
 #define REGISTER_COMMAND 3
 
-#define ADDRESS     "vmpams.mpl.ird.fr:1935/gamasenseit/"
+#define ADDRESS     "vmpams.mpl.ird.fr:1935/gamaSenseIt/"
 #define ADDRESS_PROTOCOL     "tcp://"
 #define MQTT_USER_NAME "gamasenseit"
 #define MQTT_PASSWORD "gamasenseit"
