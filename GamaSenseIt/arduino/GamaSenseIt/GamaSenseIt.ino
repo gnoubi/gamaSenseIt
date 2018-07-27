@@ -13,24 +13,11 @@ void setup() {
   
   //Configuration des paramètres réseau
   int res = gamaSenseIt.configure(sensorName,sensorAddress);
-
-  //Connexion à la gateway
-  res = gamaSenseIt.registerToGateway();
-  if(res == 0)
-  {
-    Serial.println("Sensor registering to Gateway OK");
-    Serial.print("Current date is ");
-    Serial.println(gamaSenseIt.getCurrentDate(), DEC);
-  }
-  else
-  {
-     Serial.println("Sensor registering to Gateway ERROR");
-     while(true);
-  }
 }
 
 void loop() {
   i++;
   //envoi d'un message à la gateway
-  gamaSenseIt.sendToGateway("Bonjour le Monde " + String(i));
+  gamaSenseIt.sendDataToGateway("Bonjour le Monde " + String(i));
+  Serial.print("Bonjour le Monde " + String(i));
 }

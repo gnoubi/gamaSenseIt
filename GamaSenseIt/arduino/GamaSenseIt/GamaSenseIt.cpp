@@ -3,12 +3,14 @@
 GamaSenseIt::GamaSenseIt()
 {
 	loraMode=LORAMODE;
+  DEFAULT_CHANNEL = CH_10_868;
 }
 
 int GamaSenseIt::configure(String nm, int addr)
 {
   this->myName = nm;
   this->address = addr;
+  this-> messageID = 0;
   return this->setupLora();
  }
 
@@ -22,9 +24,10 @@ int GamaSenseIt::setupLora()
   Serial.println(F("SX1272 module and Arduino: send packets without ACK"));
  #endif 
 
-#if(GAMA_SENSE_IT_DEBUG_MODE > 0)
+
  // Print a start message
-  PRINT_CSTSTR("%s","Welcome to the gamaSenseIt Network\n");  
+  PRINT_CSTSTR("%s","Simple LoRa ping-pong with the gateway\n");  
+#if(GAMA_SENSE_IT_DEBUG_MODE > 0)
 #ifdef ARDUINO_AVR_PRO
   PRINT_CSTSTR("%s","Arduino Pro Mini detected\n");  
 #endif
@@ -95,7 +98,10 @@ int GamaSenseIt::setupLora()
    Serial.print(F("Setting Mode: state "));
   Serial.println(e, DEC);
 #endif 
-  
+      // Set header
+  //  e = sx1272.setHeaderON();
+  //  printf("Setting Header ON: state %d\n", e);
+    
   sx1272._enableCarrierSense=true;
    
   // Set header
@@ -124,7 +130,9 @@ int GamaSenseIt::setupLora()
     PRINT_VALUE("%d", e);
     PRINTLN;
 #endif
-
+    // Set CRC
+ //   e = sx1272.setCRC_ON();
+ //   printf("Setting CRC ON: state %d\n", e);
   // Select amplifier line; PABOOST or RFO
 #ifdef PABOOST
   sx1272._needPABOOST=true;
@@ -221,15 +229,18 @@ String GamaSenseIt::buildRegisterMessage()
 
 String GamaSenseIt::buildCaptureMessage(String data)
 {
-    unsigned long mdate =getCurrentDate();
-    String sdate = String(mdate);
+    messageID = messageID + 1;
+    String sid = String(messageID); 
+
     String message = "" ;
     message+=GAMA_SENS_IT_MESSAGE_CAPTURE_COMMAND;
-    message+=GAMA_SENS_IT_MESSAGE_DATE;
-    message+=sdate;
+    message+=GAMA_SENS_IT_SENDER_NAME;
+    message+=myName;
+    message+=GAMA_SENS_IT_MESSAGE_ID;
+    message+=sid;
     message+=GAMA_SENS_IT_MESSAGE_VALUE;
     message+=data;
- return message;
+    return message;
 }
 
 String GamaSenseIt::waitAndReceiveMessage()
@@ -261,8 +272,16 @@ String GamaSenseIt::waitAndReceiveMessage()
   return receivedMessage;
 }
 
+
+void GamaSenseIt::sendDataToGateway(String message)
+{
+  sendToGateway(buildCaptureMessage(message));
+}
+
+
 void GamaSenseIt::sendToGateway(String message)
 {
+ // message = buildCaptureMessage(message);
   String prefix = GAMA_SENS_IT_MESSAGE_HEADER ;     
   char data [message.length()+prefix.length()+1 ];
   //xmm.toCharArray(data, xmm.length());
@@ -306,42 +325,6 @@ Serial.println("************************");
 }
 
 
-int GamaSenseIt::registerToGateway()
-{
- sendToGateway(buildRegisterMessage());
-  String receivedMessage="";
-  int command = -1;
-  unsigned long startWaiting = millis()/1000;
-  delay(1000);
-#if(GAMA_SENSE_IT_DEBUG_MODE > 0)
-   Serial.print("Registering");
-#endif
-  do
-  {
-    receivedMessage = waitAndReceiveMessage();
-    Serial.print("message recu");
-    Serial.println(receivedMessage);
-    
-    command = messageCommand(receivedMessage);
-    if(startWaiting + 120 < (millis()/1000))
-      return -1;
-  }while(DATE_UPDATE_COMMAND != command);
-  startDate = millis() / 1000;
-  timeStamp = (receivedMessage.substring(offsetMessageContent(receivedMessage))).toInt();
-
-#if(GAMA_SENSE_IT_DEBUG_MODE > 0)
-  Serial.print("date : ");
-  Serial.println(timeStamp);
-#endif  
-  
-  return 0;
-}
-
-unsigned long GamaSenseIt::getCurrentDate()
-{
-  unsigned long delayFromStart = (millis()/1000) - startDate;
-  return timeStamp + delayFromStart;
-}
 
 GamaSenseIt gamaSenseIt = GamaSenseIt();
 

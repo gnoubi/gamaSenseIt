@@ -12,8 +12,9 @@
 #define GAMA_SENS_IT_MESSAGE_UPDATE_DATE_COMMAND String("UPDATE_DATE_")
 #define GAMA_SENS_IT_MESSAGE_REGISTER_COMMAND String("REGISTER_")
 #define GAMA_SENS_IT_MESSAGE_CAPTURE_COMMAND String("CAPTURE")
-#define GAMA_SENS_IT_MESSAGE_DATE "_DATE_"
+#define GAMA_SENS_IT_SENDER_NAME "_SENDER_"
 #define GAMA_SENS_IT_MESSAGE_VALUE "_VALUES_"
+#define  GAMA_SENS_IT_MESSAGE_ID "_MID_"
 #define CAPTURE_COMMAND 1
 #define  DATE_UPDATE_COMMAND 2
 #define  REGISTER_COMMAND 3
@@ -39,20 +40,20 @@ class GamaSenseIt
  public :
     GamaSenseIt();
     int configure(String nm, int addr);
-    unsigned long getCurrentDate();
-    void sendToGateway(String message);
+     void sendDataToGateway(String message);
+   
     String waitAndReceiveMessage();
-    int registerToGateway();
     uint32_t DEFAULT_CHANNEL; //=CH_10_868
-	int loraMode;
+	  int loraMode;
+    int messageID;
 
  private :
     String myName;
     int address;
     int e;
-    unsigned long int startDate;
     unsigned long int timeStamp;
- 
+    void sendToGateway(String message);
+    
     int setupLora();
     String buildCaptureMessage(String data);
     String buildRegisterMessage();
