@@ -9,7 +9,7 @@ using namespace std;
 
 GamaSenseIT::GamaSenseIT(SX1272 &loraConnection)
 {
-	string id = CLIENTID;
+	string id = MQTT_TOPIC;
 	gatewayName = new char[id.length()+1];
 	strcpy(gatewayName,id.c_str());
 	this->loraConnector = loraConnection;
