@@ -13,8 +13,15 @@ public class SensorType {
  Long idType;
  String version;
  String typeName;
+ 
+ 
 
-	 public String getVersion() {
+	public SensorType(String version, String typeName) {
+		super();
+		this.version = version;
+		this.typeName = typeName;
+	}
+	public String getVersion() {
 		return version;
 	}
 	public void setVersion(String version) {
