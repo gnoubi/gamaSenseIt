@@ -311,7 +311,7 @@ void GamaSenseIT::setupMQTT()
 	strcat(tcpAddress,port.c_str());
 	*/
 	string address = this->brokerAddress;
-	string clientID = this->gateway;
+	string clientID = this->username;
 	char  tcpAddress[1+address.length()];
 	strcpy(tcpAddress,address.c_str());
 	//strcat(tcpAddress,address.c_str());
