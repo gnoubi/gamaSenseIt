@@ -81,7 +81,8 @@ private:
     int computeCaptureCommand(string message, int senderAddress);
     void computeRegisterCommand(string message, int senderAddress);
     void computeMessage(string message, int senderAddress);
-    void setupMQTT(string address, string clientID);
+    void setupMQTT();
+	void closeMQTT();
     void setupOutFile(string outf);
 
 

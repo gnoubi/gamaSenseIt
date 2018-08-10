@@ -279,7 +279,13 @@ int GamaSenseIT::computeCaptureCommand(string message, int senderAddress)
     	outFile->flush();
     }
 
-    int sending = useBroker==false?0:sendToBrocker(data,  sensorName, mid,  sensorDate);
+    int sending = 0;
+	if(useBroker)
+		{
+			setupMQTT();
+			sendToBrocker(data,  sensorName, mid,  sensorDate);
+			closeMQTT();
+		} 
     return 1;
 }
 
@@ -296,7 +302,7 @@ void GamaSenseIT::computeMessage(string message, int senderAddress)
      }
  }
 
-void GamaSenseIT::setupMQTT(string address, string clientID)
+void GamaSenseIT::setupMQTT()
 {
 	
 	/*char  tcpAddress[pro.length()+port.length()+1+address.length()];
@@ -304,7 +310,8 @@ void GamaSenseIT::setupMQTT(string address, string clientID)
 	strcat(tcpAddress,address.c_str());
 	strcat(tcpAddress,port.c_str());
 	*/
-	
+	string address = this->brokerAddress;
+	string clientID = this->gateway;
 	char  tcpAddress[1+address.length()];
 	strcpy(tcpAddress,address.c_str());
 	//strcat(tcpAddress,address.c_str());
@@ -327,6 +334,13 @@ void GamaSenseIT::setupMQTT(string address, string clientID)
         printf("Failed to connect, return code %d\n", rc);
         exit(-1);
     }
+}
+
+
+void GamaSenseIT::closeMQTT()
+{
+    MQTTClient_disconnect(client, 10000);
+    MQTTClient_destroy(&client);
 }
 
 void GamaSenseIT::setupOutFile(string outf)
@@ -387,7 +401,8 @@ void GamaSenseIT::setup()
     setupLora();
     if(useBroker == true)
     {
-        setupMQTT(brokerAddress,gatewayName);
+        setupMQTT();
+		closeMQTT();
     }
     if(saveInFile == true)
     {
