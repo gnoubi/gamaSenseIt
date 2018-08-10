@@ -20,6 +20,7 @@ public class SensoredBulkData {
 	
 	long token;
 	Date captureDate;
+	Date receivingDate;
 	String contents;
 	public Long getIdData() {
 		return idData;
@@ -50,6 +51,23 @@ public class SensoredBulkData {
 	}
 	public void setContents(String contents) {
 		this.contents = contents;
+	}
+	public Date getReceivingDate() {
+		return receivingDate;
+	}
+	public void setReceivingDate(Date receivingDate) {
+		this.receivingDate = receivingDate;
+	}
+	public SensoredBulkData(Sensor sensor, long token, Date captureDate, Date receivingDate, String contents) {
+		super();
+		this.sensor = sensor;
+		this.token = token;
+		this.captureDate = captureDate;
+		this.receivingDate = receivingDate;
+		this.contents = contents;
+	}
+	public SensoredBulkData() {
+		super();
 	}
 
 	

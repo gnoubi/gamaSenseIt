@@ -21,7 +21,7 @@ public class Sensor {
 	private Long idSensor;
 	@Column(columnDefinition = "point")
 	private Point location;
-	private String sensorName;
+	private String name;
 	
 	@ManyToOne
 	private SensorType sensorType;
@@ -35,7 +35,7 @@ public class Sensor {
 	public Sensor( String sensorName, Point location, SensorType sensorType) {
 		super();
 		this.location = location;
-		this.sensorName = sensorName;
+		this.name = sensorName;
 		this.sensorType = sensorType;
 	}
 
@@ -53,11 +53,11 @@ public class Sensor {
 	public void setLocation(Point location) {
 		this.location = location;
 	}
-	public String getSensorName() {
-		return sensorName;
+	public String getName() {
+		return name;
 	}
-	public void setSensorName(String sensorName) {
-		this.sensorName = sensorName;
+	public void setName(String sensorName) {
+		this.name = sensorName;
 	}
 
 

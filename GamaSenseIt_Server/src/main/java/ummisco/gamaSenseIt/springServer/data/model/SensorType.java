@@ -12,14 +12,17 @@ public class SensorType {
  @GeneratedValue(strategy = GenerationType.AUTO)
  Long idType;
  String version;
- String typeName;
+ String name;
  
  
 
-	public SensorType(String version, String typeName) {
+	public SensorType() {
+	super();
+}
+	public SensorType(String name,String version ) {
 		super();
 		this.version = version;
-		this.typeName = typeName;
+		this.name = name;
 	}
 	public String getVersion() {
 		return version;
@@ -28,10 +31,10 @@ public class SensorType {
 		this.version = version;
 	}
 	public String getTypeName() {
-		return typeName;
+		return name;
 	}
 	public void setTypeName(String typeName) {
-		this.typeName = typeName;
+		this.name = typeName;
 	}
 	public Long getIdType() {
 		return idType;

@@ -11,4 +11,7 @@
 	<bean id="SensorManagment"
 		class="ummisco.gamaSenseIt.springServer.data.services.SensorManagment" >
 	</bean>
+	
+
+	
 </beans>
