@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 @Entity
@@ -16,6 +17,7 @@ public class SensoredBulkData {
 	Long idData;
 	
 	@ManyToOne
+	@JoinColumn(name = "sensor_id", nullable = false)
 	private Sensor sensor;
 	
 	long token;

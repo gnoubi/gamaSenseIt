@@ -29,7 +29,7 @@ public class Sensor {
 	@ManyToOne
 	private SensorType sensorType;
 	
-	@OneToMany
+	@OneToMany(mappedBy="sensor")
 	private List<SensoredBulkData> bulkData;
 	
 	public Sensor()
