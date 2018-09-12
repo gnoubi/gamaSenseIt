@@ -1,9 +1,13 @@
 package ummisco.gamaSenseIt.springServer.data.model;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -29,8 +33,10 @@ public class Sensor {
 	@ManyToOne
 	private SensorType sensorType;
 	
-	@OneToMany(mappedBy="sensor")
-	private List<SensoredBulkData> bulkData;
+	@OneToMany(cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY,
+            mappedBy="sensor")
+	private Set<SensoredBulkData> bulkData = new HashSet<>();
 	
 	public Sensor()
 	{}
