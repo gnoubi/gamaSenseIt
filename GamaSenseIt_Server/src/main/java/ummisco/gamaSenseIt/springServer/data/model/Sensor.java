@@ -27,6 +27,8 @@ public class Sensor {
 	@ManyToOne
 	private SensorType sensorType;
 	
+	@OneToMany
+	private SensoredBulkData bulkData;
 	
 	public Sensor()
 	{}
