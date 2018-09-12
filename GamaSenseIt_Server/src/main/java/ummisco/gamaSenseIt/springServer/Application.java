@@ -114,7 +114,7 @@ public class Application {
 			Date dte = Calendar.getInstance().getTime();
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss");
 			System.out.println("Message recu : " +arg0.getPayload().toString());
-			//sensorManager.saveData(arg0.getPayload().toString(), dte);
+			sensorManager.saveData(arg0.getPayload().toString(), dte);
 			
 			
 		}
