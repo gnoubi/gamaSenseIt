@@ -19,9 +19,10 @@ public class Sensor {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long idSensor;
-	@Column(columnDefinition = "point")
-	private Point location;
 	private String name;
+	private double longitude;
+	private double latitude;
+	
 	
 	@ManyToOne
 	private SensorType sensorType;
@@ -29,30 +30,20 @@ public class Sensor {
 	
 	public Sensor()
 	{}
-	
-	
-	
 	public Sensor( String sensorName, Point location, SensorType sensorType) {
 		super();
-		this.location = location;
+		this.longitude = location.getX();
+		this.latitude = location.getY();
 		this.name = sensorName;
 		this.sensorType = sensorType;
 	}
-
-
-
 	public Long getIdSensor() {
 		return idSensor;
 	}
 	public void setIdSensor(Long idSensor) {
 		this.idSensor = idSensor;
 	}
-	public Point getLocation() {
-		return location;
-	}
-	public void setLocation(Point location) {
-		this.location = location;
-	}
+	
 	public String getName() {
 		return name;
 	}
@@ -60,18 +51,23 @@ public class Sensor {
 		this.name = sensorName;
 	}
 
-
-
 	public SensorType getSensorType() {
 		return sensorType;
 	}
-
-
-
 	public void setSensorType(SensorType sensorType) {
 		this.sensorType = sensorType;
 	}
-
-	
+	public double getLongitude() {
+		return longitude;
+	}
+	public void setLongitude(double longitude) {
+		this.longitude = longitude;
+	}
+	public double getLatitude() {
+		return latitude;
+	}
+	public void setLatitude(double latitude) {
+		this.latitude = latitude;
+	}
 	
 }
