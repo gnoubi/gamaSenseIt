@@ -22,17 +22,17 @@
  *  Implementation:    Covadonga Albiñana & Victor Boria
  */
 
-//**********************************************************************/
+//**********************************************************************
 // Includes
-//**********************************************************************/
+//**********************************************************************
 
 #include "SX1272.h"
-#include <SPI.h>
+#include <math.h>
 
 /*  CHANGE LOGS by C. Pham
- *	June 29th, 2018
- *		- SX1272_WRST (not defined by default) controls whether there will be a RST procedure or not. Normally, there is no need for the RST.
- *		- If RST is used, it is currently pin 4 on the Arduino but sometimes there is conflict, so better not use RST
+ *	August 28th, 2018
+ *		- add a small delay in the availableData() loop that decreases the CPU load of the lora_gateway process to 4~5% instead of nearly 100%
+ *		- suggested by rertini (https://github.com/CongducPham/LowCostLoRaGw/issues/211)
  *  March 28th, 2018
  *		- check at packet reception that the packet type is correct, otherwise discard the packet and returned error code is 5
  *      - add max number of retries for CarrierSense
@@ -44,18 +44,11 @@
  *      - use dedicated smaller buffer for ACK
  *  Feb 13th, 2018
  *      - fix bug in availableData() to set back the LoRa module into standby mode. This affected only some radio modules
- *	Jan 19th, 2018
- *		- add a setCSPin(uint8_t cs) function to set the Chip Select (CS) pin
- *		- call sx1272.setCSPin(18) for instance before calling sx1272.ON()
- *		- by default, the CS pin will be set to SX1272_SS defined in SX1272.h
  *  November 10th, 2017
  *		- change the way packet's RSSI is computed
  *  November 7th, 2017
+ *      - CRC (RxPayloadCrcOn) is set back to OFF for the gateway
  *      - bug fix in how the CRC is checked at receiver in getPacket() function
- *  November 3rd, 2017
- *      - IMPORTANT: the CS pin is now always pin number 10 on Arduino boards
- *      - if you use the Libelium Multiprotocol shield to connect a Libelium LoRa then change the CS pin to pin 2 in SX1272.h
- *      - CRC (RxPayloadCrcOn) is now ON by default for transmitter side (end-device)
  *  June, 22th, 2017
  *      - setPowerDBM(uint8_t dbm) calls setPower('X') when dbm is set to 20
  *  Apr, 21th, 2017
@@ -67,13 +60,10 @@
  *      - fix bug in getRSSIpacket() when SNR < 0 thanks to John Rohde from Aarhus University
  *  Dec, 17th, 2016
  *      - fix bug making -DPABOOST in radio.makefile inoperant
- *  Dec, 1st, 2016
- *      - add RSSI computation while performing CAD with doCAD()
- *      - WARNING: the SX1272 lib for gateway (Raspberry) does not have this functionality
- *  Nov, 26th, 2016
+ *  Now, 26th, 2016
  *		- add preliminary support for ToA limitation
  *      - when in "production" mode, uncomment #define LIMIT_TOA
- *  Nov, 16th, 2016
+ *  Now, 16th, 2016
  *		- provide better power management mechanisms
  *		- manage PA_BOOST and dBm setting 
  *  Jan, 23rd, 2016
@@ -100,14 +90,11 @@
  *  Nov, 13th, 2015
  *      - add CarrierSense() to perform some Listen Before Talk procedure
  *      - add dynamic ACK suport
- *          - compile with W_REQUESTED_ACK, retry field is used to indicate at the receiver
- *			  that an ACK should be sent
+ *          - compile with W_REQUESTED_ACK, retry field is used to indicate at the receiver that an ACK should be sent
  *          - receiveWithTimeout() has been modified to send an ACK if retry is 1
- *          - at sender side, sendPacketTimeoutACK() has been modified to indicate
- *			  whether retry should be set to 1 or not in setPacket()
- *          - receiver should always use receiveWithTimeout() while sender decides to use
- *			  sendPacketTimeout() or sendPacketTimeoutACK()
- *  Jun, 2015
+ *          - at sender side, sendPacketTimeoutACK() has been modified to indicate whether retry should be set to 1 or not in setPacket()
+ *          - receiver should always use receiveWithTimeout() while sender decides to use sendPacketTimeout() or sendPacketTimeoutACK()
+ * Jun, 2015
  *      - Add time on air computation and CAD features
 */
 
@@ -125,7 +112,6 @@ uint8_t sx1272_CAD_value[11]={0, 62, 31, 16, 16, 8, 9, 5, 3, 1, 1};
 #define DUTYCYCLE_DURATION 3600000L
 // 4 min for testing
 //#define DUTYCYCLE_DURATION 240000L
-
 // end
 
 //**********************************************************************/
@@ -134,9 +120,6 @@ uint8_t sx1272_CAD_value[11]={0, 62, 31, 16, 16, 8, 9, 5, 3, 1, 1};
 
 SX1272::SX1272()
 {
-	//set the Chip Select pin
-	_SX1272_SS=SX1272_SS;
-	
     // Initialize class variables
     _bandwidth = BW_125;
     _codingRate = CR_5;
@@ -166,7 +149,6 @@ SX1272::SX1272()
     _limitToA=false;
     _startToAcycle=millis();
     _remainingToA=MAX_DUTY_CYCLE_PER_HOUR;
-    _endToAcycle=_startToAcycle+DUTYCYCLE_DURATION;
 #ifdef W_REQUESTED_ACK
     _requestACK = 0;
 #endif
@@ -184,7 +166,7 @@ SX1272::SX1272()
     _maxRetries = 0;
     packet_sent.retry = _retries;
 };
-
+    
 // added by C. Pham
 // copied from LoRaMAC-Node
 /*!
@@ -196,20 +178,20 @@ void SX1272::RxChainCalibration()
 {
     if (_board==SX1276Chip) {
 
-        Serial.println(F("SX1276 LF/HF calibration"));
+        printf("SX1276 LF/HF calibration\n");
 
         // Cut the PA just in case, RFO output, power = -1 dBm
         writeRegister( REG_PA_CONFIG, 0x00 );
-    
+
         // Launch Rx chain calibration for LF band
         writeRegister( REG_IMAGE_CAL, ( readRegister( REG_IMAGE_CAL ) & RF_IMAGECAL_IMAGECAL_MASK ) | RF_IMAGECAL_IMAGECAL_START );
         while( ( readRegister( REG_IMAGE_CAL ) & RF_IMAGECAL_IMAGECAL_RUNNING ) == RF_IMAGECAL_IMAGECAL_RUNNING )
         {
         }
-    
+
         // Sets a Frequency in HF band
         setChannel(CH_17_868);
-    
+
         // Launch Rx chain calibration for HF band
         writeRegister( REG_IMAGE_CAL, ( readRegister( REG_IMAGE_CAL ) & RF_IMAGECAL_IMAGECAL_MASK ) | RF_IMAGECAL_IMAGECAL_START );
         while( ( readRegister( REG_IMAGE_CAL ) & RF_IMAGECAL_IMAGECAL_RUNNING ) == RF_IMAGECAL_IMAGECAL_RUNNING )
@@ -217,7 +199,6 @@ void SX1272::RxChainCalibration()
         }
     }
 }
-
 
 /*
  Function: Sets the module ON.
@@ -228,68 +209,52 @@ uint8_t SX1272::ON()
     uint8_t state = 2;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'ON'"));
+    printf("\n");
+    printf("Starting 'ON'\n");
 #endif
 
     // Powering the module
-    pinMode(_SX1272_SS,OUTPUT);
-    digitalWrite(_SX1272_SS,HIGH);
+    pinMode(SX1272_SS,OUTPUT);
+    digitalWrite(SX1272_SS,HIGH);
     delay(100);
 
-    //#define USE_SPI_SETTINGS
-
-#ifdef USE_SPI_SETTINGS
-    SPI.beginTransaction(SPISettings(2000000, MSBFIRST, SPI_MODE0));
-#else
     //Configure the MISO, MOSI, CS, SPCR.
     SPI.begin();
     //Set Most significant bit first
     SPI.setBitOrder(MSBFIRST);
-#ifdef _VARIANT_ARDUINO_DUE_X_ 
-    // for the DUE, set to 4MHz
-    SPI.setClockDivider(42);
-#else
-    // for the MEGA, set to 2MHz
-    SPI.setClockDivider(SPI_CLOCK_DIV8);
-#endif   
+    //Divide the clock frequency
+    SPI.setClockDivider(SPI_CLOCK_DIV64);
     //Set data mode
     SPI.setDataMode(SPI_MODE0);
-#endif  
-
     delay(100);
 
-#ifdef SX1272_WRST
     // added by C. Pham
     pinMode(SX1272_RST,OUTPUT);
     digitalWrite(SX1272_RST,HIGH);
     delay(100);
     digitalWrite(SX1272_RST,LOW);
     delay(100);
-#endif
-    
+
     // from single_chan_pkt_fwd by Thomas Telkamp
     uint8_t version = readRegister(REG_VERSION);
 
     if (version == 0x22) {
         // sx1272
-        Serial.println(F("SX1272 detected, starting"));
+        printf("SX1272 detected, starting.\n");
         _board = SX1272Chip;
     } else {
         // sx1276?
-#ifdef SX1272_WRST        
         digitalWrite(SX1272_RST, LOW);
         delay(100);
         digitalWrite(SX1272_RST, HIGH);
         delay(100);
-#endif        
         version = readRegister(REG_VERSION);
         if (version == 0x12) {
             // sx1276
-            Serial.println(F("SX1276 detected, starting"));
+            printf("SX1276 detected, starting.\n");
             _board = SX1276Chip;
         } else {
-            Serial.println(F("Unrecognized transceiver"));
+            printf("Unrecognized transceiver.\n");
         }
     }
     // end from single_chan_pkt_fwd by Thomas Telkamp
@@ -299,22 +264,18 @@ uint8_t SX1272::ON()
 
     setMaxCurrent(0x1B);
 #if (SX1272_debug_mode > 1)
-    Serial.println(F("## Setting ON with maximum current supply ##"));
-    Serial.println();
+    printf("## Setting ON with maximum current supply ##\n");
+    printf("\n");
 #endif
 
     // set LoRa mode
-    state = setLORA();
-
-    // Added by C. Pham     
-    // set CRC ON
-    setCRC_ON();
+    state = setLORA();   
 
     // Added by C. Pham for ToA computation
     getPreambleLength();
 #ifdef W_NET_KEY
     //#if (SX1272_debug_mode > 1)
-    Serial.println(F("## SX1272 layer has net key##"));
+    printf("## SX1272 layer has net key##\n");
     //#endif
 #endif
 
@@ -389,7 +350,7 @@ uint8_t SX1272::ON()
         // 1000 001 0
         // BW=250 CR=4/5 ImplicitH_off
         writeRegister(0x1D,0x82);
-        // 1001 0 1 11
+        // 1000 0 1 11
         // SF=9 TxContinuous_off RxPayloadCrcOn_on SymbTimeOut
         writeRegister(0x1E,0x97);
     }
@@ -432,39 +393,25 @@ uint8_t SX1272::ON()
     writeRegister(0x37,0xA);
     writeRegister(0x38,0x42);
     writeRegister(0x39,0x12);
-    //writeRegister(0x3A,0x65);
-    //writeRegister(0x3B,0x1D);
-    //writeRegister(0x3C,0x1);
-    //writeRegister(0x3D,0xA1);
-    //writeRegister(0x3E,0x0);
-    //writeRegister(0x3F,0x0);
-    //writeRegister(0x40,0x0);
-    //writeRegister(0x41,0x0);
+    writeRegister(0x3A,0x65);
+    writeRegister(0x3B,0x1D);
+    writeRegister(0x3C,0x1);
+    writeRegister(0x3D,0xA1);
+    writeRegister(0x3E,0x0);
+    writeRegister(0x3F,0x0);
+    writeRegister(0x40,0x0);
+    writeRegister(0x41,0x0);
     // commented by C. Pham
     // since now we handle also the SX1276
     //writeRegister(0x42,0x22);
 #endif
+
     // added by C. Pham
     // default sync word for non-LoRaWAN
     setSyncWord(_defaultSyncWord);
     getSyncWord();
     _defaultSyncWord=_syncWord;
-
-#ifdef LIMIT_TOA
-    uint16_t remainingToA=limitToA();
-    Serial.println(F("## Limit ToA ON ##"));
-    Serial.print(F("cycle begins at "));
-    Serial.print(_startToAcycle);
-    Serial.print(F(" cycle ends at "));
-    Serial.print(_endToAcycle);
-    Serial.print(F(" remaining ToA is "));
-    Serial.print(remainingToA);
-    Serial.println();
-#endif
     //end
-
-    //init random generator
-    randomSeed(millis());
 
     return state;
 }
@@ -476,17 +423,17 @@ uint8_t SX1272::ON()
 void SX1272::OFF()
 {
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'OFF'"));
+    printf("\n");
+    printf("Starting 'OFF'\n");
 #endif
 
     SPI.end();
     // Powering the module
-    pinMode(_SX1272_SS,OUTPUT);
-    digitalWrite(_SX1272_SS,LOW);
+    pinMode(SX1272_SS,OUTPUT);
+    digitalWrite(SX1272_SS,LOW);
 #if (SX1272_debug_mode > 1)
-    Serial.println(F("## Setting OFF ##"));
-    Serial.println();
+    printf("## Setting OFF ##\n");
+    printf("\n");
 #endif
 }
 
@@ -498,24 +445,24 @@ void SX1272::OFF()
 */
 byte SX1272::readRegister(byte address)
 {
-    byte value = 0x00;
-
-    digitalWrite(_SX1272_SS,LOW);
+    digitalWrite(SX1272_SS,LOW);
     bitClear(address, 7);		// Bit 7 cleared to write in registers
-    SPI.transfer(address);
-    value = SPI.transfer(0x00);
-    digitalWrite(_SX1272_SS,HIGH);
+    //SPI.transfer(address);
+    //value = SPI.transfer(0x00);
+    txbuf[0] = address;
+    txbuf[1] = 0x00;
+    maxWrite16();
+    digitalWrite(SX1272_SS,HIGH);
 
 #if (SX1272_debug_mode > 1)
-    Serial.print(F("## Reading:  ##\t"));
-    Serial.print(F("Register "));
-    Serial.print(address, HEX);
-    Serial.print(F(":  "));
-    Serial.print(value, HEX);
-    Serial.println();
+    printf("## Reading:  ##\tRegister ");
+    printf("%X", address);
+    printf(":  ");
+    printf("%X", rxbuf[1]);
+    printf("\n");
 #endif
 
-    return value;
+    return rxbuf[1];
 }
 
 /*
@@ -527,22 +474,39 @@ byte SX1272::readRegister(byte address)
 */
 void SX1272::writeRegister(byte address, byte data)
 {
-    digitalWrite(_SX1272_SS,LOW);
+    digitalWrite(SX1272_SS,LOW);
+    delay(1);
     bitSet(address, 7);			// Bit 7 set to read from registers
-    SPI.transfer(address);
-    SPI.transfer(data);
-    digitalWrite(_SX1272_SS,HIGH);
+    //SPI.transfer(address);
+    //SPI.transfer(data);
+    txbuf[0] = address;
+    txbuf[1] = data;
+    maxWrite16();
+    //digitalWrite(SX1272_SS,HIGH);
 
 #if (SX1272_debug_mode > 1)
-    Serial.print(F("## Writing:  ##\t"));
-    Serial.print(F("Register "));
+    printf("## Writing:  ##\tRegister ");
     bitClear(address, 7);
-    Serial.print(address, HEX);
-    Serial.print(F(":  "));
-    Serial.print(data, HEX);
-    Serial.println();
+    printf("%X", address);
+    printf(":  ");
+    printf("%X", data);
+    printf("\n");
 #endif
 
+}
+
+/*
+ Function: It gets the temperature from the measurement block module.
+ Returns: Integer that determines if there has been any error
+   state = 2  --> The command has not been executed
+   state = 1  --> There has been an error while executing the command
+   state = 0  --> The command has been executed with no errors
+*/
+void SX1272::maxWrite16()
+{
+    digitalWrite(SX1272_SS,LOW);
+    SPI.transfernb(txbuf, rxbuf, 2);
+    digitalWrite(SX1272_SS,HIGH);
 }
 
 /*
@@ -561,7 +525,7 @@ void SX1272::clearFlags()
         writeRegister(REG_IRQ_FLAGS, 0xFF);	// LoRa mode flags register
         writeRegister(REG_OP_MODE, st0);		// Getting back to previous status
 #if (SX1272_debug_mode > 1)
-        Serial.println(F("## LoRa flags cleared ##"));
+        printf("## LoRa flags cleared ##\n");
 #endif
     }
     else
@@ -571,7 +535,7 @@ void SX1272::clearFlags()
         writeRegister(REG_IRQ_FLAGS2, 0xFF); // FSK mode flags2 register
         writeRegister(REG_OP_MODE, st0);		// Getting back to previous status
 #if (SX1272_debug_mode > 1)
-        Serial.println(F("## FSK flags cleared ##"));
+        printf("## FSK flags cleared ##\n");
 #endif
     }
 }
@@ -589,8 +553,8 @@ uint8_t SX1272::setLORA()
     byte st0;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'setLORA'"));
+    printf("\n");
+    printf("Starting 'setLORA'\n");
 #endif
 
     // modified by C. Pham
@@ -603,14 +567,13 @@ uint8_t SX1272::setLORA()
         writeRegister(REG_OP_MODE, LORA_STANDBY_MODE);
         delay(50+retry*10);
         st0 = readRegister(REG_OP_MODE);
-        Serial.println(F("..."));
+        printf("...\n");
 
-        if ((retry % 2)==0) {
+        if ((retry % 2)==0)
             if (retry==20)
                 retry=0;
             else
                 retry++;
-        }       
         /*
         if (st0!=LORA_STANDBY_MODE) {
             pinMode(SX1272_RST,OUTPUT);
@@ -622,13 +585,13 @@ uint8_t SX1272::setLORA()
 
     } while (st0!=LORA_STANDBY_MODE);	// LoRa standby mode
 
-    if( st0 == LORA_STANDBY_MODE)
+    if( st0 == LORA_STANDBY_MODE )
     { // LoRa mode
         _modem = LORA;
         state = 0;
 #if (SX1272_debug_mode > 1)
-        Serial.println(F("## LoRa set with success ##"));
-        Serial.println();
+        printf("## LoRa set with success ##\n");
+        printf("\n");
 #endif
     }
     else
@@ -636,8 +599,8 @@ uint8_t SX1272::setLORA()
         _modem = FSK;
         state = 1;
 #if (SX1272_debug_mode > 1)
-        Serial.println(F("** There has been an error while setting LoRa **"));
-        Serial.println();
+        printf("** There has been an error while setting LoRa **\n");
+        printf("\n");
 #endif
     }
     return state;
@@ -657,22 +620,27 @@ uint8_t SX1272::setFSK()
     byte config1;
 
     if (_board==SX1276Chip)
-        Serial.println(F("Warning: FSK has not been tested on SX1276!"));
+        printf("Warning: FSK has not been tested on SX1276!\n");
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'setFSK'"));
+    printf("\n");
+    printf("Starting 'setFSK'\n");
 #endif
 
+    if(	_modem = LORA )
+    {
+        writeRegister(REG_OP_MODE, LORA_STANDBY_MODE);
+        writeRegister(REG_OP_MODE, LORA_SLEEP_MODE);
+    }
     writeRegister(REG_OP_MODE, FSK_SLEEP_MODE);	// Sleep mode (mandatory to change mode)
     writeRegister(REG_OP_MODE, FSK_STANDBY_MODE);	// FSK standby mode
     config1 = readRegister(REG_PACKET_CONFIG1);
-    config1 = config1 & B01111101;		// clears bits 8 and 1 from REG_PACKET_CONFIG1
-    config1 = config1 | B00000100;		// sets bit 2 from REG_PACKET_CONFIG1
+    config1 = config1 & 0B01111101;		// clears bits 8 and 1 from REG_PACKET_CONFIG1
+    config1 = config1 | 0B00000100;		// sets bit 2 from REG_PACKET_CONFIG1
     writeRegister(REG_PACKET_CONFIG1,config1);	// AddressFiltering = NodeAddress + BroadcastAddress
     writeRegister(REG_FIFO_THRESH, 0x80);	// condition to start packet tx
     config1 = readRegister(REG_SYNC_CONFIG);
-    config1 = config1 & B00111111;
+    config1 = config1 & 0B00111111;
     writeRegister(REG_SYNC_CONFIG,config1);
 
     delay(100);
@@ -683,8 +651,8 @@ uint8_t SX1272::setFSK()
         _modem = FSK;
         state = 0;
 #if (SX1272_debug_mode > 1)
-        Serial.println(F("## FSK set with success ##"));
-        Serial.println();
+        printf("## FSK set with success ##\n");
+        printf("\n");
 #endif
     }
     else
@@ -692,8 +660,8 @@ uint8_t SX1272::setFSK()
         _modem = LORA;
         state = 1;
 #if (SX1272_debug_mode > 1)
-        Serial.println(F("** There has been an error while setting FSK **"));
-        Serial.println();
+        printf("** There has been an error while setting FSK **\n");
+        printf("\n");
 #endif
     }
     return state;
@@ -713,8 +681,8 @@ uint8_t SX1272::getMode()
     byte value = 0x00;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'getMode'"));
+    printf("\n");
+    printf("Starting 'getMode'\n");
 #endif
 
     st0 = readRegister(REG_OP_MODE);		// Save the previous status
@@ -738,7 +706,7 @@ uint8_t SX1272::getMode()
     else
         _codingRate = (value >> 1) & 0x07;  		// Storing 3-1 bits REG_MODEM_CONFIG1 (=_codingRate)
 
-    value = readRegister(REG_MODEM_CONFIG2);
+    value = readRegister(REG_MODEM_CONFIG2);			// REG_MODEM_CONFIG1 (=_codingRate)
     _spreadingFactor = (value >> 4) & 0x0F; 	// Storing 4 MSB from REG_MODEM_CONFIG2 (=_spreadingFactor)
     state = 1;
 
@@ -754,17 +722,17 @@ uint8_t SX1272::getMode()
     }
 
 #if (SX1272_debug_mode > 1)
-    Serial.println(F("## Parameters from configuration mode are:"));
-    Serial.print(F("Bandwidth: "));
-    Serial.print(_bandwidth, HEX);
-    Serial.println();
-    Serial.print(F("\t Coding Rate: "));
-    Serial.print(_codingRate, HEX);
-    Serial.println();
-    Serial.print(F("\t Spreading Factor: "));
-    Serial.print(_spreadingFactor, HEX);
-    Serial.println(F(" ##"));
-    Serial.println();
+    printf("## Parameters from configuration mode are:\n");
+    printf("\t Bandwidth: ");
+    printf("%X", _bandwidth);
+    printf("\n");
+    printf("\t Coding Rate: ");
+    printf("%X", _codingRate);
+    printf("\n");
+    printf("\t Spreading Factor: ");
+    printf("%X", _spreadingFactor);
+    printf(" ##\n");
+    printf("\n");
 #endif
 
     writeRegister(REG_OP_MODE, st0);	// Getting back to previous status
@@ -790,8 +758,8 @@ int8_t SX1272::setMode(uint8_t mode)
     byte config2 = 0x00;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'setMode'"));
+    printf("\n");
+    printf("Starting 'setMode'\n");
 #endif
 
     st0 = readRegister(REG_OP_MODE);		// Save the previous status
@@ -854,8 +822,8 @@ int8_t SX1272::setMode(uint8_t mode)
         break;
 
         // mode 8 (medium reach, medium time-on-air)
-    case 8:     
-    	setCR(CR_5);        // CR = 4/5
+    case 8:
+        setCR(CR_5);        // CR = 4/5
         setSF(SF_9);        // SF = 9
         setBW(BW_500);      // BW = 500 KHz
         break;
@@ -882,8 +850,8 @@ int8_t SX1272::setMode(uint8_t mode)
         setBW(BW_125);      // BW = 125 KHz
         // set the sync word to the LoRaWAN sync word which is 0x34
         setSyncWord(0x34);
-        Serial.print(F("** Using sync word of 0x"));
-        Serial.println(_syncWord, HEX);
+        printf("** Using sync word of 0x");
+        printf("%X\n", _syncWord);
         break;
 
     default:    state = -1; // The indicated mode doesn't exist
@@ -893,8 +861,8 @@ int8_t SX1272::setMode(uint8_t mode)
     if( state == -1 )	// if state = -1, don't change its value
     {
 #if (SX1272_debug_mode > 1)
-        Serial.print(F("** The indicated mode doesn't exist, "));
-        Serial.println(F("please select from 1 to 10 **"));
+        printf("** The indicated mode doesn't exist, ");
+        printf("please select from 1 to 10 **\n");
 #endif
     }
     else
@@ -1159,7 +1127,7 @@ int8_t SX1272::setMode(uint8_t mode)
 
             // added by C. Pham
             // test of LoRaWAN channel
-            // mode 11: BW = 125 KHz, CR = 4/5, SF = 12.
+            // mode 11: BW = 125 KHz, CR = 4/5, SF = 7.
         case 11:
 
             //modified by C. Pham
@@ -1188,28 +1156,26 @@ int8_t SX1272::setMode(uint8_t mode)
         if (mode!=11) {
             setSyncWord(_defaultSyncWord);
 #if (SX1272_debug_mode > 1)
-            Serial.print(F("** Using sync word of 0x"));
-            Serial.println(_defaultSyncWord, HEX);
+            printf("** Using sync word of 0x");
+            printf("%X\n", _defaultSyncWord);
 #endif
         }
     }
-    // added by C. Pham
-    if (state == 0)
-        _loraMode=mode;
-
 #if (SX1272_debug_mode > 1)
-
     if( state == 0 )
     {
-        Serial.print(F("## Mode "));
-        Serial.print(mode, DEC);
-        Serial.println(F(" configured with success ##"));
+        printf("## Mode ");
+        printf("%d", mode);
+        printf(" configured with success ##\n");
+        printf("\n");
     }
     else
     {
-        Serial.print(F("** There has been an error while configuring mode "));
-        Serial.print(mode, DEC);
-        Serial.println(F(". **"));
+        printf("** There has been an error while configuring mode ");
+        printf("%d", mode);
+        printf(". **\n");
+        printf("\n");
+
     }
 #endif
 
@@ -1230,8 +1196,8 @@ uint8_t	SX1272::getHeader()
     int8_t state = 2;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'getHeader'"));
+    printf("\n");
+    printf("Starting 'getHeader'\n");
 #endif
 
     // added by C. Pham
@@ -1259,23 +1225,23 @@ uint8_t	SX1272::getHeader()
     if( _modem == FSK )
     { // header is not available in FSK mode
 #if (SX1272_debug_mode > 1)
-        Serial.println(F("## Notice that FSK mode packets hasn't header ##"));
-        Serial.println();
+        printf("## Notice that FSK mode packets hasn't header ##\n");
+        printf("\n");
 #endif
     }
     else
     { // header in LoRa mode
 #if (SX1272_debug_mode > 1)
-        Serial.print(F("## Header is "));
+        printf("## Header is ");
         if( _header == HEADER_ON )
         {
-            Serial.println(F("in explicit header mode ##"));
+            printf("in explicit header mode ##\n");
         }
         else
         {
-            Serial.println(F("in implicit header mode ##"));
+            printf("in implicit header mode ##\n");
         }
-        Serial.println();
+        printf("\n");
 #endif
     }
     return state;
@@ -1295,16 +1261,16 @@ int8_t	SX1272::setHeaderON()
     byte config1;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'setHeaderON'"));
+    printf("\n");
+    printf("Starting 'setHeaderON'\n");
 #endif
 
     if( _modem == FSK )
     {
         state = -1;		// header is not available in FSK mode
 #if (SX1272_debug_mode > 1)
-        Serial.println(F("## FSK mode packets hasn't header ##"));
-        Serial.println();
+        printf("## FSK mode packets hasn't header ##\n");
+        printf("\n");
 #endif
     }
     else
@@ -1314,16 +1280,16 @@ int8_t	SX1272::setHeaderON()
         {
             state = -1;		// Mandatory headerOFF with SF = 6
 #if (SX1272_debug_mode > 1)
-            Serial.println(F("## Mandatory implicit header mode with spreading factor = 6 ##"));
+            printf("## Mandatory implicit header mode with spreading factor = 6 ##\n");
 #endif
         }
         else
         {
             // added by C. Pham
             if (_board==SX1272Chip)
-                config1 = config1 & B11111011;		// clears bit 2 from config1 = headerON
+                config1 = config1 & 0B11111011;		// clears bit 2 from config1 = headerON
             else
-                config1 = config1 & B11111110;              // clears bit 0 from config1 = headerON
+                config1 = config1 & 0B11111110;              // clears bit 0 from config1 = headerON
 
             writeRegister(REG_MODEM_CONFIG1,config1);	// Update config1
         }
@@ -1345,8 +1311,8 @@ int8_t	SX1272::setHeaderON()
                 state = 0;
                 _header = HEADER_ON;
 #if (SX1272_debug_mode > 1)
-                Serial.println(F("## Header has been activated ##"));
-                Serial.println();
+                printf("## Header has been activated ##\n");
+                printf("\n");
 #endif
             }
             else
@@ -1355,7 +1321,7 @@ int8_t	SX1272::setHeaderON()
             }
         }
     }
-	return state;
+    return state;
 }
 
 /*
@@ -1372,16 +1338,16 @@ int8_t	SX1272::setHeaderOFF()
     byte config1;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'setHeaderOFF'"));
+    printf("\n");
+    printf("Starting 'setHeaderOFF'\n");
 #endif
 
     if( _modem == FSK )
     { // header is not available in FSK mode
         state = -1;
 #if (SX1272_debug_mode > 1)
-        Serial.println(F("## Notice that FSK mode packets hasn't header ##"));
-        Serial.println();
+        printf("## Notice that FSK mode packets hasn't header ##\n");
+        printf("\n");
 #endif
     }
     else
@@ -1390,9 +1356,9 @@ int8_t	SX1272::setHeaderOFF()
 
         // modified by C. Pham
         if (_board==SX1272Chip)
-            config1 = config1 | B00000100;			// sets bit 2 from REG_MODEM_CONFIG1 = headerOFF
+            config1 = config1 | 0B00000100;			// sets bit 2 from REG_MODEM_CONFIG1 = headerOFF
         else
-            config1 = config1 | B00000001;                      // sets bit 0 from REG_MODEM_CONFIG1 = headerOFF
+            config1 = config1 | 0B00000001;                      // sets bit 0 from REG_MODEM_CONFIG1 = headerOFF
 
         writeRegister(REG_MODEM_CONFIG1,config1);		// Update config1
 
@@ -1412,16 +1378,16 @@ int8_t	SX1272::setHeaderOFF()
             _header = HEADER_OFF;
 
 #if (SX1272_debug_mode > 1)
-            Serial.println(F("## Header has been desactivated ##"));
-            Serial.println();
+            printf("## Header has been desactivated ##\n");
+            printf("\n");
 #endif
         }
         else
         {
             state = 1;
 #if (SX1272_debug_mode > 1)
-            Serial.println(F("** Header hasn't been desactivated ##"));
-            Serial.println();
+            printf("** Header hasn't been desactivated ##\n");
+            printf("\n");
 #endif
         }
     }
@@ -1441,8 +1407,8 @@ uint8_t	SX1272::getCRC()
     byte value;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'getCRC'"));
+    printf("\n");
+    printf("Starting 'getCRC'\n");
 #endif
 
     if( _modem == LORA )
@@ -1467,8 +1433,8 @@ uint8_t	SX1272::getCRC()
         { // CRCoff
             _CRC = CRC_OFF;
 #if (SX1272_debug_mode > 1)
-            Serial.println(F("## CRC is desactivated ##"));
-            Serial.println();
+            printf("## CRC is desactivated ##\n");
+            printf("\n");
 #endif
             state = 0;
         }
@@ -1476,8 +1442,8 @@ uint8_t	SX1272::getCRC()
         { // CRCon
             _CRC = CRC_ON;
 #if (SX1272_debug_mode > 1)
-            Serial.println(F("## CRC is activated ##"));
-            Serial.println();
+            printf("## CRC is activated ##\n");
+            printf("\n");
 #endif
             state = 0;
         }
@@ -1491,8 +1457,8 @@ uint8_t	SX1272::getCRC()
         { // CRCoff
             _CRC = CRC_OFF;
 #if (SX1272_debug_mode > 1)
-            Serial.println(F("## CRC is desactivated ##"));
-            Serial.println();
+            printf("## CRC is desactivated ##\n");
+            printf("\n");
 #endif
             state = 0;
         }
@@ -1500,8 +1466,8 @@ uint8_t	SX1272::getCRC()
         { // CRCon
             _CRC = CRC_ON;
 #if (SX1272_debug_mode > 1)
-            Serial.println(F("## CRC is activated ##"));
-            Serial.println();
+            printf("## CRC is activated ##\n");
+            printf("\n");
 #endif
             state = 0;
         }
@@ -1510,8 +1476,8 @@ uint8_t	SX1272::getCRC()
     {
         state = 1;
 #if (SX1272_debug_mode > 1)
-        Serial.println(F("** There has been an error while getting configured CRC **"));
-        Serial.println();
+        printf("** There has been an error while getting configured CRC **\n");
+        printf("\n");
 #endif
     }
     return state;
@@ -1530,8 +1496,8 @@ uint8_t	SX1272::setCRC_ON()
     byte config1;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'setCRC_ON'"));
+    printf("\n");
+    printf("Starting 'setCRC_ON'\n");
 #endif
 
     if( _modem == LORA )
@@ -1553,9 +1519,9 @@ uint8_t	SX1272::setCRC_ON()
         config1 = readRegister(theRegister);	// Save config1 to modify only the CRC bit
 
         if (_board==SX1272Chip)
-            config1 = config1 | B00000010;				// sets bit 1 from REG_MODEM_CONFIG1 = CRC_ON
+            config1 = config1 | 0B00000010;				// sets bit 1 from REG_MODEM_CONFIG1 = CRC_ON
         else
-            config1 = config1 | B00000100;                               // sets bit 2 from REG_MODEM_CONFIG2 = CRC_ON
+            config1 = config1 | 0B00000100;                               // sets bit 2 from REG_MODEM_CONFIG2 = CRC_ON
 
         writeRegister(theRegister,config1);
 
@@ -1568,15 +1534,15 @@ uint8_t	SX1272::setCRC_ON()
             state = 0;
             _CRC = CRC_ON;
 #if (SX1272_debug_mode > 1)
-            Serial.println(F("## CRC has been activated ##"));
-            Serial.println();
+            printf("## CRC has been activated ##\n");
+            printf("\n");
 #endif
         }
     }
     else
     { // FSK mode
         config1 = readRegister(REG_PACKET_CONFIG1);	// Save config1 to modify only the CRC bit
-        config1 = config1 | B00010000;				// set bit 4 and 3 from REG_MODEM_CONFIG1 = CRC_ON
+        config1 = config1 | 0B00010000;				// set bit 4 and 3 from REG_MODEM_CONFIG1 = CRC_ON
         writeRegister(REG_PACKET_CONFIG1,config1);
 
         state = 1;
@@ -1587,8 +1553,8 @@ uint8_t	SX1272::setCRC_ON()
             state = 0;
             _CRC = CRC_ON;
 #if (SX1272_debug_mode > 1)
-            Serial.println(F("## CRC has been activated ##"));
-            Serial.println();
+            printf("## CRC has been activated ##\n");
+            printf("\n");
 #endif
         }
     }
@@ -1596,8 +1562,8 @@ uint8_t	SX1272::setCRC_ON()
     {
         state = 1;
 #if (SX1272_debug_mode > 1)
-        Serial.println(F("** There has been an error while setting CRC ON **"));
-        Serial.println();
+        printf("** There has been an error while setting CRC ON **\n");
+        printf("\n");
 #endif
     }
     return state;
@@ -1616,8 +1582,8 @@ uint8_t	SX1272::setCRC_OFF()
     byte config1;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'setCRC_OFF'"));
+    printf("\n");
+    printf("Starting 'setCRC_OFF'\n");
 #endif
 
     if( _modem == LORA )
@@ -1638,9 +1604,9 @@ uint8_t	SX1272::setCRC_OFF()
 
         config1 = readRegister(theRegister);	// Save config1 to modify only the CRC bit
         if (_board==SX1272Chip)
-            config1 = config1 & B11111101;				// clears bit 1 from config1 = CRC_OFF
+            config1 = config1 & 0B11111101;				// clears bit 1 from config1 = CRC_OFF
         else
-            config1 = config1 & B11111011;				// clears bit 2 from config1 = CRC_OFF
+            config1 = config1 & 0B11111011;				// clears bit 2 from config1 = CRC_OFF
 
         writeRegister(theRegister,config1);
 
@@ -1650,15 +1616,15 @@ uint8_t	SX1272::setCRC_OFF()
             state = 0;
             _CRC = CRC_OFF;
 #if (SX1272_debug_mode > 1)
-            Serial.println(F("## CRC has been desactivated ##"));
-            Serial.println();
+            printf("## CRC has been desactivated ##\n");
+            printf("\n");
 #endif
         }
     }
     else
     { // FSK mode
         config1 = readRegister(REG_PACKET_CONFIG1);	// Save config1 to modify only the CRC bit
-        config1 = config1 & B11101111;				// clears bit 4 from config1 = CRC_OFF
+        config1 = config1 & 0B11101111;				// clears bit 4 from config1 = CRC_OFF
         writeRegister(REG_PACKET_CONFIG1,config1);
 
         config1 = readRegister(REG_PACKET_CONFIG1);
@@ -1667,8 +1633,8 @@ uint8_t	SX1272::setCRC_OFF()
             state = 0;
             _CRC = CRC_OFF;
 #if (SX1272_debug_mode > 1)
-            Serial.println(F("## CRC has been desactivated ##"));
-            Serial.println();
+            printf("## CRC has been desactivated ##\n");
+            printf("\n");
 #endif
         }
     }
@@ -1676,8 +1642,8 @@ uint8_t	SX1272::setCRC_OFF()
     {
         state = 1;
 #if (SX1272_debug_mode > 1)
-        Serial.println(F("** There has been an error while setting CRC OFF **"));
-        Serial.println();
+        printf("** There has been an error while setting CRC OFF **\n");
+        printf("\n");
 #endif
     }
     return state;
@@ -1693,8 +1659,8 @@ uint8_t	SX1272::setCRC_OFF()
 boolean	SX1272::isSF(uint8_t spr)
 {
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'isSF'"));
+    printf("\n");
+    printf("Starting 'isSF'\n");
 #endif
 
     // Checking available values for _spreadingFactor
@@ -1714,8 +1680,8 @@ boolean	SX1272::isSF(uint8_t spr)
         return false;
     }
 #if (SX1272_debug_mode > 1)
-    Serial.println(F("## Finished 'isSF' ##"));
-    Serial.println();
+    printf("## Finished 'isSF' ##\n");
+    printf("\n");
 #endif
 }
 
@@ -1733,16 +1699,16 @@ int8_t	SX1272::getSF()
     byte config2;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'getSF'"));
+    printf("\n");
+    printf("Starting 'getSF'\n");
 #endif
 
     if( _modem == FSK )
     {
         state = -1;		// SF is not available in FSK mode
 #if (SX1272_debug_mode > 1)
-        Serial.println(F("** FSK mode hasn't spreading factor **"));
-        Serial.println();
+        printf("** FSK mode hasn't spreading factor **\n");
+        printf("\n");
 #endif
     }
     else
@@ -1756,10 +1722,10 @@ int8_t	SX1272::getSF()
         {
             state = 0;
 #if (SX1272_debug_mode > 1)
-            Serial.print(F("## Spreading factor is "));
-            Serial.print(_spreadingFactor,HEX);
-            Serial.println(F(" ##"));
-            Serial.println();
+            printf("## Spreading factor is ");
+            printf("%X", _spreadingFactor);
+            printf(" ##\n");
+            printf("\n");
 #endif
         }
     }
@@ -1783,8 +1749,8 @@ uint8_t	SX1272::setSF(uint8_t spr)
     byte config2=0;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'setSF'"));
+    printf("\n");
+    printf("Starting 'setSF'\n");
 #endif
 
     st0 = readRegister(REG_OP_MODE);	// Save the previous status
@@ -1792,65 +1758,60 @@ uint8_t	SX1272::setSF(uint8_t spr)
     if( _modem == FSK )
     {
 #if (SX1272_debug_mode > 1)
-        Serial.print(F("## Notice that FSK hasn't Spreading Factor parameter, "));
-        Serial.println(F("so you are configuring it in LoRa mode ##"));
+        printf("## Notice that FSK hasn't Spreading Factor parameter, ");
+        printf("so you are configuring it in LoRa mode ##\n");
 #endif
         state = setLORA();				// Setting LoRa mode
     }
     else
     { // LoRa mode
         writeRegister(REG_OP_MODE, LORA_STANDBY_MODE);	// LoRa standby mode
+        config1 = (readRegister(REG_MODEM_CONFIG1));	// Save config1 to modify only the LowDataRateOptimize
         config2 = (readRegister(REG_MODEM_CONFIG2));	// Save config2 to modify SF value (bits 7-4)
         switch(spr)
         {
-        case SF_6: 	config2 = config2 & B01101111;	// clears bits 7 & 4 from REG_MODEM_CONFIG2
-            config2 = config2 | B01100000;	// sets bits 6 & 5 from REG_MODEM_CONFIG2
+        case SF_6: 	config2 = config2 & 0B01101111;	// clears bits 7 & 4 from REG_MODEM_CONFIG2
+            config2 = config2 | 0B01100000;	// sets bits 6 & 5 from REG_MODEM_CONFIG2
             setHeaderOFF();		// Mandatory headerOFF with SF = 6
             break;
-        case SF_7: 	config2 = config2 & B01111111;	// clears bits 7 from REG_MODEM_CONFIG2
-            config2 = config2 | B01110000;	// sets bits 6, 5 & 4
+        case SF_7: 	config2 = config2 & 0B01111111;	// clears bits 7 from REG_MODEM_CONFIG2
+            config2 = config2 | 0B01110000;	// sets bits 6, 5 & 4
             break;
-        case SF_8: 	config2 = config2 & B10001111;	// clears bits 6, 5 & 4 from REG_MODEM_CONFIG2
-            config2 = config2 | B10000000;	// sets bit 7 from REG_MODEM_CONFIG2
+        case SF_8: 	config2 = config2 & 0B10001111;	// clears bits 6, 5 & 4 from REG_MODEM_CONFIG2
+            config2 = config2 | 0B10000000;	// sets bit 7 from REG_MODEM_CONFIG2
             break;
-        case SF_9: 	config2 = config2 & B10011111;	// clears bits 6, 5 & 4 from REG_MODEM_CONFIG2
-            config2 = config2 | B10010000;	// sets bits 7 & 4 from REG_MODEM_CONFIG2
+        case SF_9: 	config2 = config2 & 0B10011111;	// clears bits 6, 5 & 4 from REG_MODEM_CONFIG2
+            config2 = config2 | 0B10010000;	// sets bits 7 & 4 from REG_MODEM_CONFIG2
             break;
-        case SF_10:	config2 = config2 & B10101111;	// clears bits 6 & 4 from REG_MODEM_CONFIG2
-            config2 = config2 | B10100000;	// sets bits 7 & 5 from REG_MODEM_CONFIG2
+        case SF_10:	config2 = config2 & 0B10101111;	// clears bits 6 & 4 from REG_MODEM_CONFIG2
+            config2 = config2 | 0B10100000;	// sets bits 7 & 5 from REG_MODEM_CONFIG2
             break;
-        case SF_11:	config2 = config2 & B10111111;	// clears bit 6 from REG_MODEM_CONFIG2
-            config2 = config2 | B10110000;	// sets bits 7, 5 & 4 from REG_MODEM_CONFIG2
+        case SF_11:	config2 = config2 & 0B10111111;	// clears bit 6 from REG_MODEM_CONFIG2
+            config2 = config2 | 0B10110000;	// sets bits 7, 5 & 4 from REG_MODEM_CONFIG2
             getBW();
 
             // modified by C. Pham
             if( _bandwidth == BW_125)
             { // LowDataRateOptimize (Mandatory with SF_11 if BW_125)
-                if (_board==SX1272Chip) {
-                    config1 = (readRegister(REG_MODEM_CONFIG1));	// Save config1 to modify only the LowDataRateOptimize
-                    config1 = config1 | B00000001;
-                    writeRegister(REG_MODEM_CONFIG1,config1);
-                }
+                if (_board==SX1272Chip)
+                    config1 = config1 | 0B00000001;
                 else {
                     byte config3=readRegister(REG_MODEM_CONFIG3);
-                    config3 = config3 | B00001000;
+                    config3 = config3 | 0B00001000;
                     writeRegister(REG_MODEM_CONFIG3,config3);
                 }
             }
             break;
-        case SF_12: config2 = config2 & B11001111;	// clears bits 5 & 4 from REG_MODEM_CONFIG2
-            config2 = config2 | B11000000;	// sets bits 7 & 6 from REG_MODEM_CONFIG2
+        case SF_12: config2 = config2 & 0B11001111;	// clears bits 5 & 4 from REG_MODEM_CONFIG2
+            config2 = config2 | 0B11000000;	// sets bits 7 & 6 from REG_MODEM_CONFIG2
             if( _bandwidth == BW_125)
             { // LowDataRateOptimize (Mandatory with SF_12 if BW_125)
                 // modified by C. Pham
-                if (_board==SX1272Chip) {
-                    config1 = (readRegister(REG_MODEM_CONFIG1));	// Save config1 to modify only the LowDataRateOptimize
-                    config1 = config1 | B00000001;
-                    writeRegister(REG_MODEM_CONFIG1,config1);
-                }
+                if (_board==SX1272Chip)
+                    config1 = config1 | 0B00000001;
                 else {
                     byte config3=readRegister(REG_MODEM_CONFIG3);
-                    config3 = config3 | B00001000;
+                    config3 = config3 | 0B00001000;
                     writeRegister(REG_MODEM_CONFIG3,config3);
                 }
             }
@@ -1889,15 +1850,15 @@ uint8_t	SX1272::setSF(uint8_t spr)
             // single_chan_pkt_fwd uses 00 and then 00001000
             // why?
             // sets bit 2-0 (AgcAutoOn and SymbTimout) for any SF value
-            //config2 = config2 | B00000111;
+            //config2 = config2 | 0B00000111;
             // modified by C. Pham
-            config2 = config2 | B00000100;
+            config2 = config2 | 0B00000100;
             writeRegister(REG_MODEM_CONFIG1, config1);		// Update config1
         }
         else {
             // set the AgcAutoOn in bit 2 of REG_MODEM_CONFIG3
             uint8_t config3 = (readRegister(REG_MODEM_CONFIG3));
-            config3=config3 | B00000100;
+            config3=config3 | 0B00000100;
             writeRegister(REG_MODEM_CONFIG3, config3);
         }
 
@@ -1989,10 +1950,10 @@ uint8_t	SX1272::setSF(uint8_t spr)
         state = 0;
         _spreadingFactor = spr;
 #if (SX1272_debug_mode > 1)
-        Serial.print(F("## Spreading factor "));
-        Serial.print(_spreadingFactor, DEC);
-        Serial.println(F(" has been successfully set ##"));
-        Serial.println();
+        printf("## Spreading factor ");
+        printf("%d", _spreadingFactor);
+        printf(" has been successfully set ##\n");
+        printf("\n");
 #endif
     }
     else
@@ -2000,8 +1961,8 @@ uint8_t	SX1272::setSF(uint8_t spr)
         if( state != 0 )
         {
 #if (SX1272_debug_mode > 1)
-            Serial.print(F("** There has been an error while setting the spreading factor **"));
-            Serial.println();
+            printf("** There has been an error while setting the spreading factor **");
+            printf("\n");
 #endif
         }
     }
@@ -2018,8 +1979,8 @@ uint8_t	SX1272::setSF(uint8_t spr)
 boolean	SX1272::isBW(uint16_t band)
 {
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'isBW'"));
+    printf("\n");
+    printf("Starting 'isBW'\n");
 #endif
 
     // Checking available values for _bandwidth
@@ -2059,8 +2020,8 @@ boolean	SX1272::isBW(uint16_t band)
     }
 
 #if (SX1272_debug_mode > 1)
-    Serial.println(F("## Finished 'isBW' ##"));
-    Serial.println();
+    printf("## Finished 'isBW' ##\n");
+    printf("\n");
 #endif
 }
 
@@ -2078,16 +2039,16 @@ int8_t	SX1272::getBW()
     byte config1;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'getBW'"));
+    printf("\n");
+    printf("Starting 'getBW'\n");
 #endif
 
     if( _modem == FSK )
     {
         state = -1;		// BW is not available in FSK mode
 #if (SX1272_debug_mode > 1)
-        Serial.println(F("** FSK mode hasn't bandwidth **"));
-        Serial.println();
+        printf("** FSK mode hasn't bandwidth **\n");
+        printf("\n");
 #endif
     }
     else
@@ -2096,6 +2057,9 @@ int8_t	SX1272::getBW()
         if (_board==SX1272Chip) {
             // take out bits 7-6 from REG_MODEM_CONFIG1 indicates _bandwidth
             config1 = (readRegister(REG_MODEM_CONFIG1)) >> 6;
+            // added by C. Pham
+            // convert to common bandwidth values used by both SX1272 and SX1276
+            config1 += 7;
         }
         else {
             // take out bits 7-4 from REG_MODEM_CONFIG1 indicates _bandwidth
@@ -2108,18 +2072,18 @@ int8_t	SX1272::getBW()
         {
             state = 0;
 #if (SX1272_debug_mode > 1)
-            Serial.print(F("## Bandwidth is "));
-            Serial.print(_bandwidth,HEX);
-            Serial.println(F(" ##"));
-            Serial.println();
+            printf("## Bandwidth is ");
+            printf("%X", _bandwidth);
+            printf(" ##\n");
+            printf("\n");
 #endif
         }
         else
         {
             state = 1;
 #if (SX1272_debug_mode > 1)
-            Serial.print(F("** There has been an error while getting bandwidth **"));
-            Serial.println();
+            printf("** There has been an error while getting bandwidth **");
+            printf("\n");
 #endif
         }
     }
@@ -2142,18 +2106,18 @@ int8_t	SX1272::setBW(uint16_t band)
     byte config1;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'setBW'"));
+    printf("\n");
+    printf("Starting 'setBW'\n");
 #endif
 
     if(!isBW(band) )
     {
         state = 1;
 #if (SX1272_debug_mode > 1)
-        Serial.print(F("** Bandwidth "));
-        Serial.print(band, HEX);
-        Serial.println(F(" is not a correct value **"));
-        Serial.println();
+        printf("** Bandwidth ");
+        printf("%X", band);
+        printf(" is not a correct value **\n");
+        printf("\n");
 #endif
         return state;
     }
@@ -2163,8 +2127,8 @@ int8_t	SX1272::setBW(uint16_t band)
     if( _modem == FSK )
     {
 #if (SX1272_debug_mode > 1)
-        Serial.print(F("## Notice that FSK hasn't Bandwidth parameter, "));
-        Serial.println(F("so you are configuring it in LoRa mode ##"));
+        printf("## Notice that FSK hasn't Bandwidth parameter, ");
+        printf("so you are configuring it in LoRa mode ##\n");
 #endif
         state = setLORA();
     }
@@ -2175,48 +2139,48 @@ int8_t	SX1272::setBW(uint16_t band)
     if (_board==SX1272Chip) {
         switch(band)
         {
-        case BW_125:  config1 = config1 & B00111111;	// clears bits 7 & 6 from REG_MODEM_CONFIG1
+        case BW_125:  config1 = config1 & 0B00111111;	// clears bits 7 & 6 from REG_MODEM_CONFIG1
             getSF();
             if( _spreadingFactor == 11 )
             { // LowDataRateOptimize (Mandatory with BW_125 if SF_11)
-                config1 = config1 | B00000001;
+                config1 = config1 | 0B00000001;
             }
             if( _spreadingFactor == 12 )
             { // LowDataRateOptimize (Mandatory with BW_125 if SF_12)
-                config1 = config1 | B00000001;
+                config1 = config1 | 0B00000001;
             }
             break;
-        case BW_250:  config1 = config1 & B01111111;	// clears bit 7 from REG_MODEM_CONFIG1
-            config1 = config1 | B01000000;	// sets bit 6 from REG_MODEM_CONFIG1
+        case BW_250:  config1 = config1 & 0B01111111;	// clears bit 7 from REG_MODEM_CONFIG1
+            config1 = config1 | 0B01000000;	// sets bit 6 from REG_MODEM_CONFIG1
             break;
-        case BW_500:  config1 = config1 & B10111111;	//clears bit 6 from REG_MODEM_CONFIG1
-            config1 = config1 | B10000000;	//sets bit 7 from REG_MODEM_CONFIG1
+        case BW_500:  config1 = config1 & 0B10111111;	//clears bit 6 from REG_MODEM_CONFIG1
+            config1 = config1 | 0B10000000;	//sets bit 7 from REG_MODEM_CONFIG1
             break;
         }
     }
     else {
         // SX1276
-        config1 = config1 & B00001111;	// clears bits 7 - 4 from REG_MODEM_CONFIG1
+        config1 = config1 & 0B00001111;	// clears bits 7 - 4 from REG_MODEM_CONFIG1
         switch(band)
         {
         case BW_125:
             // 0111
-            config1 = config1 | B01110000;
+            config1 = config1 | 0B01110000;
             getSF();
             if( _spreadingFactor == 11 || _spreadingFactor == 12)
             { // LowDataRateOptimize (Mandatory with BW_125 if SF_11 or SF_12)
                 byte config3=readRegister(REG_MODEM_CONFIG3);
-                config3 = config3 | B00001000;
+                config3 = config3 | 0B00001000;
                 writeRegister(REG_MODEM_CONFIG3,config3);
             }
             break;
         case BW_250:
             // 1000
-            config1 = config1 | B10000000;
+            config1 = config1 | 0B10000000;
             break;
         case BW_500:
             // 1001
-            config1 = config1 | B10010000;
+            config1 = config1 | 0B10010000;
             break;
         }
     }
@@ -2323,10 +2287,10 @@ int8_t	SX1272::setBW(uint16_t band)
     {
         _bandwidth = band;
 #if (SX1272_debug_mode > 1)
-        Serial.print(F("## Bandwidth "));
-        Serial.print(band, HEX);
-        Serial.println(F(" has been successfully set ##"));
-        Serial.println();
+        printf("## Bandwidth ");
+        printf("%X", band);
+        printf(" has been successfully set ##\n");
+        printf("\n");
 #endif
     }
     writeRegister(REG_OP_MODE, st0);	// Getting back to previous status
@@ -2344,8 +2308,8 @@ int8_t	SX1272::setBW(uint16_t band)
 boolean	SX1272::isCR(uint8_t cod)
 {
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'isCR'"));
+    printf("\n");
+    printf("Starting 'isCR'\n");
 #endif
 
     // Checking available values for _codingRate
@@ -2354,16 +2318,14 @@ boolean	SX1272::isCR(uint8_t cod)
     case CR_5:
     case CR_6:
     case CR_7:
-    case CR_8:
-        return true;
+    case CR_8:	return true;
         break;
 
-    default:
-        return false;
+    default:		return false;
     }
 #if (SX1272_debug_mode > 1)
-    Serial.println(F("## Finished 'isCR' ##"));
-    Serial.println();
+    printf("## Finished 'isCR' ##\n");
+    printf("\n");
 #endif
 }
 
@@ -2381,16 +2343,16 @@ int8_t	SX1272::getCR()
     byte config1;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'getCR'"));
+    printf("\n");
+    printf("Starting 'getCR'\n");
 #endif
 
     if( _modem == FSK )
     {
         state = -1;		// CR is not available in FSK mode
 #if (SX1272_debug_mode > 1)
-        Serial.println(F("** FSK mode hasn't coding rate **"));
-        Serial.println();
+        printf("** FSK mode hasn't coding rate **\n");
+        printf("\n");
 #endif
     }
     else
@@ -2399,12 +2361,12 @@ int8_t	SX1272::getCR()
         if (_board==SX1272Chip) {
             // take out bits 7-3 from REG_MODEM_CONFIG1 indicates _bandwidth & _codingRate
             config1 = (readRegister(REG_MODEM_CONFIG1)) >> 3;
-            config1 = config1 & B00000111;	// clears bits 7-3 ---> clears _bandwidth
+            config1 = config1 & 0B00000111;	// clears bits 7-3 ---> clears _bandwidth
         }
         else {
             // take out bits 7-1 from REG_MODEM_CONFIG1 indicates _bandwidth & _codingRate
             config1 = (readRegister(REG_MODEM_CONFIG1)) >> 1;
-            config1 = config1 & B00000111;	// clears bits 7-3 ---> clears _bandwidth
+            config1 = config1 & 0B00000111;	// clears bits 7-3 ---> clears _bandwidth
         }
 
         _codingRate = config1;
@@ -2414,10 +2376,10 @@ int8_t	SX1272::getCR()
         {
             state = 0;
 #if (SX1272_debug_mode > 1)
-            Serial.print(F("## Coding rate is "));
-            Serial.print(_codingRate, HEX);
-            Serial.println(F(" ##"));
-            Serial.println();
+            printf("## Coding rate is ");
+            printf("%X", _codingRate);
+            printf(" ##\n");
+            printf("\n");
 #endif
         }
     }
@@ -2441,8 +2403,8 @@ int8_t	SX1272::setCR(uint8_t cod)
     byte config1;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'setCR'"));
+    printf("\n");
+    printf("Starting 'setCR'\n");
 #endif
 
     st0 = readRegister(REG_OP_MODE);		// Save the previous status
@@ -2450,8 +2412,8 @@ int8_t	SX1272::setCR(uint8_t cod)
     if( _modem == FSK )
     {
 #if (SX1272_debug_mode > 1)
-        Serial.print(F("## Notice that FSK hasn't Coding Rate parameter, "));
-        Serial.println(F("so you are configuring it in LoRa mode ##"));
+        printf("## Notice that FSK hasn't Coding Rate parameter, ");
+        printf("so you are configuring it in LoRa mode ##\n");
 #endif
         state = setLORA();
     }
@@ -2463,39 +2425,40 @@ int8_t	SX1272::setCR(uint8_t cod)
     if (_board==SX1272Chip) {
         switch(cod)
         {
-        case CR_5: config1 = config1 & B11001111;	// clears bits 5 & 4 from REG_MODEM_CONFIG1
-            config1 = config1 | B00001000;	// sets bit 3 from REG_MODEM_CONFIG1
+        case CR_5: config1 = config1 & 0B11001111;	// clears bits 5 & 4 from REG_MODEM_CONFIG1
+            config1 = config1 | 0B00001000;	// sets bit 3 from REG_MODEM_CONFIG1
             break;
-        case CR_6: config1 = config1 & B11010111;	// clears bits 5 & 3 from REG_MODEM_CONFIG1
-            config1 = config1 | B00010000;	// sets bit 4 from REG_MODEM_CONFIG1
+        case CR_6: config1 = config1 & 0B11010111;	// clears bits 5 & 3 from REG_MODEM_CONFIG1
+            config1 = config1 | 0B00010000;	// sets bit 4 from REG_MODEM_CONFIG1
             break;
-        case CR_7: config1 = config1 & B11011111;	// clears bit 5 from REG_MODEM_CONFIG1
-            config1 = config1 | B00011000;	// sets bits 4 & 3 from REG_MODEM_CONFIG1
+        case CR_7: config1 = config1 & 0B11011111;	// clears bit 5 from REG_MODEM_CONFIG1
+            config1 = config1 | 0B00011000;	// sets bits 4 & 3 from REG_MODEM_CONFIG1
             break;
-        case CR_8: config1 = config1 & B11100111;	// clears bits 4 & 3 from REG_MODEM_CONFIG1
-            config1 = config1 | B00100000;	// sets bit 5 from REG_MODEM_CONFIG1
+        case CR_8: config1 = config1 & 0B11100111;	// clears bits 4 & 3 from REG_MODEM_CONFIG1
+            config1 = config1 | 0B00100000;	// sets bit 5 from REG_MODEM_CONFIG1
             break;
         }
     }
     else {
         // SX1276
-        config1 = config1 & B11110001;	// clears bits 3 - 1 from REG_MODEM_CONFIG1
+        config1 = config1 & 0B11110001;	// clears bits 3 - 1 from REG_MODEM_CONFIG1
         switch(cod)
         {
         case CR_5:
-            config1 = config1 | B00000010;
+            config1 = config1 | 0B00000010;
             break;
         case CR_6:
-            config1 = config1 | B00000100;
+            config1 = config1 | 0B00000100;
             break;
         case CR_7:
-            config1 = config1 | B00000110;
+            config1 = config1 | 0B00000110;
             break;
         case CR_8:
-            config1 = config1 | B00001000;
+            config1 = config1 | 0B00001000;
             break;
         }
     }
+
     writeRegister(REG_MODEM_CONFIG1, config1);		// Update config1
 
     delay(100);
@@ -2509,48 +2472,47 @@ int8_t	SX1272::setCR(uint8_t cod)
     if (_board==SX1276Chip)
         nshift=1;
 
-    // ((config1 >> 3) & B0000111) ---> take out bits 5-3 from REG_MODEM_CONFIG1 (=_codingRate)
+    // ((config1 >> 3) & 0B0000111) ---> take out bits 5-3 from REG_MODEM_CONFIG1 (=_codingRate)
     switch(cod)
     {
-    case CR_5: if( ((config1 >> nshift) & B0000111) == 0x01 )
+    case CR_5: if( ((config1 >> nshift) & 0B0000111) == 0x01 )
         {
             state = 0;
         }
         break;
-    case CR_6: if( ((config1 >> nshift) & B0000111) == 0x02 )
+    case CR_6: if( ((config1 >> nshift) & 0B0000111) == 0x02 )
         {
             state = 0;
         }
         break;
-    case CR_7: if( ((config1 >> nshift) & B0000111) == 0x03 )
+    case CR_7: if( ((config1 >> nshift) & 0B0000111) == 0x03 )
         {
             state = 0;
         }
         break;
-    case CR_8: if( ((config1 >> nshift) & B0000111) == 0x04 )
+    case CR_8: if( ((config1 >> nshift) & 0B0000111) == 0x04 )
         {
             state = 0;
         }
         break;
     }
 
-
     if( isCR(cod) )
     {
         _codingRate = cod;
 #if (SX1272_debug_mode > 1)
-        Serial.print(F("## Coding Rate "));
-        Serial.print(cod, HEX);
-        Serial.println(F(" has been successfully set ##"));
-        Serial.println();
+        printf("## Coding Rate ");
+        printf("%X", cod);
+        printf(" has been successfully set ##\n");
+        printf("\n");
 #endif
     }
     else
     {
         state = 1;
 #if (SX1272_debug_mode > 1)
-        Serial.println(F("** There has been an error while configuring Coding Rate parameter **"));
-        Serial.println();
+        printf("** There has been an error while configuring Coding Rate parameter **\n");
+        printf("\n");
 #endif
     }
     writeRegister(REG_OP_MODE,st0);	// Getting back to previous status
@@ -2568,21 +2530,13 @@ int8_t	SX1272::setCR(uint8_t cod)
 boolean	SX1272::isChannel(uint32_t ch)
 {
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'isChannel'"));
+    printf("\n");
+    printf("Starting 'isChannel'\n");
 #endif
 
     // Checking available values for _channel
     switch(ch)
     {
-        //added by C. Pham
-    case CH_04_868:
-    case CH_05_868:
-    case CH_06_868:
-    case CH_07_868:
-    case CH_08_868:
-    case CH_09_868:
-        //end
     case CH_10_868:
     case CH_11_868:
     case CH_12_868:
@@ -2609,19 +2563,14 @@ boolean	SX1272::isChannel(uint32_t ch)
         //added by C. Pham
     case CH_12_900:
     case CH_00_433:
-    case CH_01_433:
-    case CH_02_433:
-    case CH_03_433:
         //end
         return true;
-        break;
 
-    default:
-        return false;
+    default:			return false;
     }
 #if (SX1272_debug_mode > 1)
-    Serial.println(F("## Finished 'isChannel' ##"));
-    Serial.println();
+    printf("## Finished 'isChannel' ##\n");
+    printf("\n");
 #endif
 }
 
@@ -2641,8 +2590,8 @@ uint8_t SX1272::getChannel()
     uint8_t freq1;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'getChannel'"));
+    printf("\n");
+    printf("Starting 'getChannel'\n");
 #endif
 
     freq3 = readRegister(REG_FRF_MSB);	// frequency channel MSB
@@ -2655,10 +2604,10 @@ uint8_t SX1272::getChannel()
     {
         state = 0;
 #if (SX1272_debug_mode > 1)
-        Serial.print(F("## Frequency channel is "));
-        Serial.print(_channel, HEX);
-        Serial.println(F(" ##"));
-        Serial.println();
+        printf("## Frequency channel is ");
+        printf("%X", _channel);
+        printf(" ##\n");
+        printf("\n");
 #endif
     }
     else
@@ -2688,8 +2637,8 @@ int8_t SX1272::setChannel(uint32_t ch)
     uint32_t freq;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'setChannel'"));
+    printf("\n");
+    printf("Starting 'setChannel'\n");
 #endif
 
     // added by C. Pham
@@ -2736,10 +2685,10 @@ int8_t SX1272::setChannel(uint32_t ch)
         state = 0;
         _channel = ch;
 #if (SX1272_debug_mode > 1)
-        Serial.print(F("## Frequency channel "));
-        Serial.print(ch, HEX);
-        Serial.println(F(" has been successfully set ##"));
-        Serial.println();
+        printf("## Frequency channel ");
+        printf("%X", ch);
+        printf(" has been successfully set ##\n");
+        printf("\n");
 #endif
     }
     else
@@ -2747,17 +2696,17 @@ int8_t SX1272::setChannel(uint32_t ch)
         state = 1;
     }
 
-    // commented by C. Pham to avoid adding new channel each time
+    // commented by C. Pham to avoid adding new channel
     // besides, the test above is sufficient
     /*
-    if(!isChannel(ch) )
+    if( not isChannel(ch) )
     {
         state = -1;
 #if (SX1272_debug_mode > 1)
-        Serial.print(F("** Frequency channel "));
-        Serial.print(ch, HEX);
-        Serial.println(F("is not a correct value **"));
-        Serial.println();
+        printf("** Frequency channel ");
+        printf("%X", ch);
+        printf("is not a correct value **\n");
+        printf("\n");
 #endif
     }
     */
@@ -2780,8 +2729,8 @@ uint8_t SX1272::getPower()
     byte value = 0x00;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'getPower'"));
+    printf("\n");
+    printf("Starting 'getPower'\n");
 #endif
 
     value = readRegister(REG_PA_CONFIG);
@@ -2789,17 +2738,17 @@ uint8_t SX1272::getPower()
 
     // modified by C. Pham
     // get only the OutputPower
-    _power = value & B00001111;
+    _power = value & 0B00001111;
 
     //if( (value > -1) & (value < 16) )
     if( _power < 16 )
     {
         state = 0;
 #if (SX1272_debug_mode > 1)
-        Serial.print(F("## Output power is "));
-        Serial.print(_power, HEX);
-        Serial.println(F(" ##"));
-        Serial.println();
+        printf("## Output power is ");
+        printf("%X", _power);
+        printf(" ##\n");
+        printf("\n");
 #endif
     }
 
@@ -2825,8 +2774,8 @@ int8_t SX1272::setPower(char p)
     byte RegPaDacReg=(_board==SX1272Chip)?0x5A:0x4D;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'setPower'"));
+    printf("\n");
+    printf("Starting 'setPower'\n");
 #endif
 
     st0 = readRegister(REG_OP_MODE);	  // Save the previous status
@@ -2876,16 +2825,16 @@ int8_t SX1272::setPower(char p)
         // we set only the PA_BOOST pin
         // limit to 14dBm
         value = 0x0C;
-        value = value | B10000000;
+        value = value | 0B10000000;
         // set RegOcp for OcpOn and OcpTrim
         // 130mA
         setMaxCurrent(0x10);
     }
-    
+
     if (p=='X') {
         // normally value = 0x0F;
         // we set the PA_BOOST pin
-        value = value | B10000000;
+        value = value | 0B10000000;
         // and then set the high output power config with register REG_PA_DAC
         writeRegister(RegPaDacReg, 0x87);
         // set RegOcp for OcpOn and OcpTrim
@@ -2908,7 +2857,7 @@ int8_t SX1272::setPower(char p)
         // for the SX1276
 
         // set MaxPower to 7 -> Pmax=10.8+0.6*MaxPower [dBm] = 15
-        value = value | B01110000;
+        value = value | 0B01110000;
 
         // then Pout = Pmax-(15-_power[3:0]) if  PaSelect=0 (RFO pin for +14dBm)
         // so L=3dBm; H=7dBm; M=15dBm (but should be limited to 14dBm by RFO pin)
@@ -2928,8 +2877,8 @@ int8_t SX1272::setPower(char p)
     {
         state = 0;
 #if (SX1272_debug_mode > 1)
-        Serial.println(F("## Output power has been successfully set ##"));
-        Serial.println();
+        printf("## Output power has been successfully set ##\n");
+        printf("\n");
 #endif
     }
     else
@@ -2959,8 +2908,8 @@ int8_t SX1272::setPowerNum(uint8_t pow)
     byte value = 0x00;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'setPower'"));
+    printf("\n");
+    printf("Starting 'setPower'\n");
 #endif
 
     st0 = readRegister(REG_OP_MODE);	  // Save the previous status
@@ -2981,8 +2930,8 @@ int8_t SX1272::setPowerNum(uint8_t pow)
     {
         state = -1;
 #if (SX1272_debug_mode > 1)
-        Serial.println(F("## Power value is not valid ##"));
-        Serial.println();
+        printf("## Power value is not valid ##\n");
+        printf("\n");
 #endif
     }
 
@@ -2990,10 +2939,11 @@ int8_t SX1272::setPowerNum(uint8_t pow)
     if (_board==SX1276Chip) {
         value=readRegister(REG_PA_CONFIG);
         // clear OutputPower, but keep current value of PaSelect and MaxPower
-        value=value & B11110000;
+        value=value & 0B11110000;
         value=value + _power;
         _power=value;
     }
+
     writeRegister(REG_PA_CONFIG, _power);	// Setting output power value
     value = readRegister(REG_PA_CONFIG);
 
@@ -3001,8 +2951,8 @@ int8_t SX1272::setPowerNum(uint8_t pow)
     {
         state = 0;
 #if (SX1272_debug_mode > 1)
-        Serial.println(F("## Output power has been successfully set ##"));
-        Serial.println();
+        printf("## Output power has been successfully set ##\n");
+        printf("\n");
 #endif
     }
     else
@@ -3029,8 +2979,8 @@ uint8_t SX1272::getPreambleLength()
     uint8_t p_length;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'getPreambleLength'"));
+    printf("\n");
+    printf("Starting 'getPreambleLength'\n");
 #endif
 
     state = 1;
@@ -3043,10 +2993,10 @@ uint8_t SX1272::getPreambleLength()
         // Saving LSB preamble length in LoRa mode
         _preamblelength = _preamblelength + (p_length & 0xFFFF);
 #if (SX1272_debug_mode > 1)
-        Serial.print(F("## Preamble length configured is "));
-        Serial.print(_preamblelength, HEX);
-        Serial.print(F(" ##"));
-        Serial.println();
+        printf("## Preamble length configured is ");
+        printf("%X", _preamblelength);
+        printf(" ##");
+        printf("\n");
 #endif
     }
     else
@@ -3058,10 +3008,10 @@ uint8_t SX1272::getPreambleLength()
         // Saving LSB preamble length in FSK mode
         _preamblelength = _preamblelength + (p_length & 0xFFFF);
 #if (SX1272_debug_mode > 1)
-        Serial.print(F("## Preamble length configured is "));
-        Serial.print(_preamblelength, HEX);
-        Serial.print(F(" ##"));
-        Serial.println();
+        printf("## Preamble length configured is ");
+        printf("%X", _preamblelength);
+        printf(" ##");
+        printf("\n");
 #endif
     }
     state = 0;
@@ -3084,8 +3034,8 @@ uint8_t SX1272::setPreambleLength(uint16_t l)
     int8_t state = 2;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'setPreambleLength'"));
+    printf("\n");
+    printf("Starting 'setPreambleLength'\n");
 #endif
 
     st0 = readRegister(REG_OP_MODE);	// Save the previous status
@@ -3113,10 +3063,10 @@ uint8_t SX1272::setPreambleLength(uint16_t l)
 
     state = 0;
 #if (SX1272_debug_mode > 1)
-    Serial.print(F("## Preamble length "));
-    Serial.print(l, HEX);
-    Serial.println(F(" has been successfully set ##"));
-    Serial.println();
+    printf("## Preamble length ");
+    printf("%X", l);
+    printf(" has been successfully set ##\n");
+    printf("\n");
 #endif
 
     writeRegister(REG_OP_MODE, st0);	// Getting back to previous status
@@ -3136,8 +3086,8 @@ uint8_t SX1272::getPayloadLength()
     uint8_t state = 2;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'getPayloadLength'"));
+    printf("\n");
+    printf("Starting 'getPayloadLength'\n");
 #endif
 
     if( _modem == LORA )
@@ -3154,10 +3104,10 @@ uint8_t SX1272::getPayloadLength()
     }
 
 #if (SX1272_debug_mode > 1)
-    Serial.print(F("## Payload length configured is "));
-    Serial.print(_payloadlength, HEX);
-    Serial.println(F(" ##"));
-    Serial.println();
+    printf("## Payload length configured is ");
+    printf("%X", _payloadlength);
+    printf(" ##\n");
+    printf("\n");
 #endif
 
     state = 0;
@@ -3204,8 +3154,8 @@ int8_t SX1272::setPacketLength(uint8_t l)
     int8_t state = 2;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'setPacketLength'"));
+    printf("\n");
+    printf("Starting 'setPacketLength'\n");
 #endif
 
     st0 = readRegister(REG_OP_MODE);	// Save the previous status
@@ -3230,10 +3180,10 @@ int8_t SX1272::setPacketLength(uint8_t l)
     {
         state = 0;
 #if (SX1272_debug_mode > 1)
-        Serial.print(F("## Packet length "));
-        Serial.print(packet_sent.length, DEC);
-        Serial.println(F(" has been successfully set ##"));
-        Serial.println();
+        printf("## Packet length ");
+        printf("%d", packet_sent.length);
+        printf(" has been successfully set ##\n");
+        printf("\n");
 #endif
     }
     else
@@ -3262,8 +3212,8 @@ uint8_t SX1272::getNodeAddress()
     uint8_t state = 2;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'getNodeAddress'"));
+    printf("\n");
+    printf("Starting 'getNodeAddress'\n");
 #endif
 
     if( _modem == LORA )
@@ -3284,10 +3234,10 @@ uint8_t SX1272::getNodeAddress()
 
     state = 0;
 #if (SX1272_debug_mode > 1)
-    Serial.print(F("## Node address configured is "));
-    Serial.print(_nodeAddress);
-    Serial.println(F(" ##"));
-    Serial.println();
+    printf("## Node address configured is ");
+    printf("%d", _nodeAddress);
+    printf(" ##\n");
+    printf("\n");
 #endif
     return state;
 }
@@ -3309,16 +3259,16 @@ int8_t SX1272::setNodeAddress(uint8_t addr)
     uint8_t state = 2;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'setNodeAddress'"));
+    printf("\n");
+    printf("Starting 'setNodeAddress'\n");
 #endif
 
     if( addr > 255 )
     {
         state = -1;
 #if (SX1272_debug_mode > 1)
-        Serial.println(F("** Node address must be less than 255 **"));
-        Serial.println();
+        printf("** Node address must be less than 255 **\n");
+        printf("\n");
 #endif
     }
     else
@@ -3347,18 +3297,18 @@ int8_t SX1272::setNodeAddress(uint8_t addr)
         {
             state = 0;
 #if (SX1272_debug_mode > 1)
-            Serial.print(F("## Node address "));
-            Serial.print(addr);
-            Serial.println(F(" has been successfully set ##"));
-            Serial.println();
+            printf("## Node address ");
+            printf("%d", addr);
+            printf(" has been successfully set ##\n");
+            printf("\n");
 #endif
         }
         else
         {
             state = 1;
 #if (SX1272_debug_mode > 1)
-            Serial.println(F("** There has been an error while setting address ##"));
-            Serial.println();
+            printf("** There has been an error while setting address ##\n");
+            printf("\n");
 #endif
         }
     }
@@ -3379,8 +3329,8 @@ int8_t SX1272::getSNR()
     byte value;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'getSNR'"));
+    printf("\n");
+    printf("Starting 'getSNR'\n");
 #endif
 
     if( _modem == LORA )
@@ -3402,18 +3352,18 @@ int8_t SX1272::getSNR()
         }
         state = 0;
 #if (SX1272_debug_mode > 0)
-        Serial.print(F("## SNR value is "));
-        Serial.print(_SNR, DEC);
-        Serial.println(F(" ##"));
-        Serial.println();
+        printf("## SNR value is ");
+        printf("%d", _SNR);
+        printf(" ##\n");
+        printf("\n");
 #endif
     }
     else
     { // forbidden command if FSK mode
         state = -1;
 #if (SX1272_debug_mode > 0)
-        Serial.println(F("** SNR does not exist in FSK mode **"));
-        Serial.println();
+        printf("** SNR does not exist in FSK mode **\n");
+        printf("\n");
 #endif
     }
     return state;
@@ -3433,8 +3383,8 @@ uint8_t SX1272::getRSSI()
     int total = 5;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'getRSSI'"));
+    printf("\n");
+    printf("Starting 'getRSSI'\n");
 #endif
 
     if( _modem == LORA )
@@ -3444,21 +3394,22 @@ uint8_t SX1272::getRSSI()
         for(int i = 0; i < total; i++)
         {
             // modified by C. Pham
-            // with SX1276 we have to add 18 to OFFSET_RSSI to obtain -157
+            // with SX1276 we have to add 18 to OFFSET_RSSI
             _RSSI = -(OFFSET_RSSI+(_board==SX1276Chip?18:0)) + readRegister(REG_RSSI_VALUE_LORA);
             rssi_mean += _RSSI;
         }
 
         rssi_mean = rssi_mean / total;
         _RSSI = rssi_mean;
-
+        
         state = 0;
 #if (SX1272_debug_mode > 0)
-        Serial.print(F("## RSSI value is "));
-        Serial.print(_RSSI, DEC);
-        Serial.println(F(" ##"));
-        Serial.println();
+        printf("## RSSI value is ");
+        printf("%d", _RSSI);
+        printf(" ##\n");
+        printf("\n");
 #endif
+
     }
     else
     {
@@ -3471,14 +3422,14 @@ uint8_t SX1272::getRSSI()
         }
         rssi_mean = rssi_mean / total;
         _RSSI = rssi_mean;
-
+        
         state = 0;
 
 #if (SX1272_debug_mode > 0)
-        Serial.print(F("## RSSI value is "));
-        Serial.print(_RSSI);
-        Serial.println(F(" ##"));
-        Serial.println();
+        printf("## RSSI value is ");
+        printf("%d", _RSSI);
+        printf(" ##\n");
+        printf("\n");
 #endif
     }
     return state;
@@ -3497,8 +3448,8 @@ int16_t SX1272::getRSSIpacket()
     int8_t state = 2;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'getRSSIpacket'"));
+    printf("\n");
+    printf("Starting 'getRSSIpacket'\n");
 #endif
 
     state = 1;
@@ -3531,10 +3482,10 @@ int16_t SX1272::getRSSIpacket()
                 state = 0;
             }
 #if (SX1272_debug_mode > 0)
-            Serial.print(F("## RSSI packet value is "));
-            Serial.print(_RSSIpacket, DEC);
-            Serial.println(F(" ##"));
-            Serial.println();
+            printf("## RSSI packet value is ");
+            printf("%d", _RSSIpacket);
+            printf(" ##\n");
+            printf("\n");
 #endif
         }
     }
@@ -3542,8 +3493,8 @@ int16_t SX1272::getRSSIpacket()
     { // RSSI packet doesn't exist in FSK mode
         state = -1;
 #if (SX1272_debug_mode > 0)
-        Serial.println(F("** RSSI packet does not exist in FSK mode **"));
-        Serial.println();
+        printf("** RSSI packet does not exist in FSK mode **\n");
+        printf("\n");
 #endif
     }
     return state;
@@ -3562,8 +3513,8 @@ uint8_t SX1272::setRetries(uint8_t ret)
     uint8_t state = 2;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'setRetries'"));
+    printf("\n");
+    printf("Starting 'setRetries'\n");
 #endif
 
     state = 1;
@@ -3571,10 +3522,10 @@ uint8_t SX1272::setRetries(uint8_t ret)
     {
         state = -1;
 #if (SX1272_debug_mode > 1)
-        Serial.print(F("** Retries value can't be greater than "));
-        Serial.print(MAX_RETRIES, DEC);
-        Serial.println(F(" **"));
-        Serial.println();
+        printf("** Retries value can't be greater than ");
+        printf("%d", MAX_RETRIES);
+        printf(" **\n");
+        printf("\n");
 #endif
     }
     else
@@ -3582,10 +3533,10 @@ uint8_t SX1272::setRetries(uint8_t ret)
         _maxRetries = ret;
         state = 0;
 #if (SX1272_debug_mode > 1)
-        Serial.print(F("## Maximum retries value = "));
-        Serial.print(_maxRetries, DEC);
-        Serial.println(F(" ##"));
-        Serial.println();
+        printf("## Maximum retries value = ");
+        printf("%d", _maxRetries);
+        printf(" ##\n");
+        printf("\n");
 #endif
     }
     return state;
@@ -3606,15 +3557,15 @@ uint8_t SX1272::getMaxCurrent()
     byte value;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'getMaxCurrent'"));
+    printf("\n");
+    printf("Starting 'getMaxCurrent'\n");
 #endif
 
     state = 1;
     _maxCurrent = readRegister(REG_OCP);
 
     // extract only the OcpTrim value from the OCP register
-    _maxCurrent &= B00011111;
+    _maxCurrent &= 0B00011111;
 
     if( _maxCurrent <= 15 )
     {
@@ -3631,10 +3582,10 @@ uint8_t SX1272::getMaxCurrent()
 
     _maxCurrent = value;
 #if (SX1272_debug_mode > 1)
-    Serial.print(F("## Maximum current supply configured is "));
-    Serial.print(value, DEC);
-    Serial.println(F(" mA ##"));
-    Serial.println();
+    printf("## Maximum current supply configured is ");
+    printf("%d", value);
+    printf(" mA ##\n");
+    printf("\n");
 #endif
     state = 0;
     return state;
@@ -3656,8 +3607,8 @@ int8_t SX1272::setMaxCurrent(uint8_t rate)
     byte st0;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'setMaxCurrent'"));
+    printf("\n");
+    printf("Starting 'setMaxCurrent'\n");
 #endif
 
     // Maximum rate value = 0x1B, because maximum current supply = 240 mA
@@ -3665,15 +3616,15 @@ int8_t SX1272::setMaxCurrent(uint8_t rate)
     {
         state = -1;
 #if (SX1272_debug_mode > 1)
-        Serial.print(F("** Maximum current supply is 240 mA, "));
-        Serial.println(F("so maximum parameter value must be 27 (DEC) or 0x1B (HEX) **"));
-        Serial.println();
+        printf("** Maximum current supply is 240 mA, ");
+        printf("so maximum parameter value must be 27 (DEC) or 0x1B (HEX) **\n");
+        printf("\n");
 #endif
     }
     else
     {
         // Enable Over Current Protection
-        rate |= B00100000;
+        rate |= 0B00100000;
 
         state = 1;
         st0 = readRegister(REG_OP_MODE);	// Save the previous status
@@ -3705,8 +3656,8 @@ uint8_t SX1272::getRegs()
     uint8_t state_f = 2;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'getRegs'"));
+    printf("\n");
+    printf("Starting 'getRegs'\n");
 #endif
 
     state_f = 1;
@@ -3719,7 +3670,7 @@ uint8_t SX1272::getRegs()
     {
         state_f = 1;
 #if (SX1272_debug_mode > 1)
-        Serial.println(F("** Error getting mode **"));
+        printf("** Error getting mode **\n");
 #endif
     }
     if( state == 0 )
@@ -3730,7 +3681,7 @@ uint8_t SX1272::getRegs()
     {
         state_f = 1;
 #if (SX1272_debug_mode > 1)
-        Serial.println(F("** Error getting power **"));
+        printf("** Error getting power **\n");
 #endif
     }
     if( state == 0 )
@@ -3741,7 +3692,7 @@ uint8_t SX1272::getRegs()
     {
         state_f = 1;
 #if (SX1272_debug_mode > 1)
-        Serial.println(F("** Error getting channel **"));
+        printf("** Error getting channel **\n");
 #endif
     }
     if( state == 0 )
@@ -3752,7 +3703,7 @@ uint8_t SX1272::getRegs()
     {
         state_f = 1;
 #if (SX1272_debug_mode > 1)
-        Serial.println(F("** Error getting CRC **"));
+        printf("** Error getting CRC **\n");
 #endif
     }
     if( state == 0 )
@@ -3763,7 +3714,7 @@ uint8_t SX1272::getRegs()
     {
         state_f = 1;
 #if (SX1272_debug_mode > 1)
-        Serial.println(F("** Error getting header **"));
+        printf("** Error getting header **\n");
 #endif
     }
     if( state == 0 )
@@ -3774,7 +3725,7 @@ uint8_t SX1272::getRegs()
     {
         state_f = 1;
 #if (SX1272_debug_mode > 1)
-        Serial.println(F("** Error getting preamble length **"));
+        printf("** Error getting preamble length **\n");
 #endif
     }
     if( state == 0 )
@@ -3785,7 +3736,7 @@ uint8_t SX1272::getRegs()
     {
         state_f = 1;
 #if (SX1272_debug_mode > 1)
-        Serial.println(F("** Error getting payload length **"));
+        printf("** Error getting payload length **\n");
 #endif
     }
     if( state == 0 )
@@ -3796,7 +3747,7 @@ uint8_t SX1272::getRegs()
     {
         state_f = 1;
 #if (SX1272_debug_mode > 1)
-        Serial.println(F("** Error getting node address **"));
+        printf("** Error getting node address **\n");
 #endif
     }
     if( state == 0 )
@@ -3807,14 +3758,14 @@ uint8_t SX1272::getRegs()
     {
         state_f = 1;
 #if (SX1272_debug_mode > 1)
-        Serial.println(F("** Error getting maximum current supply **"));
+        printf("** Error getting maximum current supply **\n");
 #endif
     }
     if( state_f != 0 )
     {
 #if (SX1272_debug_mode > 1)
-        Serial.println(F("** Error getting temperature **"));
-        Serial.println();
+        printf("** Error getting temperature **\n");
+        printf("\n");
 #endif
     }
     return state_f;
@@ -3834,8 +3785,8 @@ uint8_t SX1272::truncPayload(uint16_t length16)
     state = 1;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'truncPayload'"));
+    printf("\n");
+    printf("Starting 'truncPayload'\n");
 #endif
 
     if( length16 > MAX_PAYLOAD )
@@ -3863,8 +3814,8 @@ uint8_t SX1272::setACK()
     uint8_t state = 2;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'setACK'"));
+    printf("\n");
+    printf("Starting 'setACK'\n");
 #endif
 
     // added by C. Pham
@@ -3872,8 +3823,8 @@ uint8_t SX1272::setACK()
     // when operating under duty-cycle mode
     if (_limitToA) {
         if (getRemainingToA() - getToA(ACK_LENGTH) < 0) {
-            Serial.print(F("## not enough ToA for ACK at"));
-            Serial.println(millis());
+            printf("## not enough ToA for ACK at ");
+            printf("%d\n", millis());
             return SX1272_ERROR_TOA;
         }
     }
@@ -3921,23 +3872,23 @@ uint8_t SX1272::setACK()
         writeRegister(REG_FIFO, ACK.data[1]);	// Writing the ACK in FIFO
 
         //#if (SX1272_debug_mode > 0)
-        Serial.println(F("## ACK set and written in FIFO ##"));
+        printf("## ACK set and written in FIFO ##\n");
         // Print the complete ACK if debug_mode
-        Serial.println(F("## ACK to send:"));
-        Serial.print(F("Destination: "));
-        Serial.println(ACK.dst);			 	// Printing destination
-        Serial.print(F("Source: "));
-        Serial.println(ACK.src);			 	// Printing source
-        Serial.print(F("ACK number: "));
-        Serial.println(ACK.packnum);			// Printing ACK number
-        Serial.print(F("ACK length: "));
-        Serial.println(ACK.length);				// Printing ACK length
-        Serial.print(F("ACK payload: "));
-        Serial.println(ACK.data[0]);			// Printing ACK payload
-        Serial.print(F("ACK SNR last rcv pkt: "));
-        Serial.println(_SNR);
-        Serial.println(F("##"));
-        Serial.println();
+        printf("## ACK to send:\n");
+        printf("Destination: ");
+        printf("%d\n", ACK.dst);			 	// Printing destination
+        printf("Source: ");
+        printf("%d\n", ACK.src);			 	// Printing source
+        printf("ACK number: ");
+        printf("%d\n", ACK.packnum);			// Printing ACK number
+        printf("ACK length: ");
+        printf("%d\n", ACK.length);				// Printing ACK length
+        printf("ACK payload: ");
+        printf("%d\n", ACK.data[0]);			// Printing ACK payload
+        printf("ACK SNR last rcv pkt: ");
+        printf("%d\n", _SNR);
+        printf(" ##\n");
+        printf("\n");
         //#endif
 
         state = 0;
@@ -3962,8 +3913,8 @@ uint8_t SX1272::receive()
     uint8_t state = 1;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'receive'"));
+    printf("\n");
+    printf("Starting 'receive'\n");
 #endif
 
     // Initializing packet_received struct
@@ -3998,15 +3949,17 @@ uint8_t SX1272::receive()
     //end
 
     writeRegister(REG_FIFO_RX_BYTE_ADDR, 0x00); // Setting current value of reception buffer pointer
+    
     //clearFlags();						// Initializing flags
+    
     //state = 1;
     if( _modem == LORA )
     { // LoRa mode
         state = setPacketLength(MAX_LENGTH);	// With MAX_LENGTH gets all packets with length < MAX_LENGTH
         writeRegister(REG_OP_MODE, LORA_RX_MODE);  	  // LORA mode - Rx
 #if (SX1272_debug_mode > 1)
-        Serial.println(F("## Receiving LoRa mode activated with success ##"));
-        Serial.println();
+        printf("## Receiving LoRa mode activated with success ##\n");
+        printf("\n");
 #endif
     }
     else
@@ -4014,8 +3967,8 @@ uint8_t SX1272::receive()
         state = setPacketLength();
         writeRegister(REG_OP_MODE, FSK_RX_MODE);  // FSK mode - Rx
 #if (SX1272_debug_mode > 1)
-        Serial.println(F("## Receiving FSK mode activated with success ##"));
-        Serial.println();
+        printf("## Receiving FSK mode activated with success ##\n");
+        printf("\n");
 #endif
     }
     return state;
@@ -4059,8 +4012,8 @@ uint8_t SX1272::receivePacketTimeout()
 #ifdef W_REQUESTED_ACK
 
 // added by C. Pham
-// receiver always use receivePacketTimeout()
-// sender should either use sendPacketTimeout() or sendPacketTimeoutACK()
+// receiver always use receivePacketTimeout() but check the retry field to see whether an ACK is requested
+// note that sender should either use sendPacketTimeout() or sendPacketTimeoutACK()
 
 uint8_t SX1272::receivePacketTimeout(uint16_t wait)
 {
@@ -4068,8 +4021,8 @@ uint8_t SX1272::receivePacketTimeout(uint16_t wait)
     uint8_t state_f = 2;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'receivePacketTimeout'"));
+    printf("\n");
+    printf("Starting 'receivePacketTimeout'\n");
 #endif
 
     state = receive();
@@ -4078,6 +4031,9 @@ uint8_t SX1272::receivePacketTimeout(uint16_t wait)
         if( availableData(wait) )
         {
             state = getPacket();
+#if (SX1272_debug_mode > 0)
+	    printf("getPacket() gives state=%d\n", state);
+#endif	    
         }
         else
         {
@@ -4117,14 +4073,28 @@ uint8_t SX1272::receivePacketTimeout(uint16_t wait)
 
             if( state == 0 )
             {
+                // perform carrier sense before sending the ack
+                // use SIFS for higher priority
+                uint8_t saved_send_cad_number = _send_cad_number;
+                bool saved_extendedIFS = _extendedIFS;
+                bool saved_enableCarrierSense = _enableCarrierSense;
+
+                _enableCarrierSense=true;
+                _extendedIFS=false;
+                _send_cad_number=3;
+                CarrierSense();
+                _enableCarrierSense=saved_enableCarrierSense;
+                _extendedIFS=saved_extendedIFS;
+                _send_cad_number=saved_send_cad_number;
+
                 state = sendWithTimeout();
                 if( state == 0 )
                 {
                     state_f = 0;
 #if (SX1272_debug_mode > 1)
-                    Serial.println(F("This last packet was an ACK, so ..."));
-                    Serial.println(F("ACK successfully sent"));
-                    Serial.println();
+                    printf("This last packet was an ACK, so ...\n");
+                    printf("ACK successfully sent\n");
+                    printf("\n");
 #endif
                 }
                 else
@@ -4146,15 +4116,14 @@ uint8_t SX1272::receivePacketTimeout(uint16_t wait)
     return state_f;
 }
 #else
-
 uint8_t SX1272::receivePacketTimeout(uint16_t wait)
 {
     uint8_t state = 2;
     uint8_t state_f = 2;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'receivePacketTimeout'"));
+    printf("\n");
+    printf("Starting 'receivePacketTimeout'\n");
 #endif
 
     state = receive();
@@ -4177,7 +4146,6 @@ uint8_t SX1272::receivePacketTimeout(uint16_t wait)
     return state_f;
 }
 #endif
-
 /*
  Function: Configures the module to receive information and send an ACK.
  Returns: Integer that determines if there has been any error
@@ -4221,8 +4189,8 @@ uint8_t SX1272::receivePacketTimeoutACK(uint16_t wait)
 
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'receivePacketTimeoutACK'"));
+    printf("\n");
+    printf("Starting 'receivePacketTimeoutACK'\n");
 #endif
 
     state = receive();
@@ -4261,9 +4229,9 @@ uint8_t SX1272::receivePacketTimeoutACK(uint16_t wait)
             {
                 state_f = 0;
 #if (SX1272_debug_mode > 1)
-                Serial.println(F("This last packet was an ACK, so ..."));
-                Serial.println(F("ACK successfully sent"));
-                Serial.println();
+                printf("This last packet was an ACK, so ...\n");
+                printf("ACK successfully sent\n");
+                printf("\n");
 #endif
             }
             else
@@ -4280,9 +4248,8 @@ uint8_t SX1272::receivePacketTimeoutACK(uint16_t wait)
     {
         state_f = 1;
     }
-    return state_f;
+    return state_f; 
     */
-    return 0;
 }
 
 /*
@@ -4310,20 +4277,20 @@ uint8_t SX1272::receiveAll(uint16_t wait)
     byte config1;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'receiveAll'"));
+    printf("\n");
+    printf("Starting 'receiveAll'\n");
 #endif
 
     if( _modem == FSK )
     { // FSK mode
         writeRegister(REG_OP_MODE, FSK_STANDBY_MODE);		// Setting standby FSK mode
         config1 = readRegister(REG_PACKET_CONFIG1);
-        config1 = config1 & B11111001;			// clears bits 2-1 from REG_PACKET_CONFIG1
+        config1 = config1 & 0B11111001;			// clears bits 2-1 from REG_PACKET_CONFIG1
         writeRegister(REG_PACKET_CONFIG1, config1);		// AddressFiltering = None
     }
 #if (SX1272_debug_mode > 1)
-    Serial.println(F("## Address filtering desactivated ##"));
-    Serial.println();
+    printf("## Address filtering desactivated ##\n");
+    printf("\n");
 #endif
     state = receive();	// Setting Rx mode
     if( state == 0 )
@@ -4361,8 +4328,8 @@ boolean	SX1272::availableData(uint16_t wait)
 
 
 #if (SX1272_debug_mode > 0)
-    Serial.println();
-    Serial.println(F("Starting 'availableData'"));
+    printf("\n");
+    printf("Starting 'availableData'\n");
 #endif
 
     exitTime=millis()+(unsigned long)wait;
@@ -4375,10 +4342,11 @@ boolean	SX1272::availableData(uint16_t wait)
         //while( (bitRead(value, 4) == 0) && (millis() - previous < (unsigned long)wait) )
         while( (bitRead(value, 4) == 0) && (millis() < exitTime) )
         {
-#if defined ARDUINO_ESP8266_ESP01 || defined ARDUINO_ESP8266_NODEMCU || defined ESP32
-            yield();
-#endif        
             value = readRegister(REG_IRQ_FLAGS);
+        	// adding this small delay decreases the CPU load of the lora_gateway process to 4~5% instead of nearly 100%
+        	// suggested by rertini (https://github.com/CongducPham/LowCostLoRaGw/issues/211)
+        	// tests have shown no side effects
+        	delay(1);            
             // Condition to avoid an overflow (DO NOT REMOVE)
             //if( millis() < previous )
             //{
@@ -4389,10 +4357,9 @@ boolean	SX1272::availableData(uint16_t wait)
         if( bitRead(value, 4) == 1 )
         { // header received
 #if (SX1272_debug_mode > 0)
-            Serial.println(F("## Valid Header received in LoRa mode ##"));
+            printf("## Valid Header received in LoRa mode ##\n");
 #endif
             _hreceived = true;
-
 #ifdef W_NET_KEY
             // actually, need to wait until 3 bytes have been received
             //while( (header < 3) && (millis() - previous < (unsigned long)wait) )
@@ -4402,9 +4369,6 @@ boolean	SX1272::availableData(uint16_t wait)
             while( (header == 0) && (millis() < exitTime) )
 #endif
             { // Waiting to read first payload bytes from packet
-#if defined ARDUINO_ESP8266_ESP01 || defined ARDUINO_ESP8266_NODEMCU || defined ESP32
-            	yield();
-#endif            
                 header = readRegister(REG_FIFO_RX_BYTE_ADDR);
                 // Condition to avoid an overflow (DO NOT REMOVE)
                 //if( millis() < previous )
@@ -4416,7 +4380,6 @@ boolean	SX1272::availableData(uint16_t wait)
             if( header != 0 )
             { // Reading first byte of the received packet
 #ifdef W_NET_KEY
-                // added by C. Pham
                 // if we actually wait for an ACK, there is no net key before ACK data
                 if (_requestACK==0) {
                     _the_net_key_0 = readRegister(REG_FIFO);
@@ -4431,8 +4394,8 @@ boolean	SX1272::availableData(uint16_t wait)
             forme = false;
             _hreceived = false;
 #if (SX1272_debug_mode > 0)
-            Serial.println(F("** The timeout has expired **"));
-            Serial.println();
+            printf("** The timeout has expired **\n");
+            printf("\n");
 #endif
         }
     }
@@ -4444,6 +4407,8 @@ boolean	SX1272::availableData(uint16_t wait)
         while( (bitRead(value, 2) == 0) && (millis() < exitTime) )
         {
             value = readRegister(REG_IRQ_FLAGS2);
+            
+        	delay(1);
             // Condition to avoid an overflow (DO NOT REMOVE)
             //if( millis() < previous )
             //{
@@ -4455,7 +4420,7 @@ boolean	SX1272::availableData(uint16_t wait)
         {
             _hreceived = true;
 #if (SX1272_debug_mode > 0)
-            Serial.println(F("## Valid Preamble detected in FSK mode ##"));
+            printf("## Valid Preamble detected in FSK mode ##\n");
 #endif
             // Reading first byte of the received packet
             _destination = readRegister(REG_FIFO);
@@ -4465,17 +4430,17 @@ boolean	SX1272::availableData(uint16_t wait)
             forme = false;
             _hreceived = false;
 #if (SX1272_debug_mode > 0)
-            Serial.println(F("** The timeout has expired **"));
-            Serial.println();
+            printf("** The timeout has expired **\n");
+            printf("\n");
 #endif
         }
     }
     // We use _hreceived because we need to ensure that _destination value is correctly
     // updated and is not the _destination value from the previously packet
-    if( _hreceived == true )
+    if( _hreceived )
     { // Checking destination
 #if (SX1272_debug_mode > 0)
-        Serial.println(F("## Checking destination ##"));
+        printf("## Checking destination ##\n");
 #endif
 
         // added by C. Pham
@@ -4486,17 +4451,16 @@ boolean	SX1272::availableData(uint16_t wait)
         if (_requestACK==0)
             if (_the_net_key_0!=_my_netkey[0] || _the_net_key_1!=_my_netkey[1]) {
                 //#if (SX1272_debug_mode > 0)
-                Serial.println(F("## Wrong net key ##"));
+                printf("## Wrong net key ##\n");
                 //#endif
                 forme=false;
             }
             else
             {
                 //#if (SX1272_debug_mode > 0)
-                Serial.println(F("## Good net key ##"));
+                printf("## Good net key ##\n");
                 //#endif
             }
-
 
         if( forme && ((_destination == _nodeAddress) || (_destination == BROADCAST_0)) )
 #else
@@ -4507,15 +4471,15 @@ boolean	SX1272::availableData(uint16_t wait)
         { // LoRa or FSK mode
             forme = true;
 #if (SX1272_debug_mode > 0)
-            Serial.println(F("## Packet received is for me ##"));
+            printf("## Packet received is for me ##\n");
 #endif
         }
         else
         {
             forme = false;
 #if (SX1272_debug_mode > 0)
-            Serial.println(F("## Packet received is not for me ##"));
-            Serial.println();
+            printf("## Packet received is not for me ##\n");
+            printf("\n");
 #endif
         }
     }
@@ -4562,8 +4526,6 @@ int8_t SX1272::getPacket()
 /*
  Function: It gets and stores a packet if it is received before ending 'wait' time.
  Returns:  Integer that determines if there has been any error
-   // added by C. Pham
-   state = 5  --> The command has been executed with no errors and an ACK is requested
    state = 3  --> The command has been executed but packet has been incorrectly received
    state = 2  --> The command has not been executed
    state = 1  --> There has been an error while executing the command
@@ -4581,12 +4543,13 @@ int8_t SX1272::getPacket(uint16_t wait)
     boolean p_received = false;
 
 #if (SX1272_debug_mode > 0)
-    Serial.println();
-    Serial.println(F("Starting 'getPacket'"));
+    printf("\n");
+    printf("Starting 'getPacket'\n");
 #endif
 
     //previous = millis();
     exitTime = millis() + (unsigned long)wait;
+    
     if( _modem == LORA )
     { // LoRa mode
         value = readRegister(REG_IRQ_FLAGS);
@@ -4606,7 +4569,7 @@ int8_t SX1272::getPacket(uint16_t wait)
         // RxDone
         if ((bitRead(value, 6) == 1)) {
 #if (SX1272_debug_mode > 0)
-            Serial.println(F("## Packet received in LoRa mode ##"));
+            printf("## Packet received in LoRa mode ##\n");
 #endif
             //CrcOnPayload?
             if (bitRead(readRegister(REG_HOP_CHANNEL),6)) {
@@ -4616,14 +4579,14 @@ int8_t SX1272::getPacket(uint16_t wait)
                     p_received = true;	// packet correctly received
                     _reception = CORRECT_PACKET;
 #if (SX1272_debug_mode > 0)
-                    Serial.println(F("** The CRC is correct **"));
+                    printf("** The CRC is correct **\n");
 #endif
                 }
                 else {
                     _reception = INCORRECT_PACKET;
                     state = 3;
 #if (SX1272_debug_mode > 0)
-                    Serial.println(F("** The CRC is incorrect **"));
+                    printf("** The CRC is incorrect **\n");
 #endif
                 }
             }
@@ -4632,7 +4595,7 @@ int8_t SX1272::getPacket(uint16_t wait)
                   p_received = true;	// packet correctly received
                   _reception = CORRECT_PACKET;
 #if (SX1272_debug_mode > 0)
-                  Serial.println(F("## Packet supposed to be correct as CrcOnPayload is off at transmitter ##"));
+                  printf("## Packet supposed to be correct as CrcOnPayload is off at transmitter ##\n");
 #endif
              }
         }
@@ -4659,7 +4622,7 @@ int8_t SX1272::getPacket(uint16_t wait)
                 _reception = CORRECT_PACKET;
                 p_received = true;
 #if (SX1272_debug_mode > 0)
-                Serial.println(F("## Packet correctly received in FSK mode ##"));
+                printf("## Packet correctly received in FSK mode ##\n");
 #endif
             }
             else
@@ -4668,28 +4631,28 @@ int8_t SX1272::getPacket(uint16_t wait)
                 state = 3;
                 p_received = false;
 #if (SX1272_debug_mode > 0)
-                Serial.println(F("## Packet incorrectly received in FSK mode ##"));
+                printf("## Packet incorrectly received in FSK mode ##\n");
 #endif
             }
         }
         else
         {
 #if (SX1272_debug_mode > 0)
-            Serial.println(F("** The timeout has expired **"));
-            Serial.println();
+            printf("** The timeout has expired **\n");
+            printf("\n");
 #endif
         }
         writeRegister(REG_OP_MODE, FSK_STANDBY_MODE);	// Setting standby FSK mode
     }
-    if( p_received == true )
+    
+    if( p_received )
     {
         // Store the packet
         if( _modem == LORA )
         {
             // comment by C. Pham
-            // set the FIFO addr to 0 to read again all the bytes
+            // set the FIFO addr to 0 to read again the destination
             writeRegister(REG_FIFO_ADDR_PTR, 0x00);  	// Setting address pointer in FIFO data buffer
-
 #ifdef W_NET_KEY
             // added by C. Pham
             packet_received.netkey[0]=readRegister(REG_FIFO);
@@ -4717,18 +4680,20 @@ int8_t SX1272::getPacket(uint16_t wait)
         // modified by C. Pham
         if (!_rawFormat) {
             packet_received.type = readRegister(REG_FIFO);		// Reading second byte of the received packet
+            
             // check packet type to discard unknown packet type
-            if ( (packet_received.type & PKT_TYPE_MASK != PKT_TYPE_DATA) && (packet_received.type & PKT_TYPE_MASK != PKT_TYPE_ACK) ) {
+            if ( ((packet_received.type & PKT_TYPE_MASK) != PKT_TYPE_DATA) && ((packet_received.type & PKT_TYPE_MASK) != PKT_TYPE_ACK) ) {
                 _reception = INCORRECT_PACKET_TYPE;
                 state = 3;
 #if (SX1272_debug_mode > 0)
-                Serial.println(F("** The packet type is incorrect **"));
-#endif            	
-				return state;	
-            }             
-            packet_received.src = readRegister(REG_FIFO);		// Reading second byte of the received packet
-            packet_received.packnum = readRegister(REG_FIFO);	// Reading third byte of the received packet
-            //packet_received.length = readRegister(REG_FIFO);	// Reading fourth byte of the received packet
+                printf("** The packet type is incorrect **\n");
+#endif	
+            }    
+            else {          
+            	packet_received.src = readRegister(REG_FIFO);		// Reading second byte of the received packet
+            	packet_received.packnum = readRegister(REG_FIFO);	// Reading third byte of the received packet
+            	//packet_received.length = readRegister(REG_FIFO);	// Reading fourth byte of the received packet
+            }
         }
         else {
             packet_received.type = 0;
@@ -4736,68 +4701,71 @@ int8_t SX1272::getPacket(uint16_t wait)
             packet_received.packnum = 0;
         }
 
-        packet_received.length = readRegister(REG_RX_NB_BYTES);
+		if (_reception == CORRECT_PACKET) {
+		
+        	packet_received.length = readRegister(REG_RX_NB_BYTES);
 
-        if( _modem == LORA )
-        {
-            if (_rawFormat) {
-                _payloadlength=packet_received.length;
-            }
-            else
-                _payloadlength = packet_received.length - OFFSET_PAYLOADLENGTH;
-        }
-        if( packet_received.length > (MAX_LENGTH + 1) )
-        {
+        	if( _modem == LORA )
+			{
+				if (_rawFormat) {
+					_payloadlength=packet_received.length;
+				}
+				else
+					_payloadlength = packet_received.length - OFFSET_PAYLOADLENGTH;
+			}
+			if( packet_received.length > (MAX_LENGTH + 1) )
+			{
 #if (SX1272_debug_mode > 0)
-            Serial.println(F("Corrupted packet, length must be less than 256"));
+            	printf("Corrupted packet, length must be less than 256\n");
 #endif
-        }
-        else
-        {
-            for(unsigned int i = 0; i < _payloadlength; i++)
-            {
-                packet_received.data[i] = readRegister(REG_FIFO); // Storing payload
-            }
+			}
+			else
+			{
+				for(unsigned int i = 0; i < _payloadlength; i++)
+				{
+					packet_received.data[i] = readRegister(REG_FIFO); // Storing payload
+				}
 
-            // commented by C. Pham
-            //packet_received.retry = readRegister(REG_FIFO);
+				// commented by C. Pham
+				//packet_received.retry = readRegister(REG_FIFO);
 
-            // Print the packet if debug_mode
+				// Print the packet if debug_mode
 #if (SX1272_debug_mode > 0)
-            Serial.println(F("## Packet received:"));
-            Serial.print(F("Destination: "));
-            Serial.println(packet_received.dst);			 	// Printing destination
-            Serial.print(F("Type: "));
-            Serial.println(packet_received.type);			 	// Printing type
-            Serial.print(F("Source: "));
-            Serial.println(packet_received.src);			 	// Printing source
-            Serial.print(F("Packet number: "));
-            Serial.println(packet_received.packnum);			// Printing packet number
-            Serial.print(F("Packet length: "));
-            Serial.println(packet_received.length);			// Printing packet length
-            Serial.print(F("Data: "));
-            for(unsigned int i = 0; i < _payloadlength; i++)
-            {
-                Serial.print((char)packet_received.data[i]);		// Printing payload
-            }
-            Serial.println();
-            //Serial.print(F("Retry number: "));
-            //Serial.println(packet_received.retry);			// Printing number retry
-            Serial.println(F("##"));
-            Serial.println();
+				printf("## Packet received:\n");
+				printf("Destination: ");
+				printf("%d\n", packet_received.dst);			 	// Printing destination
+				printf("Type: ");
+				printf("%d\n", packet_received.type);			 	// Printing type    
+				printf("Source: ");
+				printf("%d\n", packet_received.src);			 	// Printing source
+				printf("Packet number: ");
+				printf("%d\n", packet_received.packnum);			// Printing packet number
+				printf("Packet length: ");
+				printf("%d\n", packet_received.length);			// Printing packet length
+				printf("Data: ");
+				for(unsigned int i = 0; i < _payloadlength; i++)
+				{
+					printf("%c", packet_received.data[i]);		// Printing payload
+				}
+				printf("\n");
+				//printf("Retry number: ");
+				//printf("%d\n", packet_received.retry);			// Printing number retry
+				printf(" ##\n");
+				printf("\n");
 #endif
-            state = 0;
+            	state = 0;
 
 #ifdef W_REQUESTED_ACK
-            // added by C. Pham
-            // need to send an ACK
-            if (packet_received.type & PKT_FLAG_ACK_REQ) {
-                state = 5;
-                _requestACK_indicator=1;
-            }
-            else
-                _requestACK_indicator=0;
+				// added by C. Pham
+				// need to send an ACK
+				if (packet_received.type & PKT_FLAG_ACK_REQ) {
+					state = 5;
+					_requestACK_indicator=1;
+				}
+				else
+					_requestACK_indicator=0;
 #endif
+        	}
         }
     }
     else
@@ -4805,27 +4773,27 @@ int8_t SX1272::getPacket(uint16_t wait)
         //state = 1;
         if( (_reception == INCORRECT_PACKET) && (_retries < _maxRetries) )
         {
-            // comment by C. Pham
-            // what is the purpose of incrementing retries here?
-            // bug? not needed?
             _retries++;
 #if (SX1272_debug_mode > 0)
-            Serial.println(F("## Retrying to send the last packet ##"));
-            Serial.println();
+            printf("## Retrying to send the last packet ##\n");
+            printf("\n");
 #endif
         }
     }
+    
     if( _modem == LORA )
     {
         writeRegister(REG_FIFO_ADDR_PTR, 0x00);  // Setting address pointer in FIFO data buffer
     }
+    
     clearFlags();	// Initializing flags
+
     if( wait > MAX_WAIT )
     {
         state = -1;
 #if (SX1272_debug_mode > 0)
-        Serial.println(F("** The timeout must be smaller than 12.5 seconds **"));
-        Serial.println();
+        printf("** The timeout must be smaller than 12.5 seconds **\n");
+        printf("\n");
 #endif
     }
 
@@ -4846,8 +4814,8 @@ int8_t SX1272::setDestination(uint8_t dest)
     int8_t state = 2;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'setDestination'"));
+    printf("\n");
+    printf("Starting 'setDestination'\n");
 #endif
 
     state = 1;
@@ -4859,16 +4827,16 @@ int8_t SX1272::setDestination(uint8_t dest)
     state = 0;
 
 #if (SX1272_debug_mode > 1)
-    Serial.print(F("## Destination "));
-    Serial.print(_destination, HEX);
-    Serial.println(F(" successfully set ##"));
-    Serial.print(F("## Source "));
-    Serial.print(packet_sent.src, DEC);
-    Serial.println(F(" successfully set ##"));
-    Serial.print(F("## Packet number "));
-    Serial.print(packet_sent.packnum, DEC);
-    Serial.println(F(" successfully set ##"));
-    Serial.println();
+    printf("## Destination ");
+    printf("%X", _destination);
+    printf(" successfully set ##\n");
+    printf("## Source ");
+    printf("%d", packet_sent.src);
+    printf(" successfully set ##\n");
+    printf("## Packet number ");
+    printf("%d", packet_sent.packnum);
+    printf(" successfully set ##\n");
+    printf("\n");
 #endif
     return state;
 }
@@ -4883,11 +4851,11 @@ int8_t SX1272::setDestination(uint8_t dest)
 uint8_t SX1272::setTimeout()
 {
     uint8_t state = 2;
-    //uint16_t delay;
+    uint16_t delay;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'setTimeout'"));
+    printf("\n");
+    printf("Starting 'setTimeout'\n");
 #endif
 
     state = 1;
@@ -5220,8 +5188,9 @@ uint8_t SX1272::setTimeout()
 
     */
 #if (SX1272_debug_mode > 1)
-    Serial.print(F("Timeout to send/receive is: "));
-    Serial.println(_sendTime, DEC);
+    printf("Timeout to send/receive is: ");
+    printf("%d",_sendTime);
+    printf("\n");
 #endif
     state = 0;
     return state;
@@ -5241,8 +5210,8 @@ uint8_t SX1272::setPayload(char *payload)
     uint16_t length16;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'setPayload'"));
+    printf("\n");
+    printf("Starting 'setPayload'\n");
 #endif
 
     state = 1;
@@ -5265,8 +5234,8 @@ uint8_t SX1272::setPayload(char *payload)
         _payloadlength = MAX_PAYLOAD_FSK;
         state = 1;
 #if (SX1272_debug_mode > 1)
-        Serial.println(F("In FSK, payload length must be less than 60 bytes."));
-        Serial.println();
+        printf("In FSK, payload length must be less than 60 bytes.\n");
+        printf("\n");
 #endif
     }
     // set length with the actual counter value
@@ -5286,8 +5255,8 @@ uint8_t SX1272::setPayload(uint8_t *payload)
     uint8_t state = 2;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'setPayload'"));
+    printf("\n");
+    printf("Starting 'setPayload'\n");
 #endif
 
     state = 1;
@@ -5296,8 +5265,8 @@ uint8_t SX1272::setPayload(uint8_t *payload)
         _payloadlength = MAX_PAYLOAD_FSK;
         state = 1;
 #if (SX1272_debug_mode > 1)
-        Serial.println(F("In FSK, payload length must be less than 60 bytes."));
-        Serial.println();
+        printf("In FSK, payload length must be less than 60 bytes.\n");
+        printf("\n");
 #endif
     }
     for(unsigned int i = 0; i < _payloadlength; i++)
@@ -5310,7 +5279,7 @@ uint8_t SX1272::setPayload(uint8_t *payload)
 }
 
 /*
- Function: It sets a packet struct in FIFO in order to send it.
+ Function: It sets a packet struct in FIFO in order to sent it.
  Returns:  Integer that determines if there has been any error
    state = 2  --> The command has not been executed
    state = 1  --> There has been an error while executing the command
@@ -5321,8 +5290,8 @@ uint8_t SX1272::setPacket(uint8_t dest, char *payload)
     int8_t state = 2;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'setPacket'"));
+    printf("\n");
+    printf("Starting 'setPacket'\n");
 #endif
 
     // added by C. Pham
@@ -5335,8 +5304,8 @@ uint8_t SX1272::setPacket(uint8_t dest, char *payload)
             length16 = length16 + OFFSET_PAYLOADLENGTH;
 
         if (getRemainingToA() - getToA(length16) < 0) {
-            Serial.print(F("## not enough ToA at "));
-            Serial.println(millis());
+            printf("## not enough ToA at ");
+            printf("%d\n", millis());
             return SX1272_ERROR_TOA;
         }
     }
@@ -5356,7 +5325,6 @@ uint8_t SX1272::setPacket(uint8_t dest, char *payload)
     if( _retries == 0 )
     { // Updating this values only if is not going to re-send the last packet
         state = setDestination(dest);	// Setting destination in packet structure
-        packet_sent.retry = _retries;
         if( state == 0 )
         {
             state = setPayload(payload);
@@ -5364,9 +5332,6 @@ uint8_t SX1272::setPacket(uint8_t dest, char *payload)
     }
     else
     {
-        // comment by C. Pham
-        // why to increase the length here?
-        // bug?
         if( _retries == 1 )
         {
             packet_sent.length++;
@@ -5374,9 +5339,9 @@ uint8_t SX1272::setPacket(uint8_t dest, char *payload)
         state = setPacketLength();
         packet_sent.retry = _retries;
 #if (SX1272_debug_mode > 0)
-        Serial.print(F("** Retrying to send last packet "));
-        Serial.print(_retries, DEC);
-        Serial.println(F(" time **"));
+        printf("** Retrying to send last packet ");
+        printf("%d", _retries);
+        printf(" time **\n");
 #endif
     }
 
@@ -5401,21 +5366,16 @@ uint8_t SX1272::setPacket(uint8_t dest, char *payload)
         packet_sent.netkey[0]=_my_netkey[0];
         packet_sent.netkey[1]=_my_netkey[1];
         //#if (SX1272_debug_mode > 0)
-        Serial.println(F("## Setting net key ##"));
+        printf("## Setting net key ##\n");
         //#endif
         writeRegister(REG_FIFO, packet_sent.netkey[0]);
         writeRegister(REG_FIFO, packet_sent.netkey[1]);
 #endif
+        writeRegister(REG_FIFO, packet_sent.dst); 		// Writing the destination in FIFO
         // added by C. Pham
-        // we can skip the header for instance when we want to generate
-        // at a higher layer a LoRaWAN packet
-        if (!_rawFormat) {
-            writeRegister(REG_FIFO, packet_sent.dst); 		// Writing the destination in FIFO
-            // added by C. Pham
-            writeRegister(REG_FIFO, packet_sent.type); 		// Writing the packet type in FIFO
-            writeRegister(REG_FIFO, packet_sent.src);		// Writing the source in FIFO
-            writeRegister(REG_FIFO, packet_sent.packnum);	// Writing the packet number in FIFO
-        }
+        writeRegister(REG_FIFO, packet_sent.type); 		// Writing the packet type in FIFO
+        writeRegister(REG_FIFO, packet_sent.src);		// Writing the source in FIFO
+        writeRegister(REG_FIFO, packet_sent.packnum);	// Writing the packet number in FIFO
         // commented by C. Pham
         //writeRegister(REG_FIFO, packet_sent.length); 	// Writing the packet length in FIFO
         for(unsigned int i = 0; i < _payloadlength; i++)
@@ -5426,28 +5386,29 @@ uint8_t SX1272::setPacket(uint8_t dest, char *payload)
         //writeRegister(REG_FIFO, packet_sent.retry);		// Writing the number retry in FIFO
         state = 0;
 #if (SX1272_debug_mode > 0)
-        Serial.println(F("## Packet set and written in FIFO ##"));
+        printf("## Packet set and written in FIFO ##\n");
         // Print the complete packet if debug_mode
-        Serial.println(F("## Packet to send: "));
-        Serial.print(F("Destination: "));
-        Serial.println(packet_sent.dst);			 	// Printing destination
-        Serial.print(F("Packet type: "));
-        Serial.println(packet_sent.type);			// Printing packet type
-        Serial.print(F("Source: "));
-        Serial.println(packet_sent.src);			 	// Printing source
-        Serial.print(F("Packet number: "));
-        Serial.println(packet_sent.packnum);			// Printing packet number
-        Serial.print(F("Packet length: "));
-        Serial.println(packet_sent.length);			// Printing packet length
-        Serial.print(F("Data: "));
+        printf("## Packet to send:  \n");
+        printf("Destination: ");
+        printf("%d\n", packet_sent.dst);			 	// Printing destination
+        printf("Type: ");
+        printf("%d\n", packet_sent.type);			 	// Printing type
+        printf("Source: ");
+        printf("%d\n", packet_sent.src);			 	// Printing source
+        printf("Packet number: ");
+        printf("%d\n", packet_sent.packnum);			// Printing packet number
+        printf("Packet length: ");
+        printf("%d\n", packet_sent.length);			// Printing packet length
+        printf("Data: ");
         for(unsigned int i = 0; i < _payloadlength; i++)
         {
-            Serial.print((char)packet_sent.data[i]);		// Printing payload
+            printf("%c", packet_sent.data[i]);		// Printing payload
         }
-        Serial.println();
-        //Serial.print(F("Retry number: "));
-        //Serial.println(packet_sent.retry);			// Printing retry number
-        Serial.println(F("##"));
+        printf("\n");
+        //printf("Retry number: ");
+        //printf("%d\n", packet_sent.retry);			// Printing number retry
+        printf(" ##\n");
+        printf("\n");
 #endif
     }
 
@@ -5467,8 +5428,8 @@ uint8_t SX1272::setPacket(uint8_t dest, uint8_t *payload)
     byte st0;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'setPacket'"));
+    printf("\n");
+    printf("Starting 'setPacket'\n");
 #endif
 
     // added by C. Pham
@@ -5483,8 +5444,8 @@ uint8_t SX1272::setPacket(uint8_t dest, uint8_t *payload)
             length16 = length16 + OFFSET_PAYLOADLENGTH;
 
         if (getRemainingToA() - getToA(length16) < 0) {
-            Serial.print(F("## not enough ToA at "));
-            Serial.println(millis());
+            printf("## not enough ToA at ");
+            printf("%d\n", millis());
             return SX1272_ERROR_TOA;
         }
     }
@@ -5505,7 +5466,6 @@ uint8_t SX1272::setPacket(uint8_t dest, uint8_t *payload)
     if( _retries == 0 )
     { // Sending new packet
         state = setDestination(dest);	// Setting destination in packet structure
-        packet_sent.retry = _retries;
         if( state == 0 )
         {
             state = setPayload(payload);
@@ -5513,9 +5473,6 @@ uint8_t SX1272::setPacket(uint8_t dest, uint8_t *payload)
     }
     else
     {
-        // comment by C. Pham
-        // why to increase the length here?
-        // bug?
         if( _retries == 1 )
         {
             packet_sent.length++;
@@ -5523,9 +5480,9 @@ uint8_t SX1272::setPacket(uint8_t dest, uint8_t *payload)
         state = setPacketLength();
         packet_sent.retry = _retries;
 #if (SX1272_debug_mode > 0)
-        Serial.print(F("** Retrying to send last packet "));
-        Serial.print(_retries, DEC);
-        Serial.println(F(" time **"));
+        printf("** Retrying to send last packet ");
+        printf("%d", _retries);
+        printf(" time **\n");
 #endif
     }
 
@@ -5549,22 +5506,15 @@ uint8_t SX1272::setPacket(uint8_t dest, uint8_t *payload)
         // added by C. Pham
         packet_sent.netkey[0]=_my_netkey[0];
         packet_sent.netkey[1]=_my_netkey[1];
-        //#if (SX1272_debug_mode > 0)
-        Serial.println(F("## Setting net key ##"));
-        //#endif
+
         writeRegister(REG_FIFO, packet_sent.netkey[0]);
         writeRegister(REG_FIFO, packet_sent.netkey[1]);
 #endif
+        writeRegister(REG_FIFO, packet_sent.dst); 		// Writing the destination in FIFO
         // added by C. Pham
-        // we can skip the header for instance when we want to generate
-        // at a higher layer a LoRaWAN packet
-        if (!_rawFormat) {
-            writeRegister(REG_FIFO, packet_sent.dst); 		// Writing the destination in FIFO
-            // added by C. Pham
-            writeRegister(REG_FIFO, packet_sent.type); 		// Writing the packet type in FIFO
-            writeRegister(REG_FIFO, packet_sent.src);		// Writing the source in FIFO
-            writeRegister(REG_FIFO, packet_sent.packnum);	// Writing the packet number in FIFO
-        }
+        writeRegister(REG_FIFO, packet_sent.type); 		// Writing the packet type in FIFO
+        writeRegister(REG_FIFO, packet_sent.src);		// Writing the source in FIFO
+        writeRegister(REG_FIFO, packet_sent.packnum);	// Writing the packet number in FIFO
         // commented by C. Pham
         //writeRegister(REG_FIFO, packet_sent.length); 	// Writing the packet length in FIFO
         for(unsigned int i = 0; i < _payloadlength; i++)
@@ -5575,28 +5525,29 @@ uint8_t SX1272::setPacket(uint8_t dest, uint8_t *payload)
         //writeRegister(REG_FIFO, packet_sent.retry);		// Writing the number retry in FIFO
         state = 0;
 #if (SX1272_debug_mode > 0)
-        Serial.println(F("## Packet set and written in FIFO ##"));
+        printf("## Packet set and written in FIFO ##\n");
         // Print the complete packet if debug_mode
-        Serial.println(F("## Packet to send: "));
-        Serial.print(F("Destination: "));
-        Serial.println(packet_sent.dst);			 	// Printing destination
-        Serial.print(F("Packet type: "));
-        Serial.println(packet_sent.type);			// Printing packet type
-        Serial.print(F("Source: "));
-        Serial.println(packet_sent.src);			 	// Printing source
-        Serial.print(F("Packet number: "));
-        Serial.println(packet_sent.packnum);			// Printing packet number
-        Serial.print(F("Packet length: "));
-        Serial.println(packet_sent.length);			// Printing packet length
-        Serial.print(F("Data: "));
+        printf("## Packet to send:  \n");
+        printf("Destination: ");
+        printf("%d\n", packet_sent.dst);			 	// Printing destination
+        printf("Type: ");
+        printf("%d\n", packet_sent.type);			 	// Printing type
+        printf("Source: ");
+        printf("%d\n", packet_sent.src);			 	// Printing source
+        printf("Packet number: ");
+        printf("%d\n", packet_sent.packnum);			// Printing packet number
+        printf("Packet length: ");
+        printf("%d\n", packet_sent.length);			// Printing packet length
+        printf("Data: ");
         for(unsigned int i = 0; i < _payloadlength; i++)
         {
-            Serial.print((char)packet_sent.data[i]);		// Printing payload
+            printf("%c", packet_sent.data[i]);		// Printing payload
         }
-        Serial.println();
-        //Serial.print(F("Retry number: "));
-        //Serial.println(packet_sent.retry);			// Printing retry number
-        Serial.println(F("##"));
+        printf("\n");
+        //printf("Retry number: ");
+        //printf("%d\n", packet_sent.retry);			// Printing number retry
+        printf(" ##\n");
+        printf("\n");
 #endif
     }
     writeRegister(REG_OP_MODE, st0);	// Getting back to previous status
@@ -5643,8 +5594,8 @@ uint8_t SX1272::sendWithTimeout(uint16_t wait)
     unsigned long exitTime;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'sendWithTimeout'"));
+    printf("\n");
+    printf("Starting 'sendWithTimeout'\n");
 #endif
 
     // clearFlags();	// Initializing flags
@@ -5658,14 +5609,6 @@ uint8_t SX1272::sendWithTimeout(uint16_t wait)
 
         writeRegister(REG_OP_MODE, LORA_TX_MODE);  // LORA mode - Tx
 
-#if (SX1272_debug_mode > 1)
-        value = readRegister(REG_OP_MODE);
-
-        if (value & LORA_TX_MODE == LORA_TX_MODE)
-            Serial.println(F("OK"));
-        else
-            Serial.println(F("ERROR"));
-#endif
         value = readRegister(REG_IRQ_FLAGS);
         // Wait until the packet is sent (TX Done flag) or the timeout expires
         //while ((bitRead(value, 3) == 0) && (millis() - previous < wait))
@@ -5702,28 +5645,24 @@ uint8_t SX1272::sendWithTimeout(uint16_t wait)
     {
         state = 0;	// Packet successfully sent
 #if (SX1272_debug_mode > 1)
-        Serial.println(F("## Packet successfully sent ##"));
-        Serial.println();
+        printf("## Packet successfully sent ##\n");
+        printf("\n");
 #endif
-        // added by C. Pham
-        // normally there should be enough remaing ToA as the test has been done earlier
-        if (_limitToA)
-            removeToA(_currentToA);
     }
     else
     {
         if( state == 1 )
         {
 #if (SX1272_debug_mode > 1)
-            Serial.println(F("** Timeout has expired **"));
-            Serial.println();
+            printf("** Timeout has expired **\n");
+            printf("\n");
 #endif
         }
         else
         {
 #if (SX1272_debug_mode > 1)
-            Serial.println(F("** There has been an error and packet has not been sent **"));
-            Serial.println();
+            printf("** There has been an error and packet has not been sent **\n");
+            printf("\n");
 #endif
         }
     }
@@ -5768,8 +5707,8 @@ uint8_t SX1272::sendPacketTimeout(uint8_t dest, char *payload)
     uint8_t state = 2;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'sendPacketTimeout'"));
+    printf("\n");
+    printf("Starting 'sendPacketTimeout'\n");
 #endif
 
     state = setPacket(dest, payload);	// Setting a packet with 'dest' destination
@@ -5793,12 +5732,11 @@ uint8_t SX1272::sendPacketTimeout(uint8_t dest, uint8_t *payload, uint16_t lengt
     uint8_t state_f = 2;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'sendPacketTimeout'"));
+    printf("\n");
+    printf("Starting 'sendPacketTimeout'\n");
 #endif
 
     state = truncPayload(length16);
-
     if( state == 0 )
     {
         state_f = setPacket(dest, payload);	// Setting a packet with 'dest' destination
@@ -5826,8 +5764,8 @@ uint8_t SX1272::sendPacketTimeout(uint8_t dest, char *payload, uint16_t wait)
     uint8_t state = 2;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'sendPacketTimeout'"));
+    printf("\n");
+    printf("Starting 'sendPacketTimeout'\n");
 #endif
 
     state = setPacket(dest, payload);	// Setting a packet with 'dest' destination
@@ -5851,8 +5789,8 @@ uint8_t SX1272::sendPacketTimeout(uint8_t dest, uint8_t *payload, uint16_t lengt
     uint8_t state_f = 2;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'sendPacketTimeout'"));
+    printf("\n");
+    printf("Starting 'sendPacketTimeout'\n");
 #endif
 
     state = truncPayload(length16);
@@ -5909,13 +5847,14 @@ uint8_t SX1272::sendPacketTimeoutACK(uint8_t dest, char *payload)
     uint8_t state_f = 2;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'sendPacketTimeoutACK'"));
+    printf("\n");
+    printf("Starting 'sendPacketTimeoutACK'\n");
 #endif
 
 #ifdef W_REQUESTED_ACK
     _requestACK = 1;
 #endif
+
     state = sendPacketTimeout(dest, payload);	// Sending packet to 'dest' destination
 
     if( state == 0 )
@@ -5929,7 +5868,7 @@ uint8_t SX1272::sendPacketTimeoutACK(uint8_t dest, char *payload)
     if( state == 0 )
     {
         // added by C. Pham
-        Serial.println(F("wait for ACK"));
+        printf("wait for ACK\n");
 
         if( availableData() )
         {
@@ -5939,7 +5878,7 @@ uint8_t SX1272::sendPacketTimeoutACK(uint8_t dest, char *payload)
         {
             state_f = SX1272_ERROR_ACK;
             // added by C. Pham
-            Serial.println(F("no ACK"));
+            printf("no ACK\n");
         }
     }
     else
@@ -5967,8 +5906,8 @@ uint8_t SX1272::sendPacketTimeoutACK(uint8_t dest, uint8_t *payload, uint16_t le
     uint8_t state_f = 2;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'sendPacketTimeoutACK'"));
+    printf("\n");
+    printf("Starting 'sendPacketTimeoutACK'\n");
 #endif
 
 #ifdef W_REQUESTED_ACK
@@ -5989,7 +5928,7 @@ uint8_t SX1272::sendPacketTimeoutACK(uint8_t dest, uint8_t *payload, uint16_t le
     if( state == 0 )
     {
         // added by C. Pham
-        Serial.println(F("wait for ACK"));
+        printf("wait for ACK\n");
 
         if( availableData() )
         {
@@ -5999,7 +5938,7 @@ uint8_t SX1272::sendPacketTimeoutACK(uint8_t dest, uint8_t *payload, uint16_t le
         {
             state_f = SX1272_ERROR_ACK;
             // added by C. Pham
-            Serial.println(F("no ACK"));
+            printf("no ACK\n");
         }
     }
     else
@@ -6027,13 +5966,14 @@ uint8_t SX1272::sendPacketTimeoutACK(uint8_t dest, char *payload, uint16_t wait)
     uint8_t state_f = 2;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'sendPacketTimeoutACK'"));
+    printf("\n");
+    printf("Starting 'sendPacketTimeoutACK'\n");
 #endif
 
 #ifdef W_REQUESTED_ACK
     _requestACK = 1;
 #endif
+
     state = sendPacketTimeout(dest, payload, wait);	// Sending packet to 'dest' destination
 
     if( state == 0 )
@@ -6047,7 +5987,7 @@ uint8_t SX1272::sendPacketTimeoutACK(uint8_t dest, char *payload, uint16_t wait)
     if( state == 0 )
     {
         // added by C. Pham
-        Serial.println(F("wait for ACK"));
+        printf("wait for ACK\n");
 
         if( availableData() )
         {
@@ -6057,7 +5997,7 @@ uint8_t SX1272::sendPacketTimeoutACK(uint8_t dest, char *payload, uint16_t wait)
         {
             state_f = SX1272_ERROR_ACK;
             // added by C. Pham
-            Serial.println(F("no ACK"));
+            printf("no ACK\n");
         }
     }
     else
@@ -6085,13 +6025,14 @@ uint8_t SX1272::sendPacketTimeoutACK(uint8_t dest, uint8_t *payload, uint16_t le
     uint8_t state_f = 2;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'sendPacketTimeoutACK'"));
+    printf("\n");
+    printf("Starting 'sendPacketTimeoutACK'\n");
 #endif
 
 #ifdef W_REQUESTED_ACK
     _requestACK = 1;
 #endif
+
     state = sendPacketTimeout(dest, payload, length16, wait);	// Sending packet to 'dest' destination
 
     if( state == 0 )
@@ -6105,7 +6046,7 @@ uint8_t SX1272::sendPacketTimeoutACK(uint8_t dest, uint8_t *payload, uint16_t le
     if( state == 0 )
     {
         // added by C. Pham
-        Serial.println(F("wait for ACK"));
+        printf("wait for ACK\n");
 
         if( availableData() )
         {
@@ -6115,7 +6056,7 @@ uint8_t SX1272::sendPacketTimeoutACK(uint8_t dest, uint8_t *payload, uint16_t le
         {
             state_f = SX1272_ERROR_ACK;
             // added by C. Pham
-            Serial.println(F("no ACK"));
+            printf("no ACK\n");
         }
     }
     else
@@ -6155,13 +6096,14 @@ uint8_t SX1272::getACK(uint16_t wait)
     unsigned long exitTime;
     boolean a_received = false;
 
-    //#if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'getACK'"));
-    //#endif
+#if (SX1272_debug_mode > 1)
+    printf("\n");
+    printf("Starting 'getACK'\n");
+#endif
 
     //previous = millis();
     exitTime = millis()+(unsigned long)wait;
+
     if( _modem == LORA )
     { // LoRa mode
         value = readRegister(REG_IRQ_FLAGS);
@@ -6177,10 +6119,6 @@ uint8_t SX1272::getACK(uint16_t wait)
         }
         if( bitRead(value, 6) == 1 )
         { // ACK received
-            // comment by C. Pham
-            // not really safe because the received packet may not be an ACK
-            // probability is low if using unicast to gateway, but if broadcast
-            // can get a packet from another node!!
             a_received = true;
         }
         // Standby para minimizar el consumo
@@ -6236,18 +6174,18 @@ uint8_t SX1272::getACK(uint16_t wait)
                                 state = 0;
                                 //#if (SX1272_debug_mode > 0)
                                 // Printing the received ACK
-                                Serial.println(F("## ACK received:"));
-                                Serial.print(F("Destination: "));
-                                Serial.println(ACK.dst);			 	// Printing destination
-                                Serial.print(F("Source: "));
-                                Serial.println(ACK.src);			 	// Printing source
-                                Serial.print(F("ACK number: "));
-                                Serial.println(ACK.packnum);			// Printing ACK number
-                                Serial.print(F("ACK length: "));
-                                Serial.println(ACK.length);				// Printing ACK length
-                                Serial.print(F("ACK payload: "));
-                                Serial.println(ACK.data[0]);			// Printing ACK payload
-                                Serial.print(F("ACK SNR of rcv pkt at gw: "));
+                                printf("## ACK received:\n");
+                                printf("Destination: ");
+                                printf("%d\n", ACK.dst);			 	// Printing destination
+                                printf("Source: ");
+                                printf("%d\n", ACK.src);			 	// Printing source
+                                printf("ACK number: ");
+                                printf("%d\n", ACK.packnum);			// Printing ACK number
+                                printf("ACK length: ");
+                                printf("%d\n", ACK.length);				// Printing ACK length
+                                printf("ACK payload: ");
+                                printf("%d\n", ACK.data[0]);			// Printing ACK payload
+                                printf("ACK SNR of rcv pkt at gw: ");
 
                                 value = ACK.data[1];
 
@@ -6263,64 +6201,64 @@ uint8_t SX1272::getACK(uint16_t wait)
                                     _rcv_snr_in_ack = ( value & 0xFF ) >> 2;
                                 }
 
-                                Serial.println(_rcv_snr_in_ack);
-                                Serial.println(F("##"));
-                                Serial.println();
+                                printf("%d\n", _rcv_snr_in_ack);
+                                printf(" ##\n");
+                                printf("\n");
                                 //#endif
                             }
                             else
                             {
                                 state = 1;
-                                #if (SX1272_debug_mode > 0)
-                                Serial.println(F("** N-ACK received **"));
-                                Serial.println();
-                                #endif
+    #if (SX1272_debug_mode > 0)
+                                printf("** N-ACK received **\n");
+                                printf("\n");
+    #endif
                             }
                         }
                         else
                         {
                             state = 1;
-                            #if (SX1272_debug_mode > 0)
-                            Serial.println(F("** ACK length incorrectly received **"));
-                            Serial.println();
-                            #endif
+    #if (SX1272_debug_mode > 0)
+                            printf("** ACK length incorrectly received **\n");
+                            printf("\n");
+    #endif
                         }
                     }
                     else
                     {
                         state = 1;
-                        #if (SX1272_debug_mode > 0)
-                        Serial.println(F("** ACK number incorrectly received **"));
-                        Serial.println();
-                        #endif
+    #if (SX1272_debug_mode > 0)
+                        printf("** ACK number incorrectly received **\n");
+                        printf("\n");
+    #endif
                     }
                 }
                 else
                 {
                     state = 1;
-                    #if (SX1272_debug_mode > 0)
-                    Serial.println(F("** ACK source incorrectly received **"));
-                    Serial.println();
-                    #endif
+    #if (SX1272_debug_mode > 0)
+                    printf("** ACK source incorrectly received **\n");
+                    printf("\n");
+    #endif
                 }
             }
         }
         else
         {
             state = 1;
-            #if (SX1272_debug_mode > 0)
-            Serial.println(F("** ACK destination incorrectly received **"));
-            Serial.println();
-            #endif
+#if (SX1272_debug_mode > 0)
+            printf("** ACK destination incorrectly received **\n");
+            printf("\n");
+#endif
         }
     }
     else
     {
         state = 1;
-        #if (SX1272_debug_mode > 0)
-        Serial.println(F("** ACK lost **"));
-        Serial.println();
-        #endif
+#if (SX1272_debug_mode > 0)
+        printf("** ACK lost **\n");
+        printf("\n");
+#endif
     }
     clearFlags();	// Initializing flags
     return state;
@@ -6362,8 +6300,8 @@ uint8_t SX1272::sendPacketTimeoutACKRetries(uint8_t dest, char *payload)
     uint8_t state = 2;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'sendPacketTimeoutACKRetries'"));
+    printf("\n");
+    printf("Starting 'sendPacketTimeoutACKRetries'\n");
 #endif
 
     // Sending packet to 'dest' destination and waiting an ACK response.
@@ -6390,8 +6328,8 @@ uint8_t SX1272::sendPacketTimeoutACKRetries(uint8_t dest, uint8_t *payload, uint
     uint8_t state = 2;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'sendPacketTimeoutACKRetries'"));
+    printf("\n");
+    printf("Starting 'sendPacketTimeoutACKRetries'\n");
 #endif
 
     // Sending packet to 'dest' destination and waiting an ACK response.
@@ -6419,8 +6357,8 @@ uint8_t SX1272::sendPacketTimeoutACKRetries(uint8_t dest, char *payload, uint16_
     uint8_t state = 2;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'sendPacketTimeoutACKRetries'"));
+    printf("\n");
+    printf("Starting 'sendPacketTimeoutACKRetries'\n");
 #endif
 
     // Sending packet to 'dest' destination and waiting an ACK response.
@@ -6447,8 +6385,8 @@ uint8_t SX1272::sendPacketTimeoutACKRetries(uint8_t dest, uint8_t *payload, uint
     uint8_t state = 2;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'sendPacketTimeoutACKRetries'"));
+    printf("\n");
+    printf("Starting 'sendPacketTimeoutACKRetries'\n");
 #endif
 
     // Sending packet to 'dest' destination and waiting an ACK response.
@@ -6476,8 +6414,8 @@ uint8_t SX1272::getTemp()
     uint8_t state = 2;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'getTemp'"));
+    printf("\n");
+    printf("Starting 'getTemp'\n");
 #endif
 
     st0 = readRegister(REG_OP_MODE);	// Save the previous status
@@ -6503,10 +6441,10 @@ uint8_t SX1272::getTemp()
 
 
 #if (SX1272_debug_mode > 1)
-    Serial.print(F("## Temperature is: "));
-    Serial.print(_temp);
-    Serial.println(F(" ##"));
-    Serial.println();
+    printf("## Temperature is: ");
+    printf("%d", _temp);
+    printf(" ##\n");
+    printf("\n");
 #endif
 
     if( _modem == LORA )
@@ -6549,22 +6487,11 @@ uint8_t SX1272::doCAD(uint8_t counter)
     uint8_t retryCAD = 3;
     uint8_t save_counter;
     byte st0;
-    int rssi_count=0;
-    int rssi_mean=0;
-    double bw=0.0;
-    bool hasRSSI=false;
-    unsigned long startRSSI=0;
-
-    bw=(_bandwidth==BW_125)?125e3:((_bandwidth==BW_250)?250e3:500e3);
-    // Symbol rate : time for one symbol (usecs)
-    double rs = bw / ( 1 << _spreadingFactor);
-    double ts = 1 / rs;
-    ts = ts * 1000000.0;
 
     st0 = readRegister(REG_OP_MODE);	// Save the previous status
 
 #ifdef DEBUG_CAD
-    Serial.println(F("SX1272::Starting 'doCAD'"));
+    printf("SX1272::Starting 'doCAD'\n");
 #endif
 
     save_counter = counter;
@@ -6577,32 +6504,20 @@ uint8_t SX1272::doCAD(uint8_t counter)
 
         do {
 
-            hasRSSI=false;
-
-            clearFlags();	// Initializing flags
-
             // wait to CadDone flag
             // previous = millis();
             startCAD = millis();
             exitTime = millis()+(unsigned long)wait;
 
-            writeRegister(REG_OP_MODE, LORA_CAD_MODE);  // LORA mode - Cad
+            clearFlags();	// Initializing flags
 
-            startRSSI=micros();
+            writeRegister(REG_OP_MODE, LORA_CAD_MODE);  // LORA mode - Cad
 
             value = readRegister(REG_IRQ_FLAGS);
             // Wait until CAD ends (CAD Done flag) or the timeout expires
             //while ((bitRead(value, 2) == 0) && (millis() - previous < wait))
             while ((bitRead(value, 2) == 0) && (millis() < exitTime))
             {
-                // only one reading per CAD
-                if (micros()-startRSSI > ts+240 && !hasRSSI) {
-                    _RSSI = -(OFFSET_RSSI+(_board==SX1276Chip?18:0)) + readRegister(REG_RSSI_VALUE_LORA);
-                    rssi_mean += _RSSI;
-                    rssi_count++;
-                    hasRSSI=true;
-                }
-
                 value = readRegister(REG_IRQ_FLAGS);
                 // Condition to avoid an overflow (DO NOT REMOVE)
                 //if( millis() < previous )
@@ -6618,9 +6533,9 @@ uint8_t SX1272::doCAD(uint8_t counter)
             {
                 state = 0;	// CAD successfully performed
 #ifdef DEBUG_CAD				  
-                Serial.print(F("SX1272::CAD duration "));
-                Serial.println(endCAD-startCAD);
-                Serial.println(F("SX1272::CAD successfully performed"));
+                printf("SX1272::CAD duration ");
+                printf("%d\n", endCAD-startCAD);
+                printd("SX1272::CAD successfully performed\n");
 #endif				  
 
                 value = readRegister(REG_IRQ_FLAGS);
@@ -6631,8 +6546,8 @@ uint8_t SX1272::doCAD(uint8_t counter)
                     // we detected activity
                     failedCAD=true;
 #ifdef DEBUG_CAD				  		
-                    Serial.print(F("SX1272::CAD exits after "));
-                    Serial.println(save_counter-counter);
+                    printf("SX1272::CAD exits after ");
+                    printf("%d\n", save_counter-counter);
 #endif				  		
                 }
 
@@ -6641,19 +6556,19 @@ uint8_t SX1272::doCAD(uint8_t counter)
             else
             {
 #ifdef DEBUG_CAD			  	 	
-                Serial.print(F("SX1272::CAD duration "));
-                Serial.println(endCAD-startCAD);
+                printf("SX1272::CAD duration "));
+                printf("%d\n", endCAD-startCAD);
 #endif				  
                 if( state == 1 )
                 {
 #ifdef DEBUG_CAD
-                    Serial.println(F("SX1272::Timeout has expired"));
+                    printf("SX1272::Timeout has expired\n");
 #endif
                 }
                 else
                 {
 #ifdef DEBUG_CAD
-                    Serial.println(F("SX1272::Error and CAD has not been performed"));
+                    printf("SX1272::Error and CAD has not been performed\n");
 #endif
                 }
 
@@ -6665,9 +6580,6 @@ uint8_t SX1272::doCAD(uint8_t counter)
             }
 
         } while (counter && !failedCAD);
-
-        rssi_mean = rssi_mean / rssi_count;
-        _RSSI = rssi_mean;
     }
 
     writeRegister(REG_OP_MODE, st0);
@@ -6677,8 +6589,8 @@ uint8_t SX1272::doCAD(uint8_t counter)
     clearFlags();		// Initializing flags
 
 #ifdef DEBUG_CAD	  
-    Serial.print(F("SX1272::doCAD duration "));
-    Serial.println(endDoCad-startDoCad);
+    printf("SX1272::doCAD duration ");
+    printf("%d\n", endDoCad-startDoCad);
 #endif
 
     if (failedCAD)
@@ -6687,43 +6599,6 @@ uint8_t SX1272::doCAD(uint8_t counter)
     return state;
 }
 
-//#define DEBUG_GETTOA
-
-#ifdef DEBUG_GETTOA
-
-void printDouble( double val, byte precision){
-    // prints val with number of decimal places determine by precision
-    // precision is a number from 0 to 6 indicating the desired decimial places
-    // example: lcdPrintDouble( 3.1415, 2); // prints 3.14 (two decimal places)
-
-    if(val < 0.0){
-        Serial.print('-');
-        val = -val;
-    }
-
-    Serial.print (int(val));  //prints the int part
-    if( precision > 0) {
-        Serial.print("."); // print the decimal point
-        unsigned long frac;
-        unsigned long mult = 1;
-        byte padding = precision -1;
-        while(precision--)
-            mult *=10;
-
-        if(val >= 0)
-            frac = (val - int(val)) * mult;
-        else
-            frac = (int(val)- val ) * mult;
-        unsigned long frac1 = frac;
-        while( frac1 /= 10 )
-            padding--;
-        while(  padding--)
-            Serial.print("0");
-        Serial.print(frac,DEC) ;
-    }
-}
-
-#endif
 
 uint16_t SX1272::getToA(uint8_t pl) {
 
@@ -6735,11 +6610,11 @@ uint16_t SX1272::getToA(uint8_t pl) {
     bw=(_bandwidth==BW_125)?125e3:((_bandwidth==BW_250)?250e3:500e3);
 
 #ifdef DEBUG_GETTOA
-    Serial.print(F("SX1272::bw is "));
-    Serial.println(bw);
+    printf("SX1272::bw is ");
+    printf("%d\n", bw);
 
-    Serial.print(F("SX1272::SF is "));
-    Serial.println(_spreadingFactor);
+    printf("SX1272::SF is ");
+    printf("%d\n", _spreadingFactor);
 #endif
 
     //double ts=pow(2,_spreadingFactor)/bw;
@@ -6754,12 +6629,10 @@ uint16_t SX1272::getToA(uint8_t pl) {
     double tPreamble=((_preamblelength+4)+4.25)*ts;
 
 #ifdef DEBUG_GETTOA	
-    Serial.print(F("SX1272::ts is "));
-    printDouble(ts,6);
-    Serial.println();
-    Serial.print(F("SX1272::tPreamble is "));
-    printDouble(tPreamble,6);
-    Serial.println();
+    printf("SX1272::ts is ");
+    printf("%f\n", ts);
+    printf("SX1272::tPreamble is ");
+    printf("%f\n", tPreamble);
 #endif
 
     // for low data rate optimization
@@ -6771,9 +6644,8 @@ uint16_t SX1272::getToA(uint8_t pl) {
             (double)(4*(_spreadingFactor-2*DE) );
 
 #ifdef DEBUG_GETTOA                         
-    Serial.print(F("SX1272::tmp is "));
-    printDouble(tmp,6);
-    Serial.println();
+    printf("SX1272::tmp is ");
+    printf("%f\n", tmp);
 #endif
 
     tmp = ceil(tmp)*(_codingRate + 4);
@@ -6781,26 +6653,26 @@ uint16_t SX1272::getToA(uint8_t pl) {
     double nPayload = 8 + ( ( tmp > 0 ) ? tmp : 0 );
 
 #ifdef DEBUG_GETTOA    
-    Serial.print(F("SX1272::nPayload is "));
-    Serial.println(nPayload);
+    printf("SX1272::nPayload is ");
+    printf("%d\n", nPayload);
 #endif
-
+    
     double tPayload = nPayload * ts;
     // Time on air
     double tOnAir = tPreamble + tPayload;
     // in us secs
     airTime = floor( tOnAir * 1e6 + 0.999 );
-
+    
     //////
-
+    
 #ifdef DEBUG_GETTOA    
-    Serial.print(F("SX1272::airTime is "));
-    Serial.println(airTime);
+    printf("SX1272::airTime is ");
+    printf("%d\n", airTime);
 #endif
     // return in ms
-    _currentToA=ceil(airTime/1000)+1;
-    return _currentToA;
+    return ceil(airTime/1000)+1;
 }
+
 
 void SX1272::CarrierSense(uint8_t cs) {
     
@@ -6824,10 +6696,9 @@ void SX1272::CarrierSense1() {
     uint8_t retries=3;
     uint8_t DIFSretries=8;
 
-  	Serial.print(F("--> CS1\n")); 
-  	
+    printf("--> CS1\n");
+  	    
     if (_send_cad_number && _enableCarrierSense) {
-
         do {
             DIFSretries=8;
             do {
@@ -6837,22 +6708,20 @@ void SX1272::CarrierSense1() {
                 e = doCAD(_send_cad_number);
                 _endDoCad=millis();
 
-                Serial.print(F("--> CAD "));
-                Serial.print(_endDoCad-_startDoCad);
-                Serial.println();
+                printf("--> CAD ");
+                printf("%d\n", _endDoCad-_startDoCad);
 
                 if (!e) {
-                    Serial.print(F("OK1\n"));
+                    printf("OK1\n");
 
                     if (_extendedIFS)  {
                         // wait for random number of CAD
-                        uint8_t w = random(1,8);
+                        uint8_t w = rand() % 8 + 1;
 
-                        Serial.print(F("--> wait for "));
-                        Serial.print(w);
-                        Serial.print(F(" CAD = "));
-                        Serial.print(sx1272_CAD_value[_loraMode]*w);
-                        Serial.println();
+                        printf("--> wait for ");
+                        printf("%d",w);
+                        printf(" CAD = ");
+                        printf("%d\n",sx1272_CAD_value[_loraMode]*w);
 
                         delay(sx1272_CAD_value[_loraMode]*w);
 
@@ -6861,37 +6730,33 @@ void SX1272::CarrierSense1() {
                         e = doCAD(_send_cad_number);
                         _endDoCad=millis();
 
-                        Serial.print(F("--> CAD "));
-                        Serial.print(_endDoCad-_startDoCad);
-                        Serial.println();
+                        printf("--> CAD ");
+                        printf("%d\n", _endDoCad-_startDoCad);
 
                         if (!e)
-                            Serial.print(F("OK2"));
+                            printf("OK2\n");
                         else
-                            Serial.print(F("#2"));
-
-                        Serial.println();
+                            printf("#2\n");
                     }
                 }
                 else {
-                    Serial.print(F("#1\n"));
+                    printf("#1\n");
 
                     // wait for random number of DIFS
-                    uint8_t w = random(1,8);
+                    uint8_t w = rand() % 8 + 1;
 
-                    Serial.print(F("--> wait for "));
-                    Serial.print(w);
-                    Serial.print(F(" DIFS=3SIFS= "));
-                    Serial.print(sx1272_SIFS_value[_loraMode]*3*w);
-                    Serial.println();
+                    printf("--> wait for ");
+                    printf("%d",w);
+                    printf(" DIFS=3SIFS= ");
+                    printf("%d\n",sx1272_SIFS_value[_loraMode]*3*w);
 
                     delay(sx1272_SIFS_value[_loraMode]*3*w);
 
-                    Serial.print(F("--> retry\n"));
+                    printf("--> retry\n");
                 }
 
             } while (e && --DIFSretries);
-		
+
             // CAD is OK, but need to check RSSI
             if (_RSSIonSend) {
 
@@ -6900,267 +6765,267 @@ void SX1272::CarrierSense1() {
 
                 if (!e) {
 
-                    do {
+                     do {
                         getRSSI();
-                        Serial.print(F("--> RSSI "));
-                        Serial.print(_RSSI);
-                        Serial.println();
+                        printf("--> RSSI ");
+                        printf("%d\n",_RSSI);
                         rssi_retry_count--;
                         delay(1);
                     } while (_RSSI > -90 && rssi_retry_count);
                 }
                 else
-                    Serial.print(F("--> RSSI error\n"));
+                    printf("--> RSSI error\n");
 
                 if (!rssi_retry_count)
                     carrierSenseRetry=true;
                 else
                     carrierSenseRetry=false;
             }
+
         } while (carrierSenseRetry && --retries);
     }
 }
 
 void SX1272::CarrierSense2() {
 
-	int e;
-	bool carrierSenseRetry=false;  
-	uint8_t foundBusyDuringDIFSafterBusyState=0;
-    uint8_t retries=3;
-    uint8_t DIFSretries=8;
-	uint8_t n_collision=0;
-	// upper bound of the random backoff timer
-	uint8_t W=2;
-	uint32_t max_toa = sx1272.getToA(MAX_LENGTH);
-
-	// do CAD for DIFS=9CAD
-	Serial.print(F("--> CS2\n")); 
+  int e;
+  bool carrierSenseRetry=false;  
+  uint8_t foundBusyDuringDIFSafterBusyState=0;
+  uint8_t retries=3;
+  uint8_t DIFSretries=8;
+  uint8_t n_collision=0;
+  // upper bound of the random backoff timer
+  uint8_t W=2;
+  uint32_t max_toa = sx1272.getToA(MAX_LENGTH);
   
-	if (_send_cad_number && _enableCarrierSense) {
-    	  
-		do { 
-            DIFSretries=8;
-			do {
-                //D f W
-                //2 2 4
-                //3 3 8
-                //4 4 16
-                //5 5 16
-                //6 6 16
-                //...
+  //CAD for DIFS=9CAD
+  printf("--> CS2\n");
+  
+  if (_send_cad_number && _enableCarrierSense) {
+    do { 
+      DIFSretries=8;
+      do {
+        //D f W
+        //2 2 4
+        //3 3 8
+        //4 4 16
+        //5 5 16
+        //6 6 16
+        //...
+        
+        if (foundBusyDuringDIFSafterBusyState>1 && foundBusyDuringDIFSafterBusyState<5)
+          W=W*2;
+                
+        // check for free channel (SIFS/DIFS)        
+        _startDoCad=millis();
+        e = sx1272.doCAD(_send_cad_number);
+        _endDoCad=millis();
+        
+        printf("--> DIFS ");
+        printf("%ld\n",_endDoCad-_startDoCad);
 
-                if (foundBusyDuringDIFSafterBusyState>1 && foundBusyDuringDIFSafterBusyState<5)
-                    W=W*2;
+        // successull SIFS/DIFS
+        if (!e) {
+          
+          // previous collision detected
+          if (n_collision) {
+                
+              printf("--> count for ");
+              // count for random number of CAD/SIFS/DIFS?   
+              // SIFS=3CAD
+              // DIFS=9CAD
+              uint8_t w = rand() % (W*_send_cad_number) + 1;            
 
-                // check for free channel (SIFS/DIFS)
+              printf("%d\n", w);             
+
+              int busyCount=0;
+              bool nowBusy=false;
+              
+              do {
+
+                  if (nowBusy)
+                    e = sx1272.doCAD(_send_cad_number);
+                  else
+                    e = sx1272.doCAD(1);
+
+                  if (nowBusy && e) {
+                    printf("#");
+                    busyCount++;                    
+                  }
+                  else
+                  if (nowBusy && !e) {
+                    printf("|");
+                    nowBusy=false;                    
+                  }                  
+                  else
+                  if (!e) {
+                    w--;
+                    printf("-");
+                  }  
+                  else {
+                    printf("*");
+                    nowBusy=true;
+                    busyCount++;  
+                  }
+                  
+              } while (w);      
+
+              // if w==0 then we exit and 
+              // the packet will be sent  
+              printf("\n--> found busy during ");
+              printf("%d\n", busyCount);
+          }
+          else {
+              printf("OK1\n");
+              
+              if (_extendedIFS)  {          
+                // wait for random number of CAD         
+                uint8_t w = rand() % 8 + 1;
+    
+                printf("--> extended wait for ");
+                printf("%d\n",w);
+                printf(" CAD = ");
+                printf("%d\n",sx1272_CAD_value[_loraMode]*w);
+                
+                delay(sx1272_CAD_value[_loraMode]*w);
+                
+                // check for free channel (SIFS/DIFS) once again
                 _startDoCad=millis();
                 e = sx1272.doCAD(_send_cad_number);
                 _endDoCad=millis();
+     
+                printf("--> CAD ");
+                printf("%ld\n",_endDoCad-_startDoCad);
+            
+                if (!e)
+                  printf("OK2\n");            
+                else
+                  printf("#2\n");
+              }          
+          }    
+        }
+        else {
+          n_collision++;
+          foundBusyDuringDIFSafterBusyState++;          
+          printf("###");  
+          printf("%d\n",n_collision);
+          
+          printf("--> CAD until clear\n");
 
-                Serial.print(F("--> DIFS "));
-                Serial.print(_endDoCad-_startDoCad);
-                Serial.println();
+          int busyCount=0;
+              
+          _startDoCad=millis();
+          do {
+            
+            e = sx1272.doCAD(1);
 
-                // successull SIFS/DIFS
-                if (!e) {
+            if (e) {
+                printf("R");
+                busyCount++;              
+            }
+                         
+          } while (e && (millis()-_startDoCad < 2*max_toa));
 
-                    // previous collision detected
-                    if (n_collision) {
+          _endDoCad=millis();
 
-                        Serial.print(F("--> count for "));
-                        // count for random number of CAD/SIFS/DIFS?
-                        // SIFS=3CAD
-                        // DIFS=9CAD
-                        uint8_t w = random(0,W*_send_cad_number);
+          printf("\n--> found busy during ");
+          printf("%d\n", busyCount);
+                        
+          printf("--> wait duration ");
+          printf("%ld\n",_endDoCad-_startDoCad);
 
-                        Serial.println(w);
+          // to perform a new DIFS
+          printf("--> retry\n");
+          e=1;
+        }
 
-                        int busyCount=0;
-                        bool nowBusy=false;
+      } while (e && --DIFSretries);
+    
+      // CAD is OK, but need to check RSSI
+      if (_RSSIonSend) {
 
-                        do {
+          e=getRSSI();
+          uint8_t rssi_retry_count=8;
 
-                            if (nowBusy)
-                                e = sx1272.doCAD(_send_cad_number);
-                            else
-                                e = sx1272.doCAD(1);
+          if (!e) {
 
-                            if (nowBusy && e) {
-                                Serial.print(F("#"));
-                                busyCount++;
-                            }
-                            else if (nowBusy && !e) {
-                                Serial.print(F("|"));
-                                nowBusy=false;
-                            }
-                            else if (!e) {
-                                w--;
-                                Serial.print(F("-"));
-                            }
-                            else {
-                                Serial.print(F("*"));
-                                nowBusy=true;
-                                busyCount++;
-                            }
-
-                        } while (w);
-
-                        // if w==0 then we exit and
-                        // the packet will be sent
-                        Serial.println();
-                        Serial.print(F("--> busy during "));
-                        Serial.println(busyCount);
-                    }
-                    else {
-                        Serial.println(F("OK1"));
-
-                        if (_extendedIFS)  {
-                            // wait for random number of CAD
-                            uint8_t w = random(1,8);
-
-                            Serial.print(F("--> extended wait for "));
-                            Serial.println(w);
-                            Serial.print(F(" CAD = "));
-                            Serial.println(sx1272_CAD_value[_loraMode]*w);
-
-                            delay(sx1272_CAD_value[_loraMode]*w);
-
-                            // check for free channel (SIFS/DIFS) once again
-                            _startDoCad=millis();
-                            e = sx1272.doCAD(_send_cad_number);
-                            _endDoCad=millis();
-
-                            Serial.print(F("--> CAD "));
-                            Serial.println(_endDoCad-_startDoCad);
-
-                            if (!e)
-                                Serial.println("OK2");
-                            else
-                                Serial.println("#2");
-                        }
-                    }
-                }
-                else {
-                    n_collision++;
-                    foundBusyDuringDIFSafterBusyState++;
-                    Serial.print(F("###"));
-                    Serial.println(n_collision);
-
-                    Serial.println(F("--> CAD until clear"));
-
-                    int busyCount=0;
-
-                    _startDoCad=millis();
-                    do {
-
-                        e = sx1272.doCAD(1);
-
-                        if (e) {
-                            Serial.print(F("R"));
-                            busyCount++;
-                        }
-                    } while (e && (millis()-_startDoCad < 2*max_toa));
-
-                    _endDoCad=millis();
-
-                    Serial.println();
-                    Serial.print(F("--> busy during "));
-                    Serial.println(busyCount);
-
-                    Serial.print(F("--> wait "));
-                    Serial.println(_endDoCad-_startDoCad);
-
-                    // to perform a new DIFS
-                    Serial.println(F("--> retry"));
-                    e=1;
-                }
-			} while (e && --DIFSretries);
-	
-			// CAD is OK, but need to check RSSI
-			if (_RSSIonSend) {
-
-				e=getRSSI();
-				uint8_t rssi_retry_count=8;
-
-				if (!e) {
-
-                    do {
-						getRSSI();
-						Serial.print(F("--> RSSI "));
-						Serial.print(_RSSI);
-						Serial.println();
-						rssi_retry_count--;
-                        delay(1);
-                    } while (_RSSI > -90 && rssi_retry_count);
-				}
-				else
-					Serial.print(F("--> RSSI error\n"));
-
-				if (!rssi_retry_count)
-					carrierSenseRetry=true;
-				else
-					carrierSenseRetry=false;
-			}
-		} while (carrierSenseRetry && --retries);  
-  	}
+               do {
+                  getRSSI();
+                  printf("--> RSSI ");
+                  printf("%d\n",_RSSI);
+                  rssi_retry_count--;
+                  delay(1);
+              } while (_RSSI > -90 && rssi_retry_count);
+          }
+          else
+              printf("--> RSSI error\n");
+        
+          if (!rssi_retry_count)
+            carrierSenseRetry=true;  
+          else
+            carrierSenseRetry=false;
+      }
+      
+    } while (carrierSenseRetry && --retries);
+  }
 }
 
 void SX1272::CarrierSense3() {
 
-    int e;
-    bool carrierSenseRetry=false;
-    uint8_t n_collision=0;
-    uint8_t retries=3;
-    uint8_t n_cad=9;
-    uint32_t max_toa = sx1272.getToA(MAX_LENGTH);
+  int e;
+  bool carrierSenseRetry=false;
+  uint8_t n_collision=0;
+  uint8_t retries=3;
+  uint8_t n_cad=9;
+  
+  uint32_t max_toa = sx1272.getToA(MAX_LENGTH);
+  
+  //unsigned long end_carrier_sense=0;
+  
+  if (_send_cad_number && _enableCarrierSense) {
+    do { 
 
-    Serial.println(F("--> CS3"));
+      printf("--> CAD for MaxToa=");
+      printf("%ld\n", max_toa);
+        
+      //end_carrier_sense=millis()+(max_toa/n_cad)*(n_cad-1);
+      
+      for (int i=0; i<n_cad; i++) {      
+        _startDoCad=millis();
+        e = sx1272.doCAD(1);
+        _endDoCad=millis();
 
-    //unsigned long end_carrier_sense=0;
+        if (!e) {
+          printf("%ld", _endDoCad);
+          printf(" 0 ");
+          printf("%d\n", sx1272._RSSI);
+          printf(" ");
+          printf("%ld\n", _endDoCad-_startDoCad);
+        }
+        else
+          continue;
+          
+        // wait in order to have n_cad CAD operations during max_toa
+        delay(max_toa/(n_cad-1)-(millis()-_startDoCad));
+      }
 
-    if (_send_cad_number && _enableCarrierSense) {
-        do {
-            Serial.print(F("--> CAD for MaxToa="));
-            Serial.println(max_toa);
+      if (e) {
+        n_collision++;
+        printf("###");
+        printf("%d\n",n_collision);
 
-            //end_carrier_sense=millis()+(max_toa/n_cad)*(n_cad-1);
-
-            for (int i=0; i<n_cad; i++) {
-                _startDoCad=millis();
-                e = sx1272.doCAD(1);
-                _endDoCad=millis();
-
-                if (!e) {
-                    Serial.print(_endDoCad);
-                    Serial.print(F(" 0 "));
-                    Serial.print(sx1272._RSSI);
-                    Serial.print(F(" "));
-                    Serial.println(_endDoCad-_startDoCad);
-                }
-                else
-                    continue;
-
-                // wait in order to have n_cad CAD operations during max_toa
-                delay(max_toa/(n_cad-1)-(millis()-_startDoCad));
-            }
-
-            if (e) {
-                n_collision++;
-                Serial.print(F("#"));
-                Serial.println(n_collision);
-
-                Serial.print(F("Busy. Wait MaxToA="));
-                Serial.println(max_toa);
-                delay(max_toa);
-                // to perform a new max_toa waiting
-                Serial.println(F("--> retry"));
-                carrierSenseRetry=true;
-            }
-            else
-                carrierSenseRetry=false;
-
-        } while (carrierSenseRetry && --retries);
-    }
+        printf("Channel busy. Wait for MaxToA=");
+        printf("%ld\n", max_toa);
+        delay(max_toa);
+        // to perform a new max_toa waiting
+        printf("--> retry\n");
+        carrierSenseRetry=true;
+      }
+      else
+        carrierSenseRetry=false;
+      
+    } while (carrierSenseRetry && --retries);
+  }
 }
 
 /*
@@ -7176,16 +7041,15 @@ int8_t	SX1272::getSyncWord()
     int8_t state = 2;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'getSyncWord'"));
+    printf("\n");
+    printf("Starting 'getSyncWord'\n");
 #endif
 
     if( _modem == FSK )
     {
         state = -1;		// sync word is not available in FSK mode
 #if (SX1272_debug_mode > 1)
-        Serial.println(F("** FSK mode hasn't sync word **"));
-        Serial.println();
+        printf("** FSK mode hasn't sync word **\n");
 #endif
     }
     else
@@ -7195,10 +7059,9 @@ int8_t	SX1272::getSyncWord()
         state = 0;
 
 #if (SX1272_debug_mode > 1)
-        Serial.print(F("## Sync word is "));
-        Serial.print(_syncWord, HEX);
-        Serial.println(F(" ##"));
-        Serial.println();
+        printf("## Sync word is ");
+        printf("%X",_syncWord);
+        printf(" ##\n");
 #endif
     }
     return state;
@@ -7221,8 +7084,8 @@ int8_t	SX1272::setSyncWord(uint8_t sw)
     byte config1;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'setSyncWord'"));
+    printf("\n");
+    printf("Starting 'setSyncWord'\n");
 #endif
 
     st0 = readRegister(REG_OP_MODE);		// Save the previous status
@@ -7230,8 +7093,8 @@ int8_t	SX1272::setSyncWord(uint8_t sw)
     if( _modem == FSK )
     {
 #if (SX1272_debug_mode > 1)
-        Serial.print(F("## Notice that FSK hasn't sync word parameter, "));
-        Serial.println(F("so you are configuring it in LoRa mode ##"));
+        printf("## Notice that FSK hasn't sync word parameter, ");
+        printf("so you are configuring it in LoRa mode ##\n");
 #endif
         state = setLORA();
     }
@@ -7247,17 +7110,15 @@ int8_t	SX1272::setSyncWord(uint8_t sw)
         state=0;
         _syncWord = sw;
 #if (SX1272_debug_mode > 1)
-        Serial.print(F("## Sync Word "));
-        Serial.print(sw, HEX);
-        Serial.println(F(" has been successfully set ##"));
-        Serial.println();
+        printf("## Sync Word ");
+        printf("%X\n",sw);
+        printf(" has been successfully set ##\n");
 #endif
     }
     else {
         state=1;
 #if (SX1272_debug_mode > 1)
-        Serial.println(F("** There has been an error while configuring Sync Word parameter **"));
-        Serial.println();
+        printf("** There has been an error while configuring Sync Word parameter **\n");
 #endif
     }
 
@@ -7265,7 +7126,6 @@ int8_t	SX1272::setSyncWord(uint8_t sw)
     delay(100);
     return state;
 }
-
 
 int8_t SX1272::setSleepMode() {
 
@@ -7279,14 +7139,14 @@ int8_t SX1272::setSleepMode() {
     // inserted to avoid REG_OP_MODE stay = 0x40 (no sleep mode)
     delay(100);
     writeRegister(REG_OP_MODE, LORA_SLEEP_MODE);    // LoRa sleep mode
-	
-	//delay(50);
-	
+
+    //delay(50);
+
     value = readRegister(REG_OP_MODE);
 
-	//Serial.print(F("## REG_OP_MODE 0x"));
-	//Serial.println(value, HEX);
-	
+    //Serial.print(F("## REG_OP_MODE 0x"));
+    //Serial.println(value, HEX);
+
     if (value == LORA_SLEEP_MODE)
         state=0;
     else
@@ -7303,8 +7163,8 @@ int8_t SX1272::setPowerDBM(uint8_t dbm) {
     byte RegPaDacReg=(_board==SX1272Chip)?0x5A:0x4D;
 
 #if (SX1272_debug_mode > 1)
-    Serial.println();
-    Serial.println(F("Starting 'setPowerDBM'"));
+    printf("\n");
+    printf("Starting 'setPowerDBM'\n");
 #endif
 
     st0 = readRegister(REG_OP_MODE);	  // Save the previous status
@@ -7323,7 +7183,7 @@ int8_t SX1272::setPowerDBM(uint8_t dbm) {
 	
     if (dbm > 14)
         return state;
-      	
+       	
 	// disable high power output in all other cases
 	writeRegister(RegPaDacReg, 0x84);
 
@@ -7341,7 +7201,7 @@ int8_t SX1272::setPowerDBM(uint8_t dbm) {
         if (_needPABOOST) {
             value = dbm - 2;
             // we set the PA_BOOST pin
-            value = value | B10000000;
+            value = value | 0B10000000;
         }
         else
             value = dbm + 1;
@@ -7362,13 +7222,13 @@ int8_t SX1272::setPowerDBM(uint8_t dbm) {
         if (_needPABOOST) {
             value = dbm - 17 + 15;
             // we set the PA_BOOST pin
-            value = value | B10000000;
+            value = value | 0B10000000;
         }
         else
             value = dbm - pmax + 15;
 
         // set MaxPower to 7 -> Pmax=10.8+0.6*MaxPower [dBm] = 15
-        value = value | B01110000;
+        value = value | 0B01110000;
 
         writeRegister(REG_PA_CONFIG, value);
     }
@@ -7381,8 +7241,8 @@ int8_t SX1272::setPowerDBM(uint8_t dbm) {
     {
         state = 0;
 #if (SX1272_debug_mode > 1)
-        Serial.println(F("## Output power has been successfully set ##"));
-        Serial.println();
+        printf("## Output power has been successfully set ##\n");
+        printf("\n");
 #endif
     }
     else
@@ -7423,14 +7283,13 @@ long SX1272::getRemainingToA() {
         _remainingToA=MAX_DUTY_CYCLE_PER_HOUR;
         _endToAcycle=_startToAcycle+DUTYCYCLE_DURATION;
 
-        Serial.println(F("## new cycle for ToA ##"));
-        Serial.print(F("cycle begins at "));
-        Serial.print(_startToAcycle);
-        Serial.print(F(" cycle ends at "));
-        Serial.print(_endToAcycle);
-        Serial.print(F(" remaining ToA is "));
-        Serial.print(_remainingToA);
-        Serial.println();
+        printf("## new cycle for ToA ##\n");
+        printf("cycle begins at ");
+        printf("%ld", _startToAcycle);
+        printf(" cycle ends at ");
+        printf("%ld", _endToAcycle);
+        printf(" remaining ToA is ");
+        printf("%ld\n", _remainingToA);
     }
 
     return _remainingToA;
@@ -7448,20 +7307,5 @@ long SX1272::removeToA(uint16_t toa) {
     return _remainingToA;
 }
 
-int8_t SX1272::setFreqHopOn() {
-    
-    double bw=0.0;
-    bw=(_bandwidth==BW_125)?125e3:((_bandwidth==BW_250)?250e3:500e3);
-    // Symbol rate : time for one symbol (secs)
-    double rs = bw / ( 1 << _spreadingFactor);
-    double ts = 1 / rs;
-    
-    return 0;        
-}
-
-void SX1272::setCSPin(uint8_t cs) {
-	//need to call this function before the ON() function
-	_SX1272_SS=cs;
-}
 
 SX1272 sx1272 = SX1272();
