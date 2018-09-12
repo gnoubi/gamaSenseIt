@@ -1,4 +1,4 @@
-/* 
+/*
  *  Library for LoRa 868 / 915MHz SX1272 LoRa module
  *  
  *  Copyright (C) Libelium Comunicaciones Distribuidas S.L. 
@@ -21,7 +21,11 @@
  *  Design:            David Gascón 
  *  Implementation:    Covadonga Albiñana & Victor Boria
  */
-
+ 
+/*
+ * Many changes have been performed to v1.1 released by Libelium
+ * C. Pham, see change logs in SX1272.cpp
+ */
 
 #ifndef SX1272_h
 #define SX1272_h
@@ -30,13 +34,10 @@
  * Includes
  ******************************************************************************/
 
+#include <stdlib.h>
 #include <stdint.h>
-
-#ifdef RASPBERRY2
-#include "arduPi_pi2.h"
-#else
-#include "arduPi.h"
-#endif
+#include <Arduino.h>
+#include <SPI.h>
 
 #ifndef inttypes_h
 	#include <inttypes.h>
@@ -51,13 +52,26 @@
 #define W_REQUESTED_ACK
 //#define W_NET_KEY
 //#define W_INITIALIZATION
-#define SX1272_RST  7
+
+//it is not mandatory to wire this pin
+//we take pin 4 as it is available on many boards
+//#define SX1272_WRST
+#define SX1272_RST  4
+
+#if defined ARDUINO_AVR_FEATHER32U4 || defined ARDUINO_SAMD_FEATHER_M0
+// on the Adafruit Feather, the RFM95W is embeded and CS pin is normally on pin 8
+#define SX1272_SS 8
+#elif defined ARDUINO_ESP8266_ESP01
+#define SX1272_SS 15
+#else
+// starting from November 3rd, 2017, the CS pin is always pin number 10 on Arduino boards
+// if you use the Libelium Multiprotocol shield to connect a Libelium LoRa then change the CS pin to pin 2
+#define SX1272_SS 10
+#endif
 
 #define SX1272Chip  0
 #define SX1276Chip  1
 // end
-
-#define SX1272_SS 10
 
 #define SX1272_debug_mode 0
 
@@ -152,10 +166,10 @@
 #define        REG_SEQ_CONFIG2	  				0x37
 #define        REG_DETECTION_THRESHOLD          0x37
 #define        REG_TIMER_RESOL	  				0x38
-#define        REG_TIMER1_COEF	  				0x39
 // added by C. Pham
 #define        REG_SYNC_WORD                    0x39
 //end
+#define        REG_TIMER1_COEF	  				0x39
 #define        REG_TIMER2_COEF	  				0x3A
 #define        REG_IMAGE_CAL	  				0x3B
 #define        REG_TEMP		  					0x3C
@@ -208,7 +222,7 @@
 // added by C. Pham
 // The crystal oscillator frequency of the module
 #define RH_LORA_FXOSC 32000000.0
-
+ 
 // The Frequency Synthesizer step = RH_LORA_FXOSC / 2^^19
 #define RH_LORA_FCONVERT  (524288 / RH_LORA_FXOSC)
 
@@ -225,7 +239,7 @@ const uint32_t CH_07_868 = 0xD80666; // channel 07, central freq = 864.10MHz
 const uint32_t CH_08_868 = 0xD81999; // channel 08, central freq = 864.40MHz
 const uint32_t CH_09_868 = 0xD82CCC; // channel 09, central freq = 864.70MHz
 //
-const uint32_t CH_10_868 = 0xD84CCC; // channel 10, central freq = 865.20MHz
+const uint32_t CH_10_868 = 0xD84CCC; // channel 10, central freq = 865.20MHz, = 865200000*RH_LORA_FCONVERT
 const uint32_t CH_11_868 = 0xD86000; // channel 11, central freq = 865.50MHz
 const uint32_t CH_12_868 = 0xD87333; // channel 12, central freq = 865.80MHz
 const uint32_t CH_13_868 = 0xD88666; // channel 13, central freq = 866.10MHz
@@ -236,7 +250,7 @@ const uint32_t CH_17_868 = 0xD90000; // channel 17, central freq = 868.00MHz
 
 // added by C. Pham
 const uint32_t CH_18_868 = 0xD90666; // 868.1MHz for LoRaWAN test
-
+// end
 const uint32_t CH_00_900 = 0xE1C51E; // channel 00, central freq = 903.08MHz
 const uint32_t CH_01_900 = 0xE24F5C; // channel 01, central freq = 905.24MHz
 const uint32_t CH_02_900 = 0xE2D999; // channel 02, central freq = 907.40MHz
@@ -309,8 +323,8 @@ const uint8_t LORA_RX_MODE = 0x85;
 const uint8_t LORA_CAD_MODE = 0x87;
 #define LNA_MAX_GAIN                0x23
 #define LNA_OFF_GAIN                0x00
-#define LNA_LOW_GAIN		    	0x20
-//end
+#define LNA_LOW_GAIN		    0x20
+// end
 
 const uint8_t LORA_STANDBY_FSK_REGS_MODE = 0xC1;
 
@@ -342,7 +356,8 @@ const uint8_t OFFSET_PAYLOADLENGTH = 4+NET_KEY_LENGTH;
 const uint8_t net_key_0 = 0x12;
 const uint8_t net_key_1 = 0x34;
 #else
-// modified by C. Pham to remove the retry field
+// modified by C. Pham to remove the retry field and the length field
+// which will be replaced by packet type field
 const uint8_t OFFSET_PAYLOADLENGTH = 4;
 #endif
 const uint8_t OFFSET_RSSI = 139;
@@ -377,10 +392,10 @@ const uint8_t INCORRECT_PACKET_TYPE = 2;
  */
 struct pack
 {
-        // added by C. Pham
-#ifdef W_NET_KEY
-        uint8_t netkey[NET_KEY_LENGTH];
-#endif
+	// added by C. Pham
+#ifdef W_NET_KEY	
+	uint8_t netkey[NET_KEY_LENGTH];
+#endif	
 	//! Structure Variable : Packet destination
 	/*!
  	*/
@@ -409,6 +424,8 @@ struct pack
  	*/
 	uint8_t length;
 
+    // modified by C. Pham
+    // use a pointer instead of static variable to same memory footprint
 	//! Structure Variable : Packet payload
 	/*!
  	*/
@@ -436,7 +453,13 @@ class SX1272
 
 public:
 
-	SX1272();
+	//! class constructor
+  	/*!
+	It does nothing
+	\param void
+	\return void
+  	 */
+   	SX1272();
 
 	//! It puts the module ON
   	/*!
@@ -1152,7 +1175,7 @@ public:
 	*/
 	uint8_t getTemp();
 
-        // added by C. Pham
+    // added by C. Pham
     void setPacketType(uint8_t type);
     void RxChainCalibration();
     uint8_t doCAD(uint8_t counter);
@@ -1160,7 +1183,7 @@ public:
     void CarrierSense(uint8_t cs=1);
     void CarrierSense1();
     void CarrierSense2();
-    void CarrierSense3();        
+    void CarrierSense3(); 
     int8_t setSyncWord(uint8_t sw);
     int8_t getSyncWord();
     int8_t setSleepMode();
@@ -1168,11 +1191,14 @@ public:
     long limitToA();
     long getRemainingToA();
     long removeToA(uint16_t toa);
+    int8_t setFreqHopOn();
+    void setCSPin(uint8_t cs);
 
     // SX1272 or SX1276?
     uint8_t _board;
     uint8_t _syncWord;
     uint8_t _defaultSyncWord;
+    uint8_t _SX1272_SS;
     unsigned long _starttime;
     unsigned long _stoptime;
     unsigned long _startDoCad;
@@ -1182,23 +1208,25 @@ public:
     bool _extendedIFS;
     bool _RSSIonSend;
     bool _enableCarrierSense;
+    bool _freqHopOn;
+    uint8_t _hopPeriod;
     bool _rawFormat;
     int8_t _rcv_snr_in_ack;
     bool _needPABOOST;
     uint8_t _rawSNR;
 
 #ifdef W_REQUESTED_ACK
-    uint8_t _requestACK;
-    uint8_t _requestACK_indicator;
+	uint8_t _requestACK;
+	uint8_t _requestACK_indicator;
 #endif
 
 #ifdef W_NET_KEY
-    uint8_t _my_netkey[NET_KEY_LENGTH];
-    uint8_t _the_net_key_0;
-    uint8_t _the_net_key_1;
+	uint8_t _my_netkey[NET_KEY_LENGTH];
+        uint8_t _the_net_key_0;
+        uint8_t _the_net_key_1;
 #endif
-    //end
-
+	// end
+	
 	/// Variables /////////////////////////////////////////////////////////////
 
 	//! Variable : bandwidth configured in LoRa mode.
@@ -1392,15 +1420,10 @@ public:
    	*/
 	uint16_t _sendTime;
 
-private:
-
-    void maxWrite16();
-
-    char txbuf[2];
-    char rxbuf[2];
-
     // added by C. Pham for ToA management
     //
+private:
+
     bool _limitToA;
     long _remainingToA;
     unsigned long _startToAcycle;

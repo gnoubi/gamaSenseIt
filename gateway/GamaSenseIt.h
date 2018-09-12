@@ -43,7 +43,7 @@
 #define PABOOST
 #define LORAMODE  1
 
-#define MAX_DBM 20
+#define MAX_DBM 14
 
 
 using namespace std;
