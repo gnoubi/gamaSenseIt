@@ -1,5 +1,7 @@
 package ummisco.gamaSenseIt.springServer.data.model;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -28,7 +30,7 @@ public class Sensor {
 	private SensorType sensorType;
 	
 	@OneToMany
-	private SensoredBulkData bulkData;
+	private List<SensoredBulkData> bulkData;
 	
 	public Sensor()
 	{}
