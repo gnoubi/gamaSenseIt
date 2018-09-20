@@ -3,6 +3,7 @@ package ummisco.gamaSenseIt.springServer.data.services;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,8 +13,12 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 
 import ummisco.gamaSenseIt.springServer.data.model.Sensor;
+import ummisco.gamaSenseIt.springServer.data.model.SensorData;
+import ummisco.gamaSenseIt.springServer.data.model.SensorMetaData;
 import ummisco.gamaSenseIt.springServer.data.model.SensorType;
 import ummisco.gamaSenseIt.springServer.data.model.SensoredBulkData;
+import ummisco.gamaSenseIt.springServer.data.repositories.ISensorDataRepository;
+import ummisco.gamaSenseIt.springServer.data.repositories.ISensorMetaDataRepository;
 import ummisco.gamaSenseIt.springServer.data.repositories.ISensorRepository;
 import ummisco.gamaSenseIt.springServer.data.repositories.ISensorTypeRepository;
 import ummisco.gamaSenseIt.springServer.data.repositories.ISensoredBulkDataRepository;
@@ -27,6 +32,12 @@ public class SensorManagment implements ISensorManagment{
 	ISensorRepository sensorRepo;
 	@Autowired
 	ISensoredBulkDataRepository bulkDataRepo;
+	@Autowired
+	ISensorMetaDataRepository sensorMetaDataRepo;
+	@Autowired
+	ISensorDataRepository analysedDataRepo;
+	@Autowired
+	ISensorDataAnalyser dataAnalyser;
 	
 	@Override
 	public void saveDefaultSensorInit() {
@@ -40,12 +51,12 @@ public class SensorManagment implements ISensorManagment{
 		Sensor s1 = new Sensor(DEFAULT_SENSOR_NAME,p,mtype);
 		sensorRepo.save(s1);
 	}
+	
+
 	@Override
 	public void saveData(String message, Date date) {
 		
-		System.out.println("avant message "+message);
-		
-	 	String[] data = message.split(";");
+		String[] data = message.split(";");
 		
 	 	long capturedateS=Long.valueOf(data[0]).longValue();
 	 	String sensorName=data[1];
@@ -53,8 +64,7 @@ public class SensorManagment implements ISensorManagment{
 	 	String contents=data[3];
 	 	List<Sensor> foundSensors = sensorRepo.findByName(sensorName);
 	 	Sensor selectedSensor = null;
-	 	if(foundSensors.isEmpty())
-	 	{
+	 	if(foundSensors.isEmpty()) {
 			SensorType typeSens = sensorTypeRepo.findByNameAndVersion(DEFAULT_SENSOR_TYPE_NAME,DEFAULT_SENSOR_VERSION).get(0);
 	 		GeometryFactory gf=new GeometryFactory();
 			Point p = gf.createPoint(new Coordinate(0, 0));
@@ -67,10 +77,29 @@ public class SensorManagment implements ISensorManagment{
 	 	}
 		
 	 	Date capturedate = new Date(capturedateS);
-	 	
-	 	System.out.println("Data to store "+ token+" " +capturedate+ " "+contents);
-	 	
 	 	SensoredBulkData bulkData = new SensoredBulkData(selectedSensor,token,capturedate,date,contents);
 	 	bulkDataRepo.save(bulkData);
+	 	List<SensorData> aData = dataAnalyser.analyseBulkData(contents, capturedate, selectedSensor);
+	 	analysedDataRepo.saveAll(aData);
+	}
+
+
+	@Override
+	public Sensor updateSensorInformation(Sensor s) {
+		return sensorRepo.save(s);
+	}
+
+
+	@Override
+	public SensorMetaData addSensorMetaData(Sensor s, SensorMetaData md) {
+		SensorMetaData res = sensorMetaDataRepo.save(md);
+		s.addmeasuredData(md);
+		sensorRepo.save(s);
+		return res;
+	}
+	
+	public SensorType addSensorType(SensorType st)
+	{
+		return sensorTypeRepo.save(st);
 	}
 }

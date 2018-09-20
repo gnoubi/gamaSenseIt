@@ -29,7 +29,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import ummisco.gamaSenseIt.springServer.data.services.ISensorManagment;
 
 
-@SpringBootApplication(scanBasePackages= {"ummisco.gamaSenseIt.springServer.data.model", "ummisco.gamaSenseIt.springServer.data.repositories","ummisco.gamaSenseIt.springServer.data.services"})
+@SpringBootApplication(scanBasePackages= {"ummisco.gamaSenseIt.springServer.data.model", "ummisco.gamaSenseIt.springServer.data.repositories","ummisco.gamaSenseIt.springServer.data.services","ummisco.gamaSenseIt.springServer.data.controller"})
 @EnableAutoConfiguration
 //@EnableWebSecurity
 
