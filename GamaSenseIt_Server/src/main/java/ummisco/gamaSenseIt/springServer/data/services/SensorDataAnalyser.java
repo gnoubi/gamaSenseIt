@@ -10,31 +10,51 @@ import org.springframework.stereotype.Service;
 
 import ummisco.gamaSenseIt.springServer.data.model.Sensor;
 import ummisco.gamaSenseIt.springServer.data.model.SensorData;
-import ummisco.gamaSenseIt.springServer.data.model.SensorMetaData;
-import ummisco.gamaSenseIt.springServer.data.repositories.ISensorMetaDataRepository;
+import ummisco.gamaSenseIt.springServer.data.model.SensorMetadata;
+import ummisco.gamaSenseIt.springServer.data.model.ParameterMetadata;
+import ummisco.gamaSenseIt.springServer.data.model.ParameterMetadata.DataFormat;
+import ummisco.gamaSenseIt.springServer.data.repositories.IParameterMetadataRepository;
 
 @Service
 public class SensorDataAnalyser implements ISensorDataAnalyser {
 
 	@Autowired 
-	ISensorMetaDataRepository metadataRepo;
+	IParameterMetadataRepository metadataRepo;
 	@Override
 	public List<SensorData> analyseBulkData(String data, Date captureDate, Sensor s) {
-		
+		System.out.println("sensor "+ s.getName()+" data "+data+"xxx");
 		ArrayList<SensorData> res = new ArrayList<SensorData>();
-		String sep = s.getDataSeparator();
+		SensorMetadata smd = s.getMetadata();
+		String sep = smd.getDataSeparator();
 		int i = 0;
 		String[] datas= data.split(sep);
-		String[] metaDatas = s.getMeasuredDataOrder().split(Sensor.measureOrderSeparator);
+		String[] metaDatas = smd.getMeasuredDataOrder().split(SensorMetadata.MEASURE_ORDER_SEPARATOR);
 		for(String sid:metaDatas) {
+			System.out.println("SID/"+sid+"/");
 			long metaKey = Long.valueOf(sid).longValue();
-			double localData = Double.valueOf(datas[i]).doubleValue();
-			Optional<SensorMetaData> md = s.getMetadata(metaKey);
+			Optional<ParameterMetadata> md = s.getParameterMetadata(metaKey);
 			if(md.isPresent())
 			{
-				SensorData dt = new SensorData(localData,captureDate,md.get());
+				SensorData dt = null;
+				ParameterMetadata pmd=md.get();
+				if(pmd.getDataFormat().equals(DataFormat.DOUBLE))
+				{
+					double localData = Double.valueOf(datas[i]).doubleValue();
+					dt = new SensorData(localData,captureDate,md.get());
+				}
+				else if(pmd.getDataFormat().equals(DataFormat.DOUBLE))
+				{
+					long localData = Long.valueOf(datas[i]).longValue();
+					dt = new SensorData(localData,captureDate,md.get());
+				}
+				else if(pmd.getDataFormat().equals(DataFormat.STRING))
+				{
+					String localData = datas[i];
+					dt = new SensorData(localData,captureDate,md.get());
+				}
 				res.add(dt);
 			}
+			i++;
 		}
 		return res;
 	}

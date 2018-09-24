@@ -17,7 +17,6 @@ import com.vividsolutions.jts.geom.Point;
 
 @Entity 
 public class Sensor {
-	public final static String measureOrderSeparator = ":";
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -25,40 +24,32 @@ public class Sensor {
 	private String name;
 	private double longitude;
 	private double latitude;
-	private String measuredDataOrder;
-	private String dataSeparator = ":";
 	
 	
 
 	@ManyToOne
-	private SensorType sensorType;
+	private SensorMetadata sensorType;
 	
 	@OneToMany(cascade = CascadeType.ALL,
             fetch = FetchType.LAZY,
             mappedBy="sensor")
 	private Set<SensoredBulkData> bulkData = new HashSet<>();
 	
-	@OneToMany(cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY,
-            mappedBy="sensor")
-	private Set<SensorMetaData> metaData = new HashSet<>();
-	
+
 	public Sensor()
 	{
-		measuredDataOrder = "";
 		name = "";
 	}
-	public Sensor( String sensorName, Point location, SensorType sensorType) {
+	public Sensor( String sensorName, Point location, SensorMetadata sensorType) {
 		this(sensorName,location.getX(),location.getY(),sensorType);
 	}
 	
-	public Sensor( String sensorName, double locationX,double locationY, SensorType sensorType) {
-		super();
+	public Sensor( String sensorName, double locationX,double locationY, SensorMetadata sensorType) {
+		this();
 		this.longitude = locationX;
 		this.latitude = locationY;
 		this.name = sensorName;
 		this.sensorType = sensorType;
-		measuredDataOrder = "";
 	}
 	
 	public Long getIdSensor() {
@@ -68,18 +59,7 @@ public class Sensor {
 		this.idSensor = idSensor;
 	}
 	
-	public Optional<SensorMetaData> getMetadata(long id)
-	{
-		SensorMetaData res = null;
-		for(SensorMetaData md:this.metaData){
-			if(md.getId()==id)
-			{
-				res=md;
-				break;
-			}
-		}
-		return Optional.ofNullable(res);
-	}
+	
 	
 	public String getName() {
 		return name;
@@ -88,10 +68,10 @@ public class Sensor {
 		this.name = sensorName;
 	}
 
-	public SensorType getSensorType() {
+	public SensorMetadata getMetadata() {
 		return sensorType;
 	}
-	public void setSensorType(SensorType sensorType) {
+	public void setMetadata(SensorMetadata sensorType) {
 		this.sensorType = sensorType;
 	}
 	public double getLongitude() {
@@ -107,30 +87,11 @@ public class Sensor {
 		this.latitude = latitude;
 	}
 	
-	public Set<SensorMetaData> getMetaData() {
-		return metaData;
-	}
-	public void setMetaData(Set<SensorMetaData> metaData) {
-		this.metaData = metaData;
-	}
-	public String getMeasuredDataOrder() {
-		return measuredDataOrder;
-	}
-	public void setMeasuredDataOrder(String measuredData) {
-		this.measuredDataOrder = measuredData;
-	}
-	
-	public String getDataSeparator() {
-		return dataSeparator;
-	}
-	public void setDataSeparator(String metadataSeparator) {
-		this.dataSeparator = metadataSeparator;
-	}
-	public void addmeasuredData(SensorMetaData md)
+	public Optional<ParameterMetadata> getParameterMetadata(long id)
 	{
-		this.measuredDataOrder = this.measuredDataOrder + md.getId()+measureOrderSeparator;
-		this.metaData.add(md);
+		if(this.sensorType == null)
+			return Optional.empty();
+		return this.sensorType.getParameterMetadata(id);
 	}
-	
 	
 }

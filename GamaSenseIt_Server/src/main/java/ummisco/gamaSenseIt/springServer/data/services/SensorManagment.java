@@ -14,26 +14,28 @@ import com.vividsolutions.jts.geom.Point;
 
 import ummisco.gamaSenseIt.springServer.data.model.Sensor;
 import ummisco.gamaSenseIt.springServer.data.model.SensorData;
-import ummisco.gamaSenseIt.springServer.data.model.SensorMetaData;
-import ummisco.gamaSenseIt.springServer.data.model.SensorType;
+import ummisco.gamaSenseIt.springServer.data.model.ParameterMetadata;
+import ummisco.gamaSenseIt.springServer.data.model.ParameterMetadata.DataFormat;
+import ummisco.gamaSenseIt.springServer.data.model.ParameterMetadata.DataParameter;
+import ummisco.gamaSenseIt.springServer.data.model.SensorMetadata;
 import ummisco.gamaSenseIt.springServer.data.model.SensoredBulkData;
 import ummisco.gamaSenseIt.springServer.data.repositories.ISensorDataRepository;
-import ummisco.gamaSenseIt.springServer.data.repositories.ISensorMetaDataRepository;
+import ummisco.gamaSenseIt.springServer.data.repositories.IParameterMetadataRepository;
 import ummisco.gamaSenseIt.springServer.data.repositories.ISensorRepository;
-import ummisco.gamaSenseIt.springServer.data.repositories.ISensorTypeRepository;
+import ummisco.gamaSenseIt.springServer.data.repositories.ISensorMetadataRepository;
 import ummisco.gamaSenseIt.springServer.data.repositories.ISensoredBulkDataRepository;
 
 @Service("SensorManagment")
 public class SensorManagment implements ISensorManagment{
 
 	@Autowired
-	ISensorTypeRepository sensorTypeRepo;
+	IParameterMetadataRepository parameterSensorRepo;
 	@Autowired
 	ISensorRepository sensorRepo;
 	@Autowired
 	ISensoredBulkDataRepository bulkDataRepo;
 	@Autowired
-	ISensorMetaDataRepository sensorMetaDataRepo;
+	ISensorMetadataRepository sensorMetadataRepo;
 	@Autowired
 	ISensorDataRepository analysedDataRepo;
 	@Autowired
@@ -44,12 +46,24 @@ public class SensorManagment implements ISensorManagment{
 		
 		GeometryFactory gf=new GeometryFactory();
 		
-		SensorType mtype = new SensorType( DEFAULT_SENSOR_TYPE_NAME,DEFAULT_SENSOR_VERSION);
-		sensorTypeRepo.save(mtype);
+		SensorMetadata mtype = new SensorMetadata( DEFAULT_SENSOR_TYPE_NAME,DEFAULT_SENSOR_VERSION);
+		sensorMetadataRepo.save(mtype);
 		
 		Point p = gf.createPoint(new Coordinate(12.3, 5.2));
 		Sensor s1 = new Sensor(DEFAULT_SENSOR_NAME,p,mtype);
 		sensorRepo.save(s1);
+		
+		
+		SensorMetadata smd = new SensorMetadata("capMetadata", "v0", ":");
+		addSensorMetadata(smd);
+		ParameterMetadata p1 = new ParameterMetadata("temperature","c",DataFormat.DOUBLE,DataParameter.TEMPERATURE);
+		ParameterMetadata p2 = new ParameterMetadata("humidity","c",DataFormat.STRING,DataParameter.TEMPERATURE);
+		addParameterToSensorMetadata(smd, p1);
+		addParameterToSensorMetadata(smd, p2);
+		
+		Sensor sx = new Sensor("node_1",p,smd);
+		sensorRepo.save(sx);
+
 	}
 	
 
@@ -65,7 +79,7 @@ public class SensorManagment implements ISensorManagment{
 	 	List<Sensor> foundSensors = sensorRepo.findByName(sensorName);
 	 	Sensor selectedSensor = null;
 	 	if(foundSensors.isEmpty()) {
-			SensorType typeSens = sensorTypeRepo.findByNameAndVersion(DEFAULT_SENSOR_TYPE_NAME,DEFAULT_SENSOR_VERSION).get(0);
+			SensorMetadata typeSens = sensorMetadataRepo.findByNameAndVersion(DEFAULT_SENSOR_TYPE_NAME,DEFAULT_SENSOR_VERSION).get(0);
 	 		GeometryFactory gf=new GeometryFactory();
 			Point p = gf.createPoint(new Coordinate(0, 0));
 			selectedSensor = new Sensor(sensorName,p,typeSens);
@@ -76,7 +90,7 @@ public class SensorManagment implements ISensorManagment{
 	 		selectedSensor = foundSensors.get(0);
 	 	}
 		
-	 	Date capturedate = new Date(capturedateS);
+	 	Date capturedate = new Date(capturedateS*1000);
 	 	SensoredBulkData bulkData = new SensoredBulkData(selectedSensor,token,capturedate,date,contents);
 	 	bulkDataRepo.save(bulkData);
 	 	List<SensorData> aData = dataAnalyser.analyseBulkData(contents, capturedate, selectedSensor);
@@ -89,17 +103,21 @@ public class SensorManagment implements ISensorManagment{
 		return sensorRepo.save(s);
 	}
 
+	@Override
+	public SensorMetadata addSensorMetadata(SensorMetadata s) {
+		sensorMetadataRepo.save(s);
+		return s;
+	}
+	
 
 	@Override
-	public SensorMetaData addSensorMetaData(Sensor s, SensorMetaData md) {
-		SensorMetaData res = sensorMetaDataRepo.save(md);
+	public ParameterMetadata addParameterToSensorMetadata(SensorMetadata s, ParameterMetadata md) {
+		md.setSensorMetadata(s);
+		ParameterMetadata res = parameterSensorRepo.save(md);
 		s.addmeasuredData(md);
-		sensorRepo.save(s);
+		sensorMetadataRepo.save(s);
 		return res;
 	}
 	
-	public SensorType addSensorType(SensorType st)
-	{
-		return sensorTypeRepo.save(st);
-	}
+
 }

@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import ummisco.gamaSenseIt.springServer.data.model.SensorMetaData;
-import ummisco.gamaSenseIt.springServer.data.model.SensorType;
-import ummisco.gamaSenseIt.springServer.data.model.SensorMetaData.DataFormat;
-import ummisco.gamaSenseIt.springServer.data.model.SensorMetaData.DataParameter;
+import ummisco.gamaSenseIt.springServer.data.model.ParameterMetadata;
+import ummisco.gamaSenseIt.springServer.data.model.SensorMetadata;
+import ummisco.gamaSenseIt.springServer.data.model.ParameterMetadata.DataFormat;
+import ummisco.gamaSenseIt.springServer.data.model.ParameterMetadata.DataParameter;
 import ummisco.gamaSenseIt.springServer.data.model.Sensor;
 import ummisco.gamaSenseIt.springServer.data.repositories.ISensorRepository;
-import ummisco.gamaSenseIt.springServer.data.repositories.ISensorTypeRepository;
+import ummisco.gamaSenseIt.springServer.data.repositories.ISensorMetadataRepository;
 import ummisco.gamaSenseIt.springServer.data.services.ISensorManagment;
 
 @RestController
@@ -27,10 +27,13 @@ public class DataController {
 	ISensorRepository sensors;
 	
 	@Autowired
+	ISensorMetadataRepository sensorMetadata;
+	
+	@Autowired
 	ISensorManagment sensorManagmentService;
 	
 	@Autowired
-	ISensorTypeRepository sensorTypeRepo;
+	ISensorMetadataRepository sensorTypeRepo;
 	
 	public DataController()
 	{
@@ -74,7 +77,7 @@ public class DataController {
 			@RequestParam(value="latitude", required=true, defaultValue="0") double lat,
 			@RequestParam(value="sensorType", required=true) long idSensorType){
 		
-		Optional<SensorType> type = sensorTypeRepo.findById(idSensorType);
+		Optional<SensorMetadata> type = sensorTypeRepo.findById(idSensorType);
 		
 		if(!type.isPresent())
 			return null;
@@ -83,7 +86,7 @@ public class DataController {
 		if(!selectedSensor.isEmpty())
 			return selectedSensor.get(0);
 	
-		Optional<SensorType> st= sensorTypeRepo.findById(idSensorType);
+		Optional<SensorMetadata> st= sensorTypeRepo.findById(idSensorType);
 		//if(sensorManagmentService.)
 		if(!st.isPresent())
 			return null;
@@ -121,18 +124,36 @@ public class DataController {
         return s;
     }
 	
-    @RequestMapping("/addMetadata")
-    public SensorMetaData addSensorMetaData(@RequestParam(value="id",required=true, defaultValue="nil") String id,
+    @RequestMapping("/addSensorMetadata")
+    public SensorMetadata addSensorMetaData(
+    		@RequestParam(value="name", required=true) String varName,
+    		@RequestParam(value="version", required=true) String version,
+    		@RequestParam(value="dataseparator", required=false, defaultValue=SensorMetadata.DEFAULT_DATA_SEPARATOR) String sep)
+    {
+    	List<SensorMetadata> lsm = sensorMetadata.findByNameAndVersion(varName, version);
+    	SensorMetadata st = null;
+    	if(lsm.size()==0) {
+    		st = new SensorMetadata(varName, version,sep);
+    		st= this.sensorMetadata.save(st);
+    	}
+    	
+    	return st;
+    }
+    
+    
+    
+    @RequestMapping("/addParameterMetadata")
+    public ParameterMetadata addParameterMetadata(
+    		@RequestParam(value="sensorMetadata", required=true, defaultValue="nil") long id,
     		@RequestParam(value="varname", required=true, defaultValue="nil") String varName,
     		@RequestParam(value="varunit", required=true, defaultValue="nil") String varUnit,
     		@RequestParam(value="varFormat", required=true, defaultValue="nil") String varFormat,
     		@RequestParam(value="mesuredParameter", required=true, defaultValue="nil") String mesuredParameter
-			)
+    		)
     {
-    	Sensor s = findSensor(id);
-    	if(s == null)
+    	Optional<SensorMetadata> md= sensorMetadata.findById(id);
+    	if(!md.isPresent())
     		return null;
-    	
     	DataFormat df = null;
     	DataParameter dp = null;
     	try {
@@ -142,8 +163,8 @@ public class DataController {
     	{
     		return null;
     	}
-    	SensorMetaData smd = new SensorMetaData(varName, varUnit, df, dp);
-    	sensorManagmentService.addSensorMetaData(s, smd);
+    	ParameterMetadata smd = new ParameterMetadata(varName, varUnit, df, dp);
+    	sensorManagmentService.addParameterToSensorMetadata(md.get(), smd);
     	return smd;
     }
 	
