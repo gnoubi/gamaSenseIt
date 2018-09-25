@@ -1,20 +1,27 @@
 package ummisco.gamaSenseIt.springServer.data.controller;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import ummisco.gamaSenseIt.springServer.data.model.DisplayedData;
 import ummisco.gamaSenseIt.springServer.data.model.ParameterMetadata;
 import ummisco.gamaSenseIt.springServer.data.model.SensorMetadata;
 import ummisco.gamaSenseIt.springServer.data.model.ParameterMetadata.DataFormat;
 import ummisco.gamaSenseIt.springServer.data.model.ParameterMetadata.DataParameter;
 import ummisco.gamaSenseIt.springServer.data.model.Sensor;
+import ummisco.gamaSenseIt.springServer.data.model.SensorData;
 import ummisco.gamaSenseIt.springServer.data.repositories.ISensorRepository;
+import ummisco.gamaSenseIt.springServer.data.repositories.ISensorDataRepository;
 import ummisco.gamaSenseIt.springServer.data.repositories.ISensorMetadataRepository;
 import ummisco.gamaSenseIt.springServer.data.services.ISensorManagment;
 
@@ -34,6 +41,10 @@ public class DataController {
 	
 	@Autowired
 	ISensorMetadataRepository sensorTypeRepo;
+	
+	@Autowired
+	ISensorDataRepository sensorData;
+	
 	
 	public DataController()
 	{
@@ -168,5 +179,32 @@ public class DataController {
     	return smd;
     }
 	
+    @RequestMapping("/sensorDataafterDate")
+    public List<DisplayedData> getDataAfter(    		
+    		@RequestParam(value="idsensor", required=true) long id,
+    		@RequestParam(value="idparameter", required=true) long idParam,
+    		@RequestParam(value="startdate") @DateTimeFormat(pattern="MM/dd/yyyy") Date start)
+
+    {
+    	Calendar dte = Calendar.getInstance();
+    	dte.add(Calendar.DAY_OF_MONTH, 1);
+    	return getDataBetween(id, idParam,start,dte.getTime() );
+    }
+    
+    @RequestMapping("/sensorDataBetweenDates")
+    public List<DisplayedData> getDataBetween(
+    		@RequestParam(value="idsensor", required=true) long id,
+    		@RequestParam(value="idparameter", required=true) long idParam,
+    		@RequestParam(value="startdate") @DateTimeFormat(pattern="MM/dd/yyyy") Date start,
+    		@RequestParam(value="enddate") @DateTimeFormat(pattern="MM/dd/yyyy") Date enddate)
+    {
+    	List<DisplayedData> dpl = new ArrayList<DisplayedData>();
+    	List<SensorData> dts = this.sensorData.findAllByDate(id,idParam,start, enddate);
+    	
+    	for(SensorData dt: dts)
+    		dpl.add(new DisplayedData(dt.getDataObject().toString(),dt.getCaptureDate().toString(),dt.getParameter().getUnit()));
+    	
+    	return dpl;
+    }
 
 }

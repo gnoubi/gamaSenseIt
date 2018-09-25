@@ -40,17 +40,17 @@ public class SensorDataAnalyser implements ISensorDataAnalyser {
 				if(pmd.getDataFormat().equals(DataFormat.DOUBLE))
 				{
 					double localData = Double.valueOf(datas[i]).doubleValue();
-					dt = new SensorData(localData,captureDate,md.get());
+					dt = new SensorData(localData,captureDate,md.get(),s);
 				}
 				else if(pmd.getDataFormat().equals(DataFormat.DOUBLE))
 				{
 					long localData = Long.valueOf(datas[i]).longValue();
-					dt = new SensorData(localData,captureDate,md.get());
+					dt = new SensorData(localData,captureDate,md.get(),s);
 				}
 				else if(pmd.getDataFormat().equals(DataFormat.STRING))
 				{
 					String localData = datas[i];
-					dt = new SensorData(localData,captureDate,md.get());
+					dt = new SensorData(localData,captureDate,md.get(),s);
 				}
 				res.add(dt);
 			}

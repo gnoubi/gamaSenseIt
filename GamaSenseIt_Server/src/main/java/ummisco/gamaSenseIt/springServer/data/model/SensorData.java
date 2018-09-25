@@ -16,33 +16,37 @@ public class SensorData {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	long id;
+	private long id;
 	@Lob
-	byte[] data;
-	Date captureDate;
-	
+	private byte[] data;
+	private Date captureDate;
 	@ManyToOne
-	ParameterMetadata metaData;
+	private Sensor sensor;
+	@ManyToOne
+	private ParameterMetadata parameter;
+	
+	
 	
 	public SensorData() {}
 
-	private SensorData( Date captureDate, ParameterMetadata metaData) {
+	private SensorData( Date captureDate, ParameterMetadata metaData, Sensor s) {
 		super();
+		this.sensor = s;
 		this.captureDate = captureDate;
-		this.metaData=metaData;
+		this.parameter=metaData;
 	}
-	public SensorData(double data, Date captureDate, ParameterMetadata metaData) {
-		this(captureDate, metaData);
+	public SensorData(double data, Date captureDate, ParameterMetadata metaData, Sensor s) {
+		this(captureDate, metaData,s);
 		this.data = ByteBuffer.allocate(Double.BYTES).putDouble(data).array();
 	}
 
-	public SensorData(long data, Date captureDate, ParameterMetadata metaData) {
-		this(captureDate, metaData);
+	public SensorData(long data, Date captureDate, ParameterMetadata metaData, Sensor s) {
+		this(captureDate, metaData,s);
 		this.data = ByteBuffer.allocate(Integer.BYTES).putLong(data).array();
 	}
 
-	public SensorData(String data, Date captureDate, ParameterMetadata metaData) {
-		this(captureDate, metaData);
+	public SensorData(String data, Date captureDate, ParameterMetadata metaData, Sensor s) {
+		this(captureDate, metaData,s);
 		this.data = data.getBytes();
 	}
 
@@ -50,7 +54,7 @@ public class SensorData {
 		return data;
 	}
 	public Object getDataObject() {
-		return metaData.getDataFormat().convertToObject(data);
+		return parameter.getDataFormat().convertToObject(data);
 	}
 	public void setData(byte[] data) {
 		this.data = data;
@@ -68,12 +72,28 @@ public class SensorData {
 		this.captureDate = captureDate;
 	}
 
-	public ParameterMetadata getMetaData() {
-		return metaData;
+	public ParameterMetadata getParameter() {
+		return parameter;
 	}
 
-	public void setMetaData(ParameterMetadata metaData) {
-		this.metaData = metaData;
+	public void setParameter(ParameterMetadata metaData) {
+		this.parameter = metaData;
+	}
+
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	public Sensor getSensor() {
+		return sensor;
+	}
+
+	public void setSensor(Sensor sensor) {
+		this.sensor = sensor;
 	}
 	
 	
