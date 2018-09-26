@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import ummisco.gamaSenseIt.springServer.data.model.DisplayedData;
 import ummisco.gamaSenseIt.springServer.data.model.DisplayedParameterMetaData;
+import ummisco.gamaSenseIt.springServer.data.model.DisplayedSensor;
 import ummisco.gamaSenseIt.springServer.data.model.ParameterMetadata;
 import ummisco.gamaSenseIt.springServer.data.model.SensorMetadata;
 import ummisco.gamaSenseIt.springServer.data.model.ParameterMetadata.DataFormat;
@@ -87,7 +88,7 @@ public class DataController {
 	}
 	
 	@RequestMapping("/addSensor")
-	public Sensor addSensor(@RequestParam(value="sensorname", required=true, defaultValue=NIL_VALUE) String name, 
+	public DisplayedSensor addSensor(@RequestParam(value="sensorname", required=true, defaultValue=NIL_VALUE) String name, 
 			@RequestParam(value="longitude", required=true, defaultValue="0") double longi,
 			@RequestParam(value="latitude", required=true, defaultValue="0") double lat,
 			@RequestParam(value="sensormetadata", required=true) long idSensorType){
@@ -99,7 +100,7 @@ public class DataController {
 		
 		List<Sensor> selectedSensor = sensors.findByName(name);
 		if(!selectedSensor.isEmpty())
-			return selectedSensor.get(0);
+			return new DisplayedSensor(selectedSensor.get(0));
 	
 		Optional<SensorMetadata> st= sensorTypeRepo.findById(idSensorType);
 		//if(sensorManagmentService.)
@@ -108,11 +109,11 @@ public class DataController {
 		
 		Sensor s = new Sensor(name, longi,lat, st.get());
 		sensors.save(s);
-		return s;
+		return new DisplayedSensor(s);
 	}
 	
     @RequestMapping("/updateSensor")
-    public Sensor updateSensor(@RequestParam(value="id", required=true) String id,
+    public DisplayedSensor updateSensor(@RequestParam(value="id", required=true) String id,
     			@RequestParam(value="sensorname", required=false, defaultValue=NIL_VALUE) String name, 
     			@RequestParam(value="longitude", required=false, defaultValue=NIL_VALUE) String longi,
     			@RequestParam(value="latitude", required=false, defaultValue=NIL_VALUE) String lat ){
@@ -136,7 +137,7 @@ public class DataController {
     		s.setLatitude(data);
     	}
     	sensors.save(s);
-        return s;
+        return new DisplayedSensor(s);
     }
 	
     @RequestMapping("/addSensorMetadata")
