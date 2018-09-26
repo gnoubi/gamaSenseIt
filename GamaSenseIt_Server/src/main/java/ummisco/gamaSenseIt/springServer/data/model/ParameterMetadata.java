@@ -40,7 +40,8 @@ public class ParameterMetadata {
 		CO2,
 		PM10,
 		PM2_5,
-		PM1
+		PM1,
+		PRESSURE
 	}
 	
 	@Id

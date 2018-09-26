@@ -9,7 +9,10 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -86,7 +89,7 @@ public class DataController {
 	public Sensor addSensor(@RequestParam(value="sensorname", required=true, defaultValue=NIL_VALUE) String name, 
 			@RequestParam(value="longitude", required=true, defaultValue="0") double longi,
 			@RequestParam(value="latitude", required=true, defaultValue="0") double lat,
-			@RequestParam(value="sensorType", required=true) long idSensorType){
+			@RequestParam(value="sensormetadata", required=true) long idSensorType){
 		
 		Optional<SensorMetadata> type = sensorTypeRepo.findById(idSensorType);
 		
@@ -179,11 +182,12 @@ public class DataController {
     	return smd;
     }
 	
-    @RequestMapping("/sensorDataafterDate")
+    @CrossOrigin
+    @RequestMapping(value="/sensorDataafterDate",  method= {RequestMethod.POST,RequestMethod.GET, RequestMethod.OPTIONS},produces = MediaType.APPLICATION_JSON_VALUE )
     public List<DisplayedData> getDataAfter(    		
     		@RequestParam(value="idsensor", required=true) long id,
     		@RequestParam(value="idparameter", required=true) long idParam,
-    		@RequestParam(value="startdate") @DateTimeFormat(pattern="MM/dd/yyyy") Date start)
+    		@RequestParam(value="startdate") @DateTimeFormat(pattern="MMddyyyy") Date start)
 
     {
     	Calendar dte = Calendar.getInstance();
@@ -191,19 +195,21 @@ public class DataController {
     	return getDataBetween(id, idParam,start,dte.getTime() );
     }
     
+    @CrossOrigin
     @RequestMapping("/sensorDataBetweenDates")
     public List<DisplayedData> getDataBetween(
+    		
     		@RequestParam(value="idsensor", required=true) long id,
     		@RequestParam(value="idparameter", required=true) long idParam,
     		@RequestParam(value="startdate") @DateTimeFormat(pattern="MM/dd/yyyy") Date start,
     		@RequestParam(value="enddate") @DateTimeFormat(pattern="MM/dd/yyyy") Date enddate)
     {
+    	
     	List<DisplayedData> dpl = new ArrayList<DisplayedData>();
     	List<SensorData> dts = this.sensorData.findAllByDate(id,idParam,start, enddate);
     	
     	for(SensorData dt: dts)
     		dpl.add(new DisplayedData(dt.getDataObject().toString(),dt.getCaptureDate().toString(),dt.getParameter().getUnit()));
-    	
     	return dpl;
     }
 

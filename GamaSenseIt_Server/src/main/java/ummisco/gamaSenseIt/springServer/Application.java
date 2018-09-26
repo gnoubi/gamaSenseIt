@@ -1,6 +1,7 @@
 package ummisco.gamaSenseIt.springServer;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -13,6 +14,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ImportResource;
+import org.springframework.http.HttpMethod;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.endpoint.MessageProducerSupport;
@@ -25,6 +27,9 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.MessagingException;
 //import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import ummisco.gamaSenseIt.springServer.data.services.ISensorManagment;
 
@@ -119,7 +124,7 @@ public class Application {
 			
 		}
 	}
-
+  
 	
 	
 
