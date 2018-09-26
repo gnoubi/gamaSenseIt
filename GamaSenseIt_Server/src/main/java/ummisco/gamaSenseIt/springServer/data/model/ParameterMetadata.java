@@ -54,7 +54,7 @@ public class ParameterMetadata {
 	@ManyToOne
 	private SensorMetadata sensorMetadata;
 	
-		private DataFormat dataFormat;
+	private DataFormat dataFormat;
 	private DataParameter parameter;
 	
 	public ParameterMetadata(String varName, String unit, DataFormat typeOfData, DataParameter typeOfSensor) {

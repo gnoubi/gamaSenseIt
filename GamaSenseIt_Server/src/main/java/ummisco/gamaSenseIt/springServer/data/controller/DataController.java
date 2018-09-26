@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import ummisco.gamaSenseIt.springServer.data.model.DisplayedData;
+import ummisco.gamaSenseIt.springServer.data.model.DisplayedParameterMetaData;
 import ummisco.gamaSenseIt.springServer.data.model.ParameterMetadata;
 import ummisco.gamaSenseIt.springServer.data.model.SensorMetadata;
 import ummisco.gamaSenseIt.springServer.data.model.ParameterMetadata.DataFormat;
@@ -157,7 +158,7 @@ public class DataController {
     
     
     @RequestMapping("/addParameterMetadata")
-    public ParameterMetadata addParameterMetadata(
+    public DisplayedParameterMetaData addParameterMetadata(
     		@RequestParam(value="sensorMetadata", required=true, defaultValue="nil") long id,
     		@RequestParam(value="varname", required=true, defaultValue="nil") String varName,
     		@RequestParam(value="varunit", required=true, defaultValue="nil") String varUnit,
@@ -178,8 +179,8 @@ public class DataController {
     		return null;
     	}
     	ParameterMetadata smd = new ParameterMetadata(varName, varUnit, df, dp);
-    	sensorManagmentService.addParameterToSensorMetadata(md.get(), smd);
-    	return smd;
+    	smd = sensorManagmentService.addParameterToSensorMetadata(md.get(), smd);
+    	return new DisplayedParameterMetaData(smd);
     }
 	
     @CrossOrigin
