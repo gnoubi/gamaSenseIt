@@ -87,6 +87,7 @@ public class DataController {
     	return s;
 	}
 	
+    @CrossOrigin
 	@RequestMapping("/addSensor")
 	public DisplayedSensor addSensor(@RequestParam(value="sensorname", required=true, defaultValue=NIL_VALUE) String name, 
 			@RequestParam(value="longitude", required=true, defaultValue="0") double longi,
@@ -112,6 +113,7 @@ public class DataController {
 		return new DisplayedSensor(s);
 	}
 	
+    @CrossOrigin	
     @RequestMapping("/updateSensor")
     public DisplayedSensor updateSensor(@RequestParam(value="id", required=true) String id,
     			@RequestParam(value="sensorname", required=false, defaultValue=NIL_VALUE) String name, 
@@ -139,7 +141,7 @@ public class DataController {
     	sensors.save(s);
         return new DisplayedSensor(s);
     }
-	
+    @CrossOrigin	
     @RequestMapping("/addSensorMetadata")
     public SensorMetadata addSensorMetaData(
     		@RequestParam(value="name", required=true) String varName,
@@ -157,7 +159,7 @@ public class DataController {
     }
     
     
-    
+    @CrossOrigin
     @RequestMapping("/addParameterMetadata")
     public DisplayedParameterMetaData addParameterMetadata(
     		@RequestParam(value="sensorMetadata", required=true, defaultValue="nil") long id,
