@@ -58,8 +58,10 @@ void GamaSenseIT::setupLora()
   	loraConnector._needPABOOST=true;
   // previous way for setting output power
   // powerLevel='x';
+printf("with PA BOOST");
 #else
-  // previous way for setting output power
+ printf("no PA BOOST");
+ // previous way for setting output power
   // powerLevel='M';  
 #endif
   

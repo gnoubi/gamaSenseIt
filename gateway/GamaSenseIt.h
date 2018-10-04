@@ -40,7 +40,7 @@
 #define TIMEOUT     10000L
 
 
-#define PABOOST
+//#define PABOOST
 #define LORAMODE  1
 
 #define MAX_DBM 14
