@@ -14,7 +14,7 @@ import com.vividsolutions.jts.geom.Point;
 
 import ummisco.gamaSenseIt.springServer.data.model.Sensor;
 import ummisco.gamaSenseIt.springServer.data.model.SensorData;
-import ummisco.gamaSenseIt.springServer.data.model.DisplayedData;
+import ummisco.gamaSenseIt.springServer.data.model.DisplayableData;
 import ummisco.gamaSenseIt.springServer.data.model.ParameterMetadata;
 import ummisco.gamaSenseIt.springServer.data.model.ParameterMetadata.DataFormat;
 import ummisco.gamaSenseIt.springServer.data.model.ParameterMetadata.DataParameter;

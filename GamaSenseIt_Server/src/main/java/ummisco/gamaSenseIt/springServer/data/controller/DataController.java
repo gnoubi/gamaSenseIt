@@ -14,11 +14,12 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import ummisco.gamaSenseIt.springServer.data.model.DisplayedData;
-import ummisco.gamaSenseIt.springServer.data.model.DisplayedParameterMetaData;
-import ummisco.gamaSenseIt.springServer.data.model.DisplayedSensor;
+import ummisco.gamaSenseIt.springServer.data.model.DisplayableData;
+import ummisco.gamaSenseIt.springServer.data.model.DisplayableParameterMetaData;
+import ummisco.gamaSenseIt.springServer.data.model.DisplayableSensor;
 import ummisco.gamaSenseIt.springServer.data.model.ParameterMetadata;
 import ummisco.gamaSenseIt.springServer.data.model.SensorMetadata;
 import ummisco.gamaSenseIt.springServer.data.model.ParameterMetadata.DataFormat;
@@ -73,13 +74,13 @@ public class DataController {
     	return s;
 	}
 	
-	private Sensor findSensor(String id)
+	private Sensor findSensor(long id)
 	{
     	Long lid = null;
     	Sensor s = null;
     	try {
     		lid = Long.valueOf(id);
-    		 s = sensors.findById(lid.longValue()).get();
+    		 s = sensors.findById(lid).get();
     	} catch(NumberFormatException e)
     	{
     		return null;
@@ -88,11 +89,12 @@ public class DataController {
 	}
 	
     @CrossOrigin
-	@RequestMapping("/addSensor")
-	public DisplayedSensor addSensor(@RequestParam(value="sensorname", required=true, defaultValue=NIL_VALUE) String name, 
-			@RequestParam(value="longitude", required=true, defaultValue="0") double longi,
-			@RequestParam(value="latitude", required=true, defaultValue="0") double lat,
-			@RequestParam(value="sensormetadata", required=true) long idSensorType){
+	@RequestMapping(IDataController.ADD_SENSOR)
+    
+	public DisplayableSensor addSensor(@RequestParam(value=IDataController.NAME, required=true, defaultValue=NIL_VALUE) String name, 
+			@RequestParam(value=IDataController.LONGITUDE, required=true, defaultValue="0") double longi,
+			@RequestParam(value=IDataController.LATITUDE, required=true, defaultValue="0") double lat,
+			@RequestParam(value=IDataController.SENSOR_METADATA, required=true) long idSensorType){
 		
 		Optional<SensorMetadata> type = sensorTypeRepo.findById(idSensorType);
 		
@@ -101,7 +103,7 @@ public class DataController {
 		
 		List<Sensor> selectedSensor = sensors.findByName(name);
 		if(!selectedSensor.isEmpty())
-			return new DisplayedSensor(selectedSensor.get(0));
+			return new DisplayableSensor(selectedSensor.get(0));
 	
 		Optional<SensorMetadata> st= sensorTypeRepo.findById(idSensorType);
 		//if(sensorManagmentService.)
@@ -110,15 +112,15 @@ public class DataController {
 		
 		Sensor s = new Sensor(name, longi,lat, st.get());
 		sensors.save(s);
-		return new DisplayedSensor(s);
+		return new DisplayableSensor(s);
 	}
 	
     @CrossOrigin	
-    @RequestMapping("/updateSensor")
-    public DisplayedSensor updateSensor(@RequestParam(value="id", required=true) String id,
-    			@RequestParam(value="sensorname", required=false, defaultValue=NIL_VALUE) String name, 
-    			@RequestParam(value="longitude", required=false, defaultValue=NIL_VALUE) String longi,
-    			@RequestParam(value="latitude", required=false, defaultValue=NIL_VALUE) String lat ){
+    @RequestMapping(IDataController.UPDATE_SENSOR)
+    public DisplayableSensor updateSensor(@RequestParam(value=IDataController.SENSOR_ID, required=true) long id,
+    			@RequestParam(value=IDataController.NAME, required=false, defaultValue=NIL_VALUE) String name, 
+    			@RequestParam(value=IDataController.LONGITUDE, required=false, defaultValue=NIL_VALUE) String longi,
+    			@RequestParam(value=IDataController.LATITUDE, required=false, defaultValue=NIL_VALUE) String lat ){
     	
     	Sensor s =findSensor(id);
     	if(s == null)
@@ -139,14 +141,14 @@ public class DataController {
     		s.setLatitude(data);
     	}
     	sensors.save(s);
-        return new DisplayedSensor(s);
+        return new DisplayableSensor(s);
     }
     @CrossOrigin	
-    @RequestMapping("/addSensorMetadata")
+    @RequestMapping(IDataController.ADD_SENSOR_METADATA)
     public SensorMetadata addSensorMetaData(
-    		@RequestParam(value="name", required=true) String varName,
-    		@RequestParam(value="version", required=true) String version,
-    		@RequestParam(value="dataseparator", required=false, defaultValue=SensorMetadata.DEFAULT_DATA_SEPARATOR) String sep)
+    		@RequestParam(value=IDataController.NAME, required=true) String varName,
+    		@RequestParam(value=IDataController.VERSION, required=true) String version,
+    		@RequestParam(value=IDataController.DATA_SEPARATOR, required=false, defaultValue=SensorMetadata.DEFAULT_DATA_SEPARATOR) String sep)
     {
     	List<SensorMetadata> lsm = sensorMetadata.findByNameAndVersion(varName, version);
     	SensorMetadata st = null;
@@ -160,13 +162,13 @@ public class DataController {
     
     
     @CrossOrigin
-    @RequestMapping("/addParameterMetadata")
-    public DisplayedParameterMetaData addParameterMetadata(
-    		@RequestParam(value="sensorMetadata", required=true, defaultValue="nil") long id,
-    		@RequestParam(value="varname", required=true, defaultValue="nil") String varName,
-    		@RequestParam(value="varunit", required=true, defaultValue="nil") String varUnit,
-    		@RequestParam(value="varFormat", required=true, defaultValue="nil") String varFormat,
-    		@RequestParam(value="mesuredParameter", required=true, defaultValue="nil") String mesuredParameter
+    @RequestMapping(IDataController.ADD_PARAMETER_META_DATA)
+    public DisplayableParameterMetaData addParameterMetadata(
+    		@RequestParam(value=IDataController.METADATA_ID, required=true, defaultValue="nil") long id,
+    		@RequestParam(value=IDataController.NAME, required=true, defaultValue="nil") String varName,
+    		@RequestParam(value=IDataController.UNIT, required=true, defaultValue="nil") String varUnit,
+    		@RequestParam(value=IDataController.DATA_FORMAT, required=true, defaultValue="nil") String varFormat,
+    		@RequestParam(value=IDataController.MEASURED_PARAMETER, required=true, defaultValue="nil") String mesuredParameter
     		)
     {
     	Optional<SensorMetadata> md= sensorMetadata.findById(id);
@@ -183,15 +185,15 @@ public class DataController {
     	}
     	ParameterMetadata smd = new ParameterMetadata(varName, varUnit, df, dp);
     	smd = sensorManagmentService.addParameterToSensorMetadata(md.get(), smd);
-    	return new DisplayedParameterMetaData(smd);
+    	return new DisplayableParameterMetaData(smd);
     }
 	
     @CrossOrigin
-    @RequestMapping(value="/sensorDataafterDate",  method= {RequestMethod.POST,RequestMethod.GET, RequestMethod.OPTIONS},produces = MediaType.APPLICATION_JSON_VALUE )
-    public List<DisplayedData> getDataAfter(    		
-    		@RequestParam(value="idsensor", required=true) long id,
-    		@RequestParam(value="idparameter", required=true) long idParam,
-    		@RequestParam(value="startdate") @DateTimeFormat(pattern="MMddyyyy") Date start)
+    @RequestMapping(value=IDataController.SENSOR_DATA_SINCE_DATE,  method= {RequestMethod.POST,RequestMethod.GET, RequestMethod.OPTIONS},produces = MediaType.APPLICATION_JSON_VALUE )
+    public List<DisplayableData> getDataAfter(    		
+    		@RequestParam(value=IDataController.SENSOR_ID, required=true) long id,
+    		@RequestParam(value=IDataController.PARAMETER_ID, required=true) long idParam,
+    		@RequestParam(value=IDataController.BEGIN_DATE) @DateTimeFormat(pattern=IDataController.DATE_PATTERN) Date start)
 
     {
     	Calendar dte = Calendar.getInstance();
@@ -200,20 +202,20 @@ public class DataController {
     }
     
     @CrossOrigin
-    @RequestMapping("/sensorDataBetweenDates")
-    public List<DisplayedData> getDataBetween(
+    @RequestMapping(value=IDataController.SENSOR_DATA_BETWEEN_DATES)
+    public List<DisplayableData> getDataBetween(
     		
-    		@RequestParam(value="idsensor", required=true) long id,
-    		@RequestParam(value="idparameter", required=true) long idParam,
-    		@RequestParam(value="startdate") @DateTimeFormat(pattern="MM/dd/yyyy") Date start,
-    		@RequestParam(value="enddate") @DateTimeFormat(pattern="MM/dd/yyyy") Date enddate)
+    		@RequestParam(value=IDataController.SENSOR_ID, required=true) long id,
+    		@RequestParam(value=IDataController.PARAMETER_ID, required=true) long idParam,
+    		@RequestParam(value=IDataController.BEGIN_DATE) @DateTimeFormat(pattern=IDataController.DATE_PATTERN) Date start,
+    		@RequestParam(value=IDataController.END_DATE) @DateTimeFormat(pattern=IDataController.DATE_PATTERN) Date enddate)
     {
     	
-    	List<DisplayedData> dpl = new ArrayList<DisplayedData>();
+    	List<DisplayableData> dpl = new ArrayList<DisplayableData>();
     	List<SensorData> dts = this.sensorData.findAllByDate(id,idParam,start, enddate);
     	
     	for(SensorData dt: dts)
-    		dpl.add(new DisplayedData(dt.getDataObject().toString(),dt.getCaptureDate().toString(),dt.getParameter().getUnit()));
+    		dpl.add(new DisplayableData(dt.getDataObject().toString(),dt.getCaptureDate().toString(),dt.getParameter().getUnit()));
     	return dpl;
     }
 
