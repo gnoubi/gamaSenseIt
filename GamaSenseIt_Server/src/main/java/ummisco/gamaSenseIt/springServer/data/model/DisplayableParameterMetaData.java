@@ -3,14 +3,14 @@ package ummisco.gamaSenseIt.springServer.data.model;
 import ummisco.gamaSenseIt.springServer.data.model.ParameterMetadata.DataFormat;
 import ummisco.gamaSenseIt.springServer.data.model.ParameterMetadata.DataParameter;
 
-public class DisplayedParameterMetaData {
+public class DisplayableParameterMetaData {
 	private long id;
 	private String varName;
 	private String unit;
 	private DataFormat dataFormat;
 	private DataParameter parameter;
 	private long sensorMetadata;
-	public DisplayedParameterMetaData(long id, String varName, String unit, DataFormat dataFormat,
+	public DisplayableParameterMetaData(long id, String varName, String unit, DataFormat dataFormat,
 			DataParameter parameter, long sensorMetadata) {
 		super();
 		this.id = id;
@@ -20,7 +20,7 @@ public class DisplayedParameterMetaData {
 		this.parameter = parameter;
 		this.sensorMetadata = sensorMetadata;
 	}
-	public DisplayedParameterMetaData(ParameterMetadata mt)
+	public DisplayableParameterMetaData(ParameterMetadata mt)
 	{
 		this(mt.getId(),
 				mt.getVarName(),

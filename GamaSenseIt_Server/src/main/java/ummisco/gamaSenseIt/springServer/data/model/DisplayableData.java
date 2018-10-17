@@ -1,11 +1,11 @@
 package ummisco.gamaSenseIt.springServer.data.model;
 
-public class DisplayedData {
+public class DisplayableData {
 	private String value;
 	private String date;
 	private String unit;
 	
-	public DisplayedData(String value, String date, String unit) {
+	public DisplayableData(String value, String date, String unit) {
 		super();
 		this.value = value;
 		this.date = date;
