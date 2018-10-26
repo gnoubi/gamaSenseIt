@@ -9,15 +9,22 @@
 	  <!-- Latest compiled and minified CSS -->
 <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.12.1/bootstrap-table.min.css">
    </head>
+   
+   
   <body>
-		<h1>test table</h1>
+
+		<h1>Data</h1>
 <main>
-		<table id="table" data-toggle="table" data-origin='' cross-origin="null" data-url="http://localhost:8080/getDataOfSensorSinceDate?sensorId=6&parameterId=5&beginDate=09252018">
+		<table id="table" data-toggle="table" data-origin='' cross-origin="null" data-url="http://localhost:8080/getData">
 		    <thead>
 					<tr>
 						<th data-field="date">Date</th>
-						<th data-field="value">Item Name</th>
-						<th data-field="unit">Item Price</th>
+						<th data-field="sensorName">Sensor Name</th>
+						<th data-field="value">Value</th>
+						<th data-field="unit">Unit</th>
+						<th data-field="measuredParameter">Parameter</th>
+						<th data-field="latitude">Latitude</th>
+						<th data-field="longitude">Longitude</th>
 					</tr>
 			</thead>
 		
@@ -31,7 +38,7 @@
 <script src="http://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.12.1/bootstrap-table.min.js"></script>
 
 <!-- Latest compiled and minified Locales -->
-<script src="http://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.12.1/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.12.1/locale/bootstrap-table-en-US.min.js"></script>
 
     </body>
 </html>

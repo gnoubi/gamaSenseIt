@@ -56,11 +56,11 @@ public class SensorManagment implements ISensorManagment{
 		
 		
 		SensorMetadata smd = new SensorMetadata("capMetadata", "v0", ":");
-		addSensorMetadata(smd);
+		smd = addSensorMetadata(smd);
 		ParameterMetadata p1 = new ParameterMetadata("temperature","c",DataFormat.DOUBLE,DataParameter.TEMPERATURE);
-		ParameterMetadata p2 = new ParameterMetadata("humidity","c",DataFormat.STRING,DataParameter.TEMPERATURE);
-		addParameterToSensorMetadata(smd, p1);
+		ParameterMetadata p2 = new ParameterMetadata("humidity","%",DataFormat.DOUBLE,DataParameter.HUMIDITY);
 		addParameterToSensorMetadata(smd, p2);
+		addParameterToSensorMetadata(smd, p1);
 		
 		Sensor sx = new Sensor("node_1",p,smd);
 		sensorRepo.save(sx);
@@ -92,9 +92,22 @@ public class SensorManagment implements ISensorManagment{
 	 	}
 		
 	 	Date capturedate = new Date(capturedateS*1000);
+	 	
+	 	System.out.println("*************************************************************************************");
+	 	
+	 	System.out.println("capture date "+capturedateS);
+	 	
+	 	System.out.println("sensorName "+sensorName);
+	 	System.out.println("sensorName "+sensorName);
+	 	System.out.println("token "+token);
+	 	System.out.println("contents "+contents);
+	 	
+	 	
 	 	SensoredBulkData bulkData = new SensoredBulkData(selectedSensor,token,capturedate,date,contents);
 	 	bulkDataRepo.save(bulkData);
 	 	List<SensorData> aData = dataAnalyser.analyseBulkData(contents, capturedate, selectedSensor);
+	 	System.out.println("*************************************************************************************");
+	 	
 	 	analysedDataRepo.saveAll(aData);
 	}
 
@@ -106,8 +119,8 @@ public class SensorManagment implements ISensorManagment{
 
 	@Override
 	public SensorMetadata addSensorMetadata(SensorMetadata s) {
-		sensorMetadataRepo.save(s);
-		return s;
+		
+		return sensorMetadataRepo.save(s);
 	}
 	
 
@@ -115,12 +128,8 @@ public class SensorManagment implements ISensorManagment{
 	public ParameterMetadata addParameterToSensorMetadata(SensorMetadata s, ParameterMetadata md) {
 		md.setSensorMetadata(s);
 		ParameterMetadata res = parameterSensorRepo.save(md);
-		s.addmeasuredData(md);
+		s.addmeasuredData(res);
 		sensorMetadataRepo.save(s);
 		return res;
 	}
-	
-	
-	
-
 }

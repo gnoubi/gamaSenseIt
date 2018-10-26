@@ -22,13 +22,23 @@ public class SensorDataAnalyser implements ISensorDataAnalyser {
 	IParameterMetadataRepository metadataRepo;
 	@Override
 	public List<SensorData> analyseBulkData(String data, Date captureDate, Sensor s) {
-		System.out.println("sensor "+ s.getName()+" data "+data+"xxx");
+		System.out.println("sensor "+ s.getName()+" data "+data);
 		ArrayList<SensorData> res = new ArrayList<SensorData>();
 		SensorMetadata smd = s.getMetadata();
 		String sep = smd.getDataSeparator();
+		System.out.println("separator "+sep);
 		int i = 0;
 		String[] datas= data.split(sep);
+		
+		System.out.println("order_"+smd.getMeasuredDataOrder()+"_");
 		String[] metaDatas = smd.getMeasuredDataOrder().split(SensorMetadata.MEASURE_ORDER_SEPARATOR);
+		
+		for(String xx:metaDatas)
+		{
+			System.out.println("meta_"+xx+"_");
+		}
+		
+		
 		for(String sid:metaDatas) {
 			System.out.println("SID/"+sid+"/");
 			long metaKey = Long.valueOf(sid).longValue();

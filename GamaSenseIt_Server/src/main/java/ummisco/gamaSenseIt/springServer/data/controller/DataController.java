@@ -90,8 +90,7 @@ public class DataController {
 	
     @CrossOrigin
 	@RequestMapping(IDataController.ADD_SENSOR)
-    
-	public DisplayableSensor addSensor(@RequestParam(value=IDataController.NAME, required=true, defaultValue=NIL_VALUE) String name, 
+    public DisplayableSensor addSensor(@RequestParam(value=IDataController.NAME, required=true, defaultValue=NIL_VALUE) String name, 
 			@RequestParam(value=IDataController.LONGITUDE, required=true, defaultValue="0") double longi,
 			@RequestParam(value=IDataController.LATITUDE, required=true, defaultValue="0") double lat,
 			@RequestParam(value=IDataController.SENSOR_METADATA, required=true) long idSensorType){
@@ -213,10 +212,36 @@ public class DataController {
     	
     	List<DisplayableData> dpl = new ArrayList<DisplayableData>();
     	List<SensorData> dts = this.sensorData.findAllByDate(id,idParam,start, enddate);
+    	return buildList(dts);
+    }
+ 
+    @CrossOrigin
+    @RequestMapping(value=IDataController.SENSOR_DATA)
+    public List<DisplayableData> getDataBetween()
+    {
+    	Iterable<SensorData> dts = this.sensorData.findAll();
+    	return buildList(dts);
     	
+    }
+    
+    private List<DisplayableData> buildList(Iterable<SensorData> dts)
+    {
+    	List<DisplayableData> dpl = new ArrayList<DisplayableData>();
     	for(SensorData dt: dts)
-    		dpl.add(new DisplayableData(dt.getDataObject().toString(),dt.getCaptureDate().toString(),dt.getParameter().getUnit()));
+    	{
+    		DisplayableData data = new DisplayableData(dt.getDataObject(), 
+    									dt.getCaptureDate(),
+    									dt.getParameter().getUnit(),
+    									dt.getSensor().getName(),
+    									dt.getSensor().getLatitude(),
+    									dt.getSensor().getLongitude(),
+    									dt.getParameter().getParameter().toString());
+
+    		dpl.add(data);
+    		
+    	}
     	return dpl;
     }
+    
 
 }

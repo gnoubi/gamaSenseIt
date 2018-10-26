@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import ummisco.gamaSenseIt.springServer.data.model.SensoredBulkData;
 
 @CrossOrigin
-@RepositoryRestResource(collectionResourceRel = "bulkData", path = "bulkData")
+//@RepositoryRestResource(collectionResourceRel = "bulkData", path = "bulkData")
+@Repository
 public interface ISensoredBulkDataRepository extends CrudRepository<SensoredBulkData, Long>{
 	List<SensoredBulkData> findByCaptureDate(Date dte);
 }

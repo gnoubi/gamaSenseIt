@@ -7,6 +7,7 @@ public interface IDataController {
 	String UPDATE_SENSOR_METADATA		= "updateSensorMetadata";
 	String ADD_PARAMETER_META_DATA 		= "addParameterMetadata";
 	String UPDATE_PARAMETER_META_DATA 	= "updateParameterMetadata";
+	String SENSOR_DATA					= "getData";
 	String SENSOR_DATA_SINCE_DATE		= "getDataOfSensorSinceDate";
 	String SENSOR_DATA_BETWEEN_DATES	= "getDataOfSensorBetweenDate";
 	
