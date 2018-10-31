@@ -360,7 +360,7 @@ void  GamaSenseIT::analyseParameter(string cmd, string value)
 		{
 			cout<<"****************************************************"<<endl;
 			cout<<"*       using default broker configuration         *"<<endl;
-			cout<<"*   broker:  vmpams.mpl.ird.fr:1935/gamaSenseIt    *"<<endl;
+			cout<<"*   broker:  vmpams.ird.fr:1935/gamaSenseIt        *"<<endl;
 			cout<<"*    login:  gamasenseit                           *"<<endl;
 			cout<<"* password:  gamasenseit                           *"<<endl;
 			cout<<"*    topic:  gamasenseit                           *"<<endl;
