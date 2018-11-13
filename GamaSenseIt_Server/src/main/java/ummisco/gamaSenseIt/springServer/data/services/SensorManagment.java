@@ -1,5 +1,6 @@
 package ummisco.gamaSenseIt.springServer.data.services;
 
+import java.text.NumberFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -72,14 +73,29 @@ public class SensorManagment implements ISensorManagment{
 	public void saveData(String message, Date date) {
 		
 		String[] data = message.split(";");
+		if(data.length<4)
+			return;
+		long capturedateS = 0;
+		long token = 0;
+		String sensorName=data[1];
+	 	
+		try
+		{
+		 	capturedateS=Long.parseLong(data[0]);
+		 	token=Long.parseLong(data[2]);			
+		}
+		catch(NumberFormatException e)
+		{
+			return ;
+		}
 		
-	 	long capturedateS=Long.valueOf(data[0]).longValue();
-	 	String sensorName=data[1];
-	 	long token=Long.valueOf(data[2]).longValue();
 	 	String contents=data[3];
 	 	List<Sensor> foundSensors = sensorRepo.findByName(sensorName);
 	 	Sensor selectedSensor = null;
-	 	if(foundSensors.isEmpty()) {
+	 	if(foundSensors.isEmpty())
+	 		return;
+	 	
+/*	 	if(foundSensors.isEmpty()) {
 			SensorMetadata typeSens = sensorMetadataRepo.findByNameAndVersion(DEFAULT_SENSOR_TYPE_NAME,DEFAULT_SENSOR_VERSION).get(0);
 	 		GeometryFactory gf=new GeometryFactory();
 			Point p = gf.createPoint(new Coordinate(0, 0));
@@ -88,8 +104,9 @@ public class SensorManagment implements ISensorManagment{
 	 	}
 	 	else
 	 	{
+	 	*/
 	 		selectedSensor = foundSensors.get(0);
-	 	}
+	 	//}
 		
 	 	Date capturedate = new Date(capturedateS*1000);
 	 	
