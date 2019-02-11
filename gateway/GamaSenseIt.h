@@ -16,7 +16,7 @@
 #include "MQTTClient.h"
 
 #define NB_RETRIES 10
-//#define WITH_ACK
+#define WITH_ACK
 
 #define GAMA_SENS_IT_MESSAGE_HEADER "GamaSenseIT_"
 #define GAMA_SENS_IT_MESSAGE_UPDATE_DATE_COMMAND "UPDATE_DATE_"
