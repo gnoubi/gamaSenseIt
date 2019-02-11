@@ -21,7 +21,7 @@ GamaSenseIT::GamaSenseIT(SX1272 &loraConnection)
 	fileName = DEFAULT_FILE_NAME;
 	loraMode=LORAMODE;
 	DEFAULT_CHANNEL = CH_10_868;
-ƒƒƒƒ}
+}
 
 void GamaSenseIT::setupLora()
 {
