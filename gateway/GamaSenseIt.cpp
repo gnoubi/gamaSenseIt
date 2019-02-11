@@ -139,7 +139,7 @@ void GamaSenseIT::waitAndReceiveMessage(string& message, int& source)
         string tmpReceivedMessage = "";
 
 #ifdef WITH_ACK
-        e = loraConnector.receivePacketTimeoutACK(10000)
+        e = loraConnector.receivePacketTimeoutACK(10000);
         
 #else
         e = loraConnector.receivePacketTimeout(10000);
