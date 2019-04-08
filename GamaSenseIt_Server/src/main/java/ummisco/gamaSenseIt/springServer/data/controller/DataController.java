@@ -32,6 +32,7 @@ import ummisco.gamaSenseIt.springServer.data.repositories.ISensorMetadataReposit
 import ummisco.gamaSenseIt.springServer.data.services.ISensorManagment;
 
 @RestController
+@RequestMapping("/public/")
 public class DataController {
 	final static String NIL_VALUE = "nil";
 	
@@ -88,105 +89,20 @@ public class DataController {
     	return s;
 	}
 	
-    @CrossOrigin
-	@RequestMapping(IDataController.ADD_SENSOR)
-    public DisplayableSensor addSensor(@RequestParam(value=IDataController.NAME, required=true, defaultValue=NIL_VALUE) String name, 
-			@RequestParam(value=IDataController.LONGITUDE, required=true, defaultValue="0") double longi,
-			@RequestParam(value=IDataController.LATITUDE, required=true, defaultValue="0") double lat,
-			@RequestParam(value=IDataController.SENSOR_METADATA, required=true) long idSensorType){
-		
-		Optional<SensorMetadata> type = sensorTypeRepo.findById(idSensorType);
-		
-		if(!type.isPresent())
-			return null;
-		
-		List<Sensor> selectedSensor = sensors.findByName(name);
-		if(!selectedSensor.isEmpty())
-			return new DisplayableSensor(selectedSensor.get(0));
-	
-		Optional<SensorMetadata> st= sensorTypeRepo.findById(idSensorType);
-		//if(sensorManagmentService.)
-		if(!st.isPresent())
-			return null;
-		
-		Sensor s = new Sensor(name, longi,lat, st.get());
-		sensors.save(s);
-		return new DisplayableSensor(s);
-	}
-	
-    @CrossOrigin	
-    @RequestMapping(IDataController.UPDATE_SENSOR)
-    public DisplayableSensor updateSensor(@RequestParam(value=IDataController.SENSOR_ID, required=true) long id,
-    			@RequestParam(value=IDataController.NAME, required=false, defaultValue=NIL_VALUE) String name, 
-    			@RequestParam(value=IDataController.LONGITUDE, required=false, defaultValue=NIL_VALUE) String longi,
-    			@RequestParam(value=IDataController.LATITUDE, required=false, defaultValue=NIL_VALUE) String lat ){
-    	
-    	Sensor s =findSensor(id);
-    	if(s == null)
-    		return null;
-    	
-    	if(!name.equals(NIL_VALUE))
-    	{
-    		s.setName(name);
-    	}
-    	if(!longi.equals(NIL_VALUE))
-    	{
-    		double data = Double.valueOf(longi).doubleValue();
-    		s.setLongitude(data);
-    	}
-    	if(!lat.equals(NIL_VALUE))
-    	{
-    		double data = Double.valueOf(lat).doubleValue();
-    		s.setLatitude(data);
-    	}
-    	sensors.save(s);
-        return new DisplayableSensor(s);
-    }
-    @CrossOrigin	
-    @RequestMapping(IDataController.ADD_SENSOR_METADATA)
-    public SensorMetadata addSensorMetaData(
-    		@RequestParam(value=IDataController.NAME, required=true) String varName,
-    		@RequestParam(value=IDataController.VERSION, required=true) String version,
-    		@RequestParam(value=IDataController.DATA_SEPARATOR, required=false, defaultValue=SensorMetadata.DEFAULT_DATA_SEPARATOR) String sep)
-    {
-    	List<SensorMetadata> lsm = sensorMetadata.findByNameAndVersion(varName, version);
-    	SensorMetadata st = null;
-    	if(lsm.size()==0) {
-    		st = new SensorMetadata(varName, version,sep);
-    		st= this.sensorMetadata.save(st);
-    	}
-    	
-    	return st;
-    }
     
     
     @CrossOrigin
-    @RequestMapping(IDataController.ADD_PARAMETER_META_DATA)
-    public DisplayableParameterMetaData addParameterMetadata(
-    		@RequestParam(value=IDataController.METADATA_ID, required=true, defaultValue="nil") long id,
-    		@RequestParam(value=IDataController.NAME, required=true, defaultValue="nil") String varName,
-    		@RequestParam(value=IDataController.UNIT, required=true, defaultValue="nil") String varUnit,
-    		@RequestParam(value=IDataController.DATA_FORMAT, required=true, defaultValue="nil") String varFormat,
-    		@RequestParam(value=IDataController.MEASURED_PARAMETER, required=true, defaultValue="nil") String mesuredParameter
-    		)
-    {
-    	Optional<SensorMetadata> md= sensorMetadata.findById(id);
-    	if(!md.isPresent())
-    		return null;
-    	DataFormat df = null;
-    	DataParameter dp = null;
-    	try {
-    			df = DataFormat.valueOf(varFormat);
-    			dp = DataParameter.valueOf(mesuredParameter);
-    	}catch(IllegalArgumentException e)
-    	{
-    		return null;
-    	}
-    	ParameterMetadata smd = new ParameterMetadata(varName, varUnit, df, dp);
-    	smd = sensorManagmentService.addParameterToSensorMetadata(md.get(), smd);
-    	return new DisplayableParameterMetaData(smd);
+    @RequestMapping(IDataController.SENSOR_METATA_DATA_FULLNAMES)
+    public List<String> getSensorMetaDataName() {
+    		ArrayList<String> res = new ArrayList<>();
+    		Iterable<SensorMetadata> mt = sensorMetadata.findAll();
+    		for(SensorMetadata s:mt)
+    		{
+    			res.add(s.getName()+" -- "+s.getVersion());
+    		}
+    		return res;
     }
-	
+ 	
     @CrossOrigin
     @RequestMapping(value=IDataController.SENSOR_DATA_SINCE_DATE,  method= {RequestMethod.POST,RequestMethod.GET, RequestMethod.OPTIONS},produces = MediaType.APPLICATION_JSON_VALUE )
     public List<DisplayableData> getDataAfter(    		

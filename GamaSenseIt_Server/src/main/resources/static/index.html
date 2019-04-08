@@ -8,11 +8,41 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
 	  <!-- Latest compiled and minified CSS -->
 <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.12.1/bootstrap-table.min.css">
+ 
+    <style>
+       /* Set the size of the div element that contains the map */
+      #map {
+        height: 400px;  /* The height is 400 pixels */
+        width: 100%;  /* The width is the width of the web page */
+       }
+    </style>
+     
+ 
    </head>
    
    
   <body>
-
+		<h1>MAP</h1>
+		
+		
+		    <!--The div element for the map -->
+    <div id="map"></div>
+    <script>
+		// Initialize and add the map
+		function initMap() {
+		  // The location of Uluru
+		  var uluru = {lat: 47.21026519999999, lng: 5.548803799999973};
+		  // The map, centered at Uluru
+		  var map = new google.maps.Map(
+		      document.getElementById('map'), {zoom: 4, center: uluru});
+		  // The marker, positioned at Uluru
+		  var marker = new google.maps.Marker({position: uluru, map: map});
+		}
+    </script>
+    
+    
+    
+		
 		<h1>Data</h1>
 <main>
 		<table id="table" data-toggle="table" data-origin='' cross-origin="null" data-url="/getData"> 
@@ -30,6 +60,11 @@
 		
 		</table>
 	</main>
+	
+	
+	   <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCt3H1XAnphx5LiIQhuWjI_JCRwVIDIBEY&callback=initMap">
+    </script>
 	 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <!-- Latest compiled and minified JavaScript -->

@@ -34,7 +34,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import ummisco.gamaSenseIt.springServer.data.services.ISensorManagment;
 
 
-@SpringBootApplication(scanBasePackages= {"ummisco.gamaSenseIt.springServer.data.model", "ummisco.gamaSenseIt.springServer.data.repositories","ummisco.gamaSenseIt.springServer.data.services","ummisco.gamaSenseIt.springServer.data.controller"})
+@SpringBootApplication(scanBasePackages= {"ummisco.gamaSenseIt.springServer.security","ummisco.gamaSenseIt.springServer.data.model", "ummisco.gamaSenseIt.springServer.data.repositories","ummisco.gamaSenseIt.springServer.data.services","ummisco.gamaSenseIt.springServer.data.controller"})
 @EnableAutoConfiguration
 //@EnableWebSecurity
 
