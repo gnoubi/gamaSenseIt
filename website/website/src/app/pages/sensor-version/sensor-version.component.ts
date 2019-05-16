@@ -20,10 +20,17 @@ import { from } from 'rxjs';
   styleUrls: ['./sensor-version.component.scss']
 })
 export class SensorVersionPage implements OnInit {
+
   sensors : Array<SensorVersion> = StockCapteurArr;
+  displaySensor;
   constructor() { }
   ngOnInit() {
-
+      this.initSensor();
      }
-
+  sensorDisplay(s:SensorVersion ){
+    this.displaySensor=s;
+  }
+  initSensor(){
+    this.displaySensor = new SensorVersion(0,'','','',[]);
+  }
 }

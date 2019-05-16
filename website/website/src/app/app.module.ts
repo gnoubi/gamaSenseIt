@@ -13,6 +13,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AppRoutingModule } from './app.routing';
 import { ComponentsModule } from './components/components.module';
 import { SensorVersionListComponent } from './sensor-version-list/sensor-version-list.component';
+
 @NgModule({
   imports: [
     BrowserAnimationsModule,

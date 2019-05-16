@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { SensorVersion } from 'src/app/SensorVersion';
+import { SensorVersion } from '../../SensorVersion';
 
 @Component({
   selector: 'app-sensor-version',
