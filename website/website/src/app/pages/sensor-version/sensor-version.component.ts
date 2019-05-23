@@ -1,18 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import Chart from 'chart.js';
 
-import {SensorVersion} from '../../SensorVersion';
-import {StockCapteurArr} from '../../stock-capteur';
+import { SensorVersion } from '../../SensorVersion';
+import { StockCapteurArr } from '../../stock-capteur';
+import { sensorVersionService } from './sensor-version-service';
 
-
-// core components
-import {
-  chartOptions,
-  parseOptions,
-  chartExample1,
-  chartExample2
-} from "../../variables/charts";
-import { from } from 'rxjs';
 
 @Component({
   selector: 'page-sensor-version',
@@ -21,16 +12,35 @@ import { from } from 'rxjs';
 })
 export class SensorVersionPage implements OnInit {
 
-  sensors : Array<SensorVersion> = StockCapteurArr;
+  sensors: Array<SensorVersion> = StockCapteurArr;
   displaySensor;
-  constructor() { }
+  operation:String = 'details';
+  sensors1: any;
+ 
+  constructor(private sensorService: sensorVersionService) { }
+
   ngOnInit() {
-      this.initSensor();
-     }
-  sensorDisplay(s:SensorVersion ){
-    this.displaySensor=s;
+    this.initSensor();
   }
-  initSensor(){
-    this.displaySensor = new SensorVersion(0,'','','',[]);
+
+  sensorDisplay(s: SensorVersion) {
+    this.displaySensor = s;
+  }
+
+  initSensor() {
+    this.displaySensor = new SensorVersion(0, '', '', '', []);
+    /*this.sensorService.getSensors().subscribe(
+      data => { this.sensors1 = data },
+      error => { console.log('error was occured') },
+      () => { console.log('Donnees bien chargee') }
+    );*/
+
+  }
+  updateSensor() {
+    this.sensorService.updateSensor().subscribe(
+      res => {
+        this.initSensor();
+      }
+    );
   }
 }

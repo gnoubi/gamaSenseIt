@@ -15,7 +15,7 @@ import { SensorVersionPage } from '../../pages/sensor-version/sensor-version.com
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import {ComponentsModule} from '../../components/components.module';
 import { DiagrammeComponent } from '../../pages/diagramme/diagramme.component';
-import { from } from 'rxjs';
+import { sensorVersionService } from '../../pages/sensor-version/sensor-version-service';
 
 
 
@@ -47,7 +47,8 @@ import { from } from 'rxjs';
   ],
   exports: [
     
-  ]
+  ],
+  providers:[sensorVersionService]
 })
 
 export class AdminLayoutModule {}

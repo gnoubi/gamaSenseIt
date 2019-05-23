@@ -21,25 +21,26 @@
                               <div class="text-center text-muted mb-4">
                                 <small>Research Sensor on Map</small>
                               </div>
-                              <form role="form">
+                              <form role="form" [formGroup]="SearchCapteurForm">
                                 <div class="form-group mb-3">
-                                  <div class="input-group input-group-alternative">
-                                    <div class="input-group-prepend">
-                                      <span class="input-group-text"><i class="ni ni-align-left-2"></i></span>
-                                    </div>
-                                    <input class="form-control" placeholder="latitude" type="number">
+                                  <div class="input-group input-group-alternative" >
+                                    <input class="form-control" placeholder="latitude" type="number"
+                                      formControlName="latitude">
                                   </div>
+                                  <!--<div class="alert alert-danger"
+                                    *ngIf="SearchCapteurForm.controls['latitude'].invalid && 
+                                                                (capteurForm.controls['latitude'].touched || capteurForm.controls['latitude'].dirty) ">
+                                    latitude Requise
+                                  </div>-->
                                 </div>
-                                <div class="form-group mb-3">
+                                <div class="form-group mb-3" >
                                   <div class="input-group input-group-alternative">
-                                    <div class="input-group-prepend">
-                                      <span class="input-group-text"><i class="ni ni-align-left-2"></i></span>
-                                    </div>
-                                    <input class="form-control" placeholder="longitude" type="number">
+                                    <input class="form-control" placeholder="longitude" type="number"
+                                      formControlName="longitude">
                                   </div>
                                 </div>
                                 <div class="text-center">
-                                  <button type="button" (click)="ResearchSensor()" class="btn btn-primary my-4">Research
+                                  <button type="button" (click)="onSearchSensor()" class="btn btn-primary my-4">Research
                                     Sensor</button>
                                 </div>
                               </form>

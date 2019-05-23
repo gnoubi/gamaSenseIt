@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+
 declare let L;
 
 @Component({
@@ -9,7 +11,23 @@ declare let L;
 
 export class MapsComponent implements OnInit {
 
-  constructor() { }
+  SearchCapteurForm: FormGroup;
+
+  constructor(private fb: FormBuilder) {
+    this.SearchCapteurForm = this.fb.group({
+      latitude: ['', Validators.required],
+      longitude: ['', Validators.required],
+    });
+  }
+
+  onSearchSensor() {
+    console.log('search lancee');
+    let sensorLongitude = this.SearchCapteurForm.get('longitude').value;
+    let sensorLatitude = this.SearchCapteurForm.get('latitude').value;
+
+    console.log(' latitude value ' + sensorLatitude + ' centimetre');
+    // L.map('mapid').setView([sensorLatitude, sensorLongitude], 15);
+  }
 
   ngOnInit() {
 
@@ -45,7 +63,6 @@ export class MapsComponent implements OnInit {
 
     var baseMaps = {
       "Field": field,
-      //"Streets": streets
     };
 
     var overlayMaps = {

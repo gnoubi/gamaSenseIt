@@ -7,7 +7,7 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col">
-                                <button type="button" class="btn btn btn-primary" data-toggle="modal"
+                                <button type="button" class="btn btn-blue" data-toggle="modal"
                                     data-target="#modal-form">Sensor View</button>
                                 <div class="modal fade" id="modal-form" tabindex="-1" role="dialog"
                                     aria-labelledby="modal-form" aria-hidden="false">
@@ -19,35 +19,31 @@
                                                         <div class="text-center text-muted mb-4">
                                                             <small> Add a new sensor View</small>
                                                         </div>
-                                                        <form role="form">
+                                                        <form role="form" [formGroup]="SensorView">
                                                             <div class="form-row mb-3 ">
                                                                 <div class="col">
                                                                     <input type="text" class="form-control"
-                                                                        placeholder="Name" name="Name" />
+                                                                        placeholder="Name" name="Name" formControlName="Name" />
                                                                 </div>
                                                             </div>
                                                             <div class="form-row mb-3">
                                                                 <div class="col">
                                                                     <input type="number" class="form-control"
                                                                         placeholder="latitude" name="latitude"
-                                                                        id="latitude" />
+                                                                        id="latitude" formControlName="latitude" />
                                                                 </div>
                                                                 <div class="col">
                                                                     <input type="number" class="form-control"
                                                                         placeholder="longitude" name="longitude"
-                                                                        id="longitude" />
+                                                                        id="longitude" formControlName="longitude"  />
                                                                 </div>
 
                                                             </div>
-                                                            <!--
-                                                            <select name="choosenSensorType">
-                                                                <option th:each="addr: ${sensorsTypes}"
-                                                                    th:value="${addr.idadresse}"
-                                                                    th:text="${addr.typeName}+', version '+${addr.version}">
-                                                                    defaultValue</option>
-                                                            </select>-->
                                                             <br />
-                                                            <input type='submit' name="envoyer" />
+                                                            <div class="col">
+                                                                <button type="button" (click)="onAddSensorView()"
+                                                                class="btn btn-primary" >Add Sensor View</button>
+                                                            </div>
                                                         </form>
                                                     </div>
                                                 </div>
@@ -70,7 +66,7 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col">
-                                <button type="button" class="btn btn btn-primary" data-toggle="modal"
+                                <button type="button" class="btn btn-blue" data-toggle="modal"
                                     data-target="#modal-form1">Sensor</button>
                                 <div class="modal fade" id="modal-form1" tabindex="-1" role="dialog"
                                     aria-labelledby="modal-form1" aria-hidden="false">
@@ -83,41 +79,41 @@
                                                         <div class="text-center text-muted mb-4">
                                                             <small>Add a New Sensor</small>
                                                         </div>
-                                                        <form role="form">
+                                                        <form role="form" [formGroup]="newSensor" >
                                                             <div class="form-row mb-3">
                                                                 <div class="col">
                                                                     <input type="text" class="form-control"
-                                                                        placeholder="Name" name="name" />
+                                                                        placeholder="Name" name="name" formControlName="Name"  />
                                                                 </div>
                                                             </div>
                                                             <div class="form-row mb-3 ">
                                                                 <div class="col">
                                                                     <input type="search" id="version"
                                                                         class="form-control" placeholder="version"
-                                                                        name="version" />
+                                                                        name="version" formControlName="version" />
                                                                 </div>
                                                             </div>
                                                             <div class="form-row mb-3 ">
                                                                 <div class="col">
                                                                     <input type="text" class="form-control"
-                                                                        placeholder="address" name="address" />
+                                                                        placeholder="address" name="address" formControlName="adresse"/>
                                                                 </div>
                                                                 <div class="col">
                                                                     <button type="button" id="find"
                                                                         class="btn btn-primary"
-                                                                        onclick="find_address();">find</button>
+                                                                        (click)="findAddress()">find</button>
                                                                 </div>
                                                             </div>
                                                             <div class="form-row mb-3">
                                                                 <div class="col">
                                                                     <input type="number" class="form-control"
                                                                         placeholder="latitude" name="latitude"
-                                                                        id="latitude" />
+                                                                        id="latitude" formControlName="latitude" />
                                                                 </div>
                                                                 <div class="col">
                                                                     <input type="number" class="form-control"
                                                                         placeholder="longitude" name="longitude"
-                                                                        id="longitude" />
+                                                                        id="longitude" formControlName="longitude" />
                                                                 </div>
 
                                                             </div>
@@ -125,7 +121,7 @@
 
                                                             <div class="col">
                                                                 <button type="button" class="btn btn-primary"
-                                                                    onclick="addElements();">Sign in</button>
+                                                                    (click)="onAddNewSensor()">Add New Sensor</button>
                                                             </div>
                                                         </form>
                                                     </div>
@@ -149,7 +145,7 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col">
-                                <button type="button" class="btn btn btn-primary" data-toggle="modal"
+                                <button type="button" class="btn btn-blue" data-toggle="modal"
                                     data-target="#modal-form2"> MetaData
                                 </button>
                                 <div class="modal fade" id="modal-form2" tabindex="-1" role="dialog"
@@ -162,15 +158,15 @@
                                                         <div class="text-center text-muted mb-4">
                                                             <small>Add MetaData of Sensor</small>
                                                         </div>
-                                                        <form role="form">
+                                                        <form role="form" [formGroup]="metaData">
                                                             <div class="form-row mb-3">
                                                                 <div class="col">
                                                                     <input type="text" class="form-control"
-                                                                        placeholder="First name" name="name" />
+                                                                        placeholder="First name" name="name" formControlName="Name"/>
                                                                 </div>
                                                                 <div class="col">
                                                                     <input type="text" class="form-control"
-                                                                        placeholder="Last name" name="version" />
+                                                                        placeholder="Last name" name="version" formControlName="version" />
                                                                 </div>
                                                             </div>
                                                             <div class="form-row mb-3">
@@ -180,7 +176,7 @@
                                                             </div>
                                                             <div class="col">
                                                                 <button type="button" class="btn btn-primary"
-                                                                    onclick="addElements();">Sign in</button>
+                                                                    (click)="onAddMetaData()">Add MetaData</button>
                                                             </div>
                                                         </form>
                                                     </div>
