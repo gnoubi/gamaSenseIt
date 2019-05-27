@@ -62,6 +62,7 @@
         </div>
         <div class="card-body">
           <div *ngIf="operation == 'details'">
+            <h3>Sensor Details</h3>
             <ul class="text-white mt-1" *ngIf="displaySensor.id!=0">
               <li>Name: {{displaySensor.name}}</li>
               <li>Version: {{displaySensor.version}}</li>
@@ -70,7 +71,7 @@
             </ul>
           </div>
           <div *ngIf="operation=='update'">
-            Update Sensor 
+            <h3>Update Sensor </h3>
             <br>
             <form role="form">
               <div class="form-row mb-3 ">
@@ -94,7 +95,7 @@
             </form>
           </div>
           <div *ngIf="operation == 'delete' ">
-            Remove Sensor
+            <h3>Remove Sensor</h3>
             <br>
             <form role="form">
               <div class="form-row mb-3 ">
