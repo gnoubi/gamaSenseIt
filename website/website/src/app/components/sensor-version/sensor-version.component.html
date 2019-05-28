@@ -2,7 +2,7 @@
     <div class="header-body">
         <!-- Card stats -->
         <div class="row">
-            <div class="col-xl-4 col-lg-4">
+            <!--<div class="col-xl-4 col-lg-4">
                 <div class="card card-stats mb-4 mb-xl-0">
                     <div class="card-body">
                         <div class="row">
@@ -18,6 +18,7 @@
                                                     <div class="card-body px-lg-5 py-lg-5">
                                                         <div class="text-center text-muted mb-4">
                                                             <small> Add a new sensor View</small>
+                                                            <-- pas besoin fait automatiquement en recuperant les donnees->
                                                         </div>
                                                         <form role="form" [formGroup]="SensorView">
                                                             <div class="form-row mb-3 ">
@@ -60,7 +61,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>-->
             <div class="col-xl-4 col-lg-4">
                 <div class="card card-stats mb-4 mb-xl-0">
                     <div class="card-body">
@@ -78,30 +79,21 @@
                                                     <div class="card-body px-lg-5 py-lg-5">
                                                         <div class="text-center text-muted mb-4">
                                                             <small>Add a New Sensor</small>
+                                                            <!--Name,Longitude,Latitude,idSensorType-->
                                                         </div>
-                                                        <form role="form" [formGroup]="newSensor" >
+                                                        <form role="form" [formGroup]="newSensor">
                                                             <div class="form-row mb-3">
                                                                 <div class="col">
                                                                     <input type="text" class="form-control"
-                                                                        placeholder="Name" name="name" formControlName="Name"  />
+                                                                        placeholder="Name" name="name"
+                                                                        formControlName="Name" />
                                                                 </div>
                                                             </div>
                                                             <div class="form-row mb-3 ">
                                                                 <div class="col">
                                                                     <input type="search" id="version"
                                                                         class="form-control" placeholder="version"
-                                                                        name="version" formControlName="version" />
-                                                                </div>
-                                                            </div>
-                                                            <div class="form-row mb-3 ">
-                                                                <div class="col">
-                                                                    <input type="text" class="form-control"
-                                                                        placeholder="address" name="address" formControlName="adresse"/>
-                                                                </div>
-                                                                <div class="col">
-                                                                    <button type="button" id="find"
-                                                                        class="btn btn-primary"
-                                                                        (click)="findAddress()">find</button>
+                                                                        name="MetaData" formControlName="type" />
                                                                 </div>
                                                             </div>
                                                             <div class="form-row mb-3">
@@ -157,22 +149,27 @@
                                                     <div class="card-body px-lg-5 py-lg-5">
                                                         <div class="text-center text-muted mb-4">
                                                             <small>Add MetaData of Sensor</small>
+                                                            <!-- -->
                                                         </div>
                                                         <form role="form" [formGroup]="metaData">
                                                             <div class="form-row mb-3">
                                                                 <div class="col">
                                                                     <input type="text" class="form-control"
-                                                                        placeholder="First name" name="name" formControlName="Name"/>
+                                                                        placeholder="Name" name="name"
+                                                                        formControlName="Name" />
                                                                 </div>
                                                                 <div class="col">
                                                                     <input type="text" class="form-control"
-                                                                        placeholder="Last name" name="version" formControlName="version" />
+                                                                        placeholder="Version" name="version"
+                                                                        formControlName="version" />
                                                                 </div>
                                                             </div>
                                                             <div class="form-row mb-3">
-
-                                                                <h2>parameters</h2>
-
+                                                                <div class="col">
+                                                                    <input type="text" class="form-control"
+                                                                        placeholder="separator" name="separator"
+                                                                        formControlName="separator" />
+                                                                </div>
                                                             </div>
                                                             <div class="col">
                                                                 <button type="button" class="btn btn-primary"

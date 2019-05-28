@@ -1,7 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { SensorVersion } from '../../SensorVersion';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
-import {sensorVersionFormService} from './sensor-version-form-service';
+import { sensorVersionFormService } from './sensor-version-form-service';
+import { Sensor } from '../../sensor';
 
 @Component({
   selector: 'app-sensor-version',
@@ -9,53 +10,62 @@ import {sensorVersionFormService} from './sensor-version-form-service';
   styleUrls: ['./sensor-version.component.css']
 })
 export class SensorVersionComponent implements OnInit {
-  @Input() sensorVersion : SensorVersion;
+  @Input() sensorVersion: SensorVersion;
   SensorView: FormGroup;
   newSensor: FormGroup;
   metaData: FormGroup;
 
-  constructor(private fb: FormBuilder,private sensorFormService:sensorVersionFormService) { 
-    this.SensorView = this.fb.group({
+  constructor(private fb: FormBuilder, private sensorFormService: sensorVersionFormService) {
+    /*this.SensorView = this.fb.group({
       Name:[''],
       latitude:[''],
       longitude:['']
-    });
+    });*/
     this.newSensor = this.fb.group({
-      Name:[''],
-      version:[''],
-      adresse:[''],
-      latitude:[''],
-      longitude:['']
+      Name: [''],
+      type: [''],
+      longitude: [''],
+      latitude: [''],
     });
     this.metaData = this.fb.group({
-      Name:[''],
-      version:[''],
+      Name: [''],
+      version: [''],
+      separator: [''],
     });
   }
 
 
-  onAddSensorView(){
-    console.log('Sensor View appelee');
-    let SensorView = this.SensorView.value;
-    //envoyer SensorView a la base de donnees des MAP
-  }
 
-  onAddNewSensor(){
+  onAddNewSensor() {
+
     console.log('Add New Sensor appelee');
-    let Sensor = this.newSensor.value;
+    /*let sensorName = this.newSensor.get('Name').value;
+    let sensorType = this.newSensor.get('type').value;
+    let sensorLongitude = this.newSensor.get('longitude').value;
+    let sensorLatitude = this.newSensor.get('latitude').value;*/
+    let s = this.newSensor.value;
+
+    this.sensorFormService.addSensor(s).subscribe(
+      res => {
+        console.log();
+      });
+
     // Appeler le service ajouter dans la base
   }
 
-  onAddMetaData(){
+  onAddMetaData() {
     console.log('Add MetaData appelee');
-    let MetaDataSensor= this.metaData.value;
+    /* let metaDataName = this.metaData.get('Name').value;
+     let metaDataVersion = this.metaData.get('version').value;
+     let metaDataSeparator = this.metaData.get('separator').value; */
+    let m = this.metaData.value;
+    this.sensorFormService.addMetaData(m).subscribe(
+      res => {
+
+    });
+
     //ajouter dans la base
 
-  }
-
-  findAddress(){
-    console.log('Find Address appelee');
-    // find Address and generate lat and long
   }
 
   ngOnInit() {

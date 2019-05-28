@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import {API_URLS} from '../../config/api.url.config'; 
+import { Sensor } from '../../sensor';
 // all Form add to a Database new Sensor.. SensorView and Metadata
 
 @Injectable()
@@ -11,21 +12,15 @@ export class sensorVersionFormService {
 
     }
 
-    getSensors():Observable<any>{
-        return this.http.get(API_URLS.TEST);
+
+    addSensor(s:Sensor):Observable<any>{
+        return this.http.post(API_URLS.ADD_SENSOR,s);
     }
 
-    addSensor():Observable<any>{
-        return this.http.post(API_URLS.TEST,null);
+    addMetaData(m):Observable<any>{
+        return this.http.post(API_URLS.ADD_SENSOR_METADATA,m);
     }
 
-    addMetaData():Observable<any>{
-        return this.http.post(API_URLS.ADD_SENSOR_METADATA,null);
-    }
-
-    addSensorView():Observable<any>{
-        return this.http.post(API_URLS.UPDATE_SENSOR,null);
-    }
     addParameterMetaData():Observable<any>{
         return this.http.post(API_URLS.ADD_PARAMETER_META_DATA,null);
     }

@@ -18,9 +18,9 @@ export class DiagrammeComponent implements OnInit {
 
   sensors: Array<SensorVersion> = StockCapteurArr;
   sensorsCheck; myLine; dataUpdate;
-  myLineBar; myLinePie;
-  element;canvas;
-  displaySensor; j = 0;
+  myBar; myPie;
+  element; canvas;
+  displaySensor; j = 0; k = 0; l = 0;
   dataMesure: [68, 80, 32, 15, 50, 100, 20];
   ctx: HTMLElement;
 
@@ -56,12 +56,44 @@ export class DiagrammeComponent implements OnInit {
   }];
 
 
+  datasetSensorB = [{
+    label: 'My First dataset',
+    backgroundColor: 'rgba(255, 99, 132, 0.5)',
+    borderColor: 'rgba(255, 99, 132, 1)',
+    data: [
+      this.randomScalingFactor(),
+      this.randomScalingFactor(),
+      this.randomScalingFactor(),
+      this.randomScalingFactor(),
+      this.randomScalingFactor(),
+      this.randomScalingFactor(),
+      this.randomScalingFactor()
+    ],
+    fill: false,
 
-  typeGraphChange() {
+  }, {
+    label: 'My Second dataset',
+    fill: false,
+    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+    borderColor: 'rgba(54, 162, 235, 1)',
+    data: [
+      this.randomScalingFactor(),
+      this.randomScalingFactor(),
+      this.randomScalingFactor(),
+      this.randomScalingFactor(),
+      this.randomScalingFactor(),
+      this.randomScalingFactor(),
+      this.randomScalingFactor()
+    ],
+  }];
+
+
+
+  /*typeGraphChange() {
     this.myLine.type = this.typeGraph;
     console.log(this.myLine.type);
     this.myLine.update();
-  }
+  }*/
 
 
   /* Get Data to Form */
@@ -92,7 +124,7 @@ export class DiagrammeComponent implements OnInit {
     var green = this.randomScalingFactor() * 255 / 100;
     var blue = this.randomScalingFactor() * 255 / 100;
 
-    var dataSensor = {
+    var dataSensorL = {
       label: 'another dataset' + this.j,
       backgroundColor: "rgba(" + red + "," + green + "," + blue + ",0.5)",
       borderColor: "rgba(" + red + "," + green + "," + blue + ",1)",
@@ -107,16 +139,73 @@ export class DiagrammeComponent implements OnInit {
       ],
       fill: false
     }
-    this.myLine.data.datasets.push(dataSensor);
-    this.myLine.update();
-    this.j++;
+    var dataSensorB = {
+      label: 'another dataset' + this.k,
+      backgroundColor: "rgba(" + red + "," + green + "," + blue + ",0.5)",
+      borderColor: "rgba(" + red + "," + green + "," + blue + ",1)",
+      data: [
+        this.randomScalingFactor(),
+        this.randomScalingFactor(),
+        this.randomScalingFactor(),
+        this.randomScalingFactor(),
+        this.randomScalingFactor(),
+        this.randomScalingFactor(),
+        this.randomScalingFactor()
+      ],
+      fill: false
+    }
+    var dataSensorP = {
+      label: 'another dataset' + this.l,
+      backgroundColor: [
+        "rgba(" + red + "," + green + "," + blue + ",0.5)",
+        "rgba(" + this.randomScalingFactor() + "," + this.randomScalingFactor() + "," + this.randomScalingFactor() + ",0.5)",
+        "rgba(" + this.randomScalingFactor() + "," + this.randomScalingFactor() + "," + this.randomScalingFactor() + ",0.5)",
+        "rgba(" + this.randomScalingFactor() + "," + this.randomScalingFactor() + "," + this.randomScalingFactor() + ",0.5)",
+        "rgba(" + this.randomScalingFactor() + "," + this.randomScalingFactor() + "," + this.randomScalingFactor() + ",0.5)",
+      ],
+      data: [
+        this.randomScalingFactor(),
+        this.randomScalingFactor(),
+        this.randomScalingFactor(),
+        this.randomScalingFactor(),
+        this.randomScalingFactor(),
+      ],
+    }
+    if (this.typeGraph == 'line') {
+      this.myLine.data.datasets.push(dataSensorL);
+      this.myLine.update();
+      this.j++;
+    } else if (this.typeGraph == 'bar') {
+      this.myBar.data.datasets.push(dataSensorB);
+      this.myBar.update();
+      this.k++;
+    }
+    else if (this.typeGraph == 'pie') {
+      //other config
+      this.myPie.data.datasets.push(dataSensorP);
+      this.myPie.update();
+      this.l++;
+    }
 
   }
 
   resetGraph() {
-    this.myLine.data.datasets = [];
-    this.myLine.update();
-    this.j = 0;
+    if (this.typeGraph == 'line') {
+      this.myLine.data.datasets = [];
+      this.myLine.update();
+      this.j = 0;
+    }
+    else if (this.typeGraph == 'bar') {
+      this.myBar.data.datasets = [];
+      this.myBar.update();
+      this.k = 0;
+    }
+    else if (this.typeGraph == 'pie') {
+      this.myPie.data.datasets = [];
+      this.myPie.update();
+      this.l = 0;
+    }
+
   }
 
   /*Chart JS */
@@ -169,7 +258,7 @@ export class DiagrammeComponent implements OnInit {
     type: 'bar',
     data: {
       labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-      datasets: this.datasetSensor,
+      datasets: this.datasetSensorB,
     },
     options: {
       legend: {
@@ -242,8 +331,8 @@ export class DiagrammeComponent implements OnInit {
   };
 
   line() {
-    this.typeGraph='line';
-     this.element = document.getElementById('chart');
+    this.typeGraph = 'line';
+    this.element = document.getElementById('chart');
     while (this.element.firstChild) {
       this.element.removeChild(this.element.firstChild);
     }
@@ -251,13 +340,13 @@ export class DiagrammeComponent implements OnInit {
     this.canvas.setAttribute("id", "myChart");
     this.canvas.className = "chart-canvas";
     this.element.appendChild(this.canvas);
-    
+
     this.ctx = document.getElementById('myChart');
 
     this.myLine = new Chart(this.ctx, this.config);
   }
   bar() {
-    this.typeGraph='bar';
+    this.typeGraph = 'bar';
     //this.ctx=null;
     this.element = document.getElementById('chart');
     while (this.element.firstChild) {
@@ -267,13 +356,13 @@ export class DiagrammeComponent implements OnInit {
     this.canvas.setAttribute("id", "myChart");
     this.canvas.className = "chart-canvas";
     this.element.appendChild(this.canvas);
-    
+
     this.ctx = document.getElementById('myChart');
 
-    this.myLineBar = new Chart(this.ctx, this.configbar);
+    this.myBar = new Chart(this.ctx, this.configbar);
   }
   pie() {
-    this.typeGraph='pie';
+    this.typeGraph = 'pie';
     //this.ctx=null;
     this.element = document.getElementById('chart');
     while (this.element.firstChild) {
@@ -283,9 +372,9 @@ export class DiagrammeComponent implements OnInit {
     this.canvas.setAttribute("id", "myChart");
     this.canvas.className = "chart-canvas";
     this.element.appendChild(this.canvas);
-    
+
     this.ctx = document.getElementById('myChart');
-    this.myLinePie = new Chart(this.ctx, this.configpie);
+    this.myPie = new Chart(this.ctx, this.configpie);
   }
 
 

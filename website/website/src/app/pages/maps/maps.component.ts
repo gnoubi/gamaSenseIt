@@ -15,17 +15,16 @@ export class MapsComponent implements OnInit {
 
   constructor(private fb: FormBuilder) {
     this.SearchCapteurForm = this.fb.group({
-      latitude: ['', Validators.required],
-      longitude: ['', Validators.required],
+      name: ['', Validators.required],
     });
   }
 
   onSearchSensor() {
     console.log('search lancee');
-    let sensorLongitude = this.SearchCapteurForm.get('longitude').value;
-    let sensorLatitude = this.SearchCapteurForm.get('latitude').value;
-
-    console.log(' latitude value ' + sensorLatitude + ' centimetre');
+    //let sensorLongitude = this.SearchCapteurForm.get('longitude').value;
+    //let sensorLatitude = this.SearchCapteurForm.get('latitude').value;
+    let sensorName = this.SearchCapteurForm.get('name').value;
+    console.log(' latitude value ' + sensorName + ' centimetre');
     // L.map('mapid').setView([sensorLatitude, sensorLongitude], 15);
   }
 

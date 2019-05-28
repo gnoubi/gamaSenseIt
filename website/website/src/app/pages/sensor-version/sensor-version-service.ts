@@ -16,8 +16,8 @@ export class sensorVersionService {
         return this.http.get(API_URLS.SENSOR_DATA_URL);
     }
 
-    updateSensor():Observable<any>{
-        return null;
+    updateSensor(s):Observable<any>{
+        return this.http.put(API_URLS.UPDATE_SENSOR,null);
     }
 
     deleteSensor():Observable<any>{

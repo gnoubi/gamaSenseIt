@@ -37,10 +37,10 @@ export class SensorVersionPage implements OnInit {
 
   }
   updateSensor() {
-    this.sensorService.updateSensor().subscribe(
+/*    this.sensorService.updateSensor().subscribe(
       res => {
         this.initSensor();
       }
-    );
+    );*/
   }
 }
