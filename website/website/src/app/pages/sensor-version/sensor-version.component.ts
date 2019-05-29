@@ -14,9 +14,11 @@ export class SensorVersionPage implements OnInit {
 
   sensors: Array<SensorVersion> = StockCapteurArr;
   displaySensor;
-  operation:String = 'details';
+  sensorUpdate;
+  sensorDelete;
+  operation: String = 'details';
   sensors1: any;
- 
+
   constructor(private sensorService: sensorVersionService) { }
 
   ngOnInit() {
@@ -29,18 +31,31 @@ export class SensorVersionPage implements OnInit {
 
   initSensor() {
     this.displaySensor = new SensorVersion(0, '', '', '', []);
-    /*this.sensorService.getSensors().subscribe(
-      data => { this.sensors1 = data },
-      error => { console.log('error was occured') },
-      () => { console.log('Donnees bien chargee') }
-    );*/
 
   }
-  updateSensor() {
-/*    this.sensorService.updateSensor().subscribe(
-      res => {
-        this.initSensor();
-      }
+
+  loadSensor() {
+    /*this.sensorService.getSensors().subscribe(
+     data => { this.sensors1 = data },
+     error => { console.log('error was occured') },
+     () => { console.log('Donnees bien chargee') }
     );*/
+  }
+
+  updateSensor(s) {
+       /* this.sensorService.updateSensor(s).subscribe(
+          res => {
+            this.loadSensor();
+          }
+        );*/
+  }
+
+  deleteSensor(s) {
+    /*this.sensorService.deleteSensor(s)
+      .subscribe(
+        res=>{
+          this.loadSensor();
+        }
+      );*/
   }
 }

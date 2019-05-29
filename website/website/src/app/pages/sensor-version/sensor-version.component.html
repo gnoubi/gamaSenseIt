@@ -20,11 +20,12 @@
             <thead class="thead-light">
               <tr>
                 <th scope="col">Name</th>
-                <th scope="col">Measured parameters</th>
+                <th scope="col">Version</th>
                 <th scope="col" class="text-center">Actions</th>
               </tr>
             </thead>
             <tbody>
+              <!--sensors1 o lieu de sensors-->
               <tr *ngFor="let sensor of sensors">
                 <td>
                   {{sensor.name}}
@@ -35,8 +36,8 @@
                 <td>
                   <button class="btn btn-outline-success" (click)="displaySensor=sensor;operation='details';">
                     Details</button>
-                  <button class="btn btn-outline-success" (click)="operation='update';"> Update</button>
-                  <button class="btn btn-outline-danger" (click)="operation='delete';"> Delete</button>
+                  <button class="btn btn-outline-success" (click)="operation='update';sensorUpdate=sensor"> Update</button>
+                  <button class="btn btn-outline-danger" (click)="operation='delete';sensorDelete=sensor"> Delete</button>
                 </td>
               </tr>
               <tr>
@@ -52,9 +53,6 @@
           <div class="row align-items-center">
             <div class="col">
               <h2 class="text-white mb-0">
-               <!-- {{operation == 'details'? 'Sensor Description':
-                operation == 'update' ? 'Update Sensor':
-                operation == 'delete' ? 'Delete Sensor':''}}-->
                 Sensor's Operation
               </h2>
             </div>
@@ -62,7 +60,7 @@
         </div>
         <div class="card-body">
           <div *ngIf="operation == 'details'">
-            <h3>Sensor Details</h3>
+            <h3 class="text-white">Sensor Details</h3>
             <ul class="text-white mt-1" *ngIf="displaySensor.id!=0">
               <li>Name: {{displaySensor.name}}</li>
               <li>Version: {{displaySensor.version}}</li>
@@ -71,12 +69,12 @@
             </ul>
           </div>
           <div *ngIf="operation=='update'">
-            <h3>Update Sensor </h3>
+            <h3 class="text-white">Update Sensor </h3>
             <br>
             <form role="form">
               <div class="form-row mb-3 ">
                 <div class="col">
-                  <input type="text" class="form-control" placeholder="Name" name="Name" formControlName="Name" />
+                  <input type="text" class="form-control" placeholder="Name" name="Name" [(ngModel)]="sensorUpdate.name"/>
                 </div>
               </div>
               <div class="form-row mb-3">
@@ -90,12 +88,12 @@
               </div>
               <br />
               <div class="col">
-                <button type="button" class="btn btn-primary">Update</button>
+                <button type="button" class="btn btn-primary">Update Sensor</button>
               </div>
             </form>
           </div>
           <div *ngIf="operation == 'delete' ">
-            <h3>Remove Sensor</h3>
+            <h3 class="text-white">Remove Sensor</h3>
             <br>
             <form role="form">
               <div class="form-row mb-3 ">
@@ -104,7 +102,7 @@
                 </div>
               </div>
               <div class="col">
-                <button type="button" class="btn btn-primary">Update</button>
+                <button type="button" class="btn btn-primary">Remove Sensor</button>
               </div>
             </form>
           </div>

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { sensorVersionService } from '../sensor-version/sensor-version-service';
 
 declare let L;
 
@@ -12,8 +13,11 @@ declare let L;
 export class MapsComponent implements OnInit {
 
   SearchCapteurForm: FormGroup;
+  sensorMap: any;
+   tabSensor;
 
-  constructor(private fb: FormBuilder) {
+
+  constructor(private fb: FormBuilder,private sensorService: sensorVersionService) {
     this.SearchCapteurForm = this.fb.group({
       name: ['', Validators.required],
     });
@@ -21,10 +25,9 @@ export class MapsComponent implements OnInit {
 
   onSearchSensor() {
     console.log('search lancee');
-    //let sensorLongitude = this.SearchCapteurForm.get('longitude').value;
-    //let sensorLatitude = this.SearchCapteurForm.get('latitude').value;
+
     let sensorName = this.SearchCapteurForm.get('name').value;
-    console.log(' latitude value ' + sensorName + ' centimetre');
+    // creer un moteur de recherche par le biais de leaflet
     // L.map('mapid').setView([sensorLatitude, sensorLongitude], 15);
   }
 
@@ -38,7 +41,6 @@ export class MapsComponent implements OnInit {
       Humidity = L.marker([14.741995, -17.433543]).bindPopup('This is humidity sensor '),
       Temperature = L.marker([14.731095, -17.435143]).bindPopup('This is Temperature sensor'),
       Rain = L.marker([14.721995, -17.437343]).bindPopup('This is Rain Detection Sensor');
-
     var sensors = L.layerGroup([SoilSensor, Humidity, Temperature, Rain]);
     var field = L.tileLayer(mapboxUrl, { id: 'mapbox.satellite', attribution: mapboxAttribution }),
       streets = L.tileLayer(mapboxUrl, { id: 'mapbox.streets', attribution: mapboxAttribution });
@@ -91,4 +93,10 @@ export class MapsComponent implements OnInit {
     mymap.on('click', onMapClick);*/
   }
 
+  loadSensor(){
+    this.sensorService.getSensors()
+    .subscribe(
+      data=>{this.sensorMap = data}
+    );
+  }
 }
