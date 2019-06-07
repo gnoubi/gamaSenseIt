@@ -14,21 +14,28 @@ export class MapsComponent implements OnInit {
 
   SearchCapteurForm: FormGroup;
   sensorMap: any;
-   tabSensor;
+  sensor: any;
+  tabSensor;
+  map;
 
 
-  constructor(private fb: FormBuilder,private sensorService: sensorVersionService) {
+  constructor(private fb: FormBuilder, private sensorService: sensorVersionService) {
     this.SearchCapteurForm = this.fb.group({
       name: ['', Validators.required],
     });
   }
 
   onSearchSensor() {
-    console.log('search lancee');
 
     let sensorName = this.SearchCapteurForm.get('name').value;
     // creer un moteur de recherche par le biais de leaflet
-    // L.map('mapid').setView([sensorLatitude, sensorLongitude], 15);
+    this.map.flyTo([43.6316, 3.89706], 15);
+
+    /*for( this.sensor in this.sensorMap){
+        if (this.sensor.name == sensorName ){
+          this.map('mapid').flyTo([this.sensor.latitude, this.sensor.longitude], 15);
+        }
+    }*/
   }
 
   ngOnInit() {
@@ -45,7 +52,7 @@ export class MapsComponent implements OnInit {
     var field = L.tileLayer(mapboxUrl, { id: 'mapbox.satellite', attribution: mapboxAttribution }),
       streets = L.tileLayer(mapboxUrl, { id: 'mapbox.streets', attribution: mapboxAttribution });
 
-    var map = L.map('mapid', {
+    this.map = L.map('mapid', {
       center: [14.731995, -17.433143],
       zoom: 15,
       layers: [field, sensors]
@@ -57,10 +64,10 @@ export class MapsComponent implements OnInit {
       popup
         .setLatLng(e.latlng)
         .setContent("You clicked the map at " + e.latlng.toString())
-        .openOn(map);
+        .openOn(this.map);
     }
 
-    map.on('click', onMapClick);
+    this.map.on('click', onMapClick);
 
     var baseMaps = {
       "Field": field,
@@ -93,10 +100,10 @@ export class MapsComponent implements OnInit {
     mymap.on('click', onMapClick);*/
   }
 
-  loadSensor(){
+  loadSensor() {
     this.sensorService.getSensors()
-    .subscribe(
-      data=>{this.sensorMap = data}
-    );
+      .subscribe(
+        data => { this.sensorMap = data }
+      );
   }
 }
