@@ -16,11 +16,22 @@ export class sensorVersionService {
         return this.http.get(API_URLS.SENSOR_DATA_URL);
     }
 
-    updateSensor(s):Observable<any>{
-        return this.http.put(API_URLS.UPDATE_SENSOR,null);
+    getSensorsBetween():Observable<any>{
+        return null;
     }
 
-    deleteSensor(s):Observable<any>{
-        return this.http.delete(API_URLS.TEST);
+    getSince():Observable<any>{
+        return null;
     }
+
+    updateSensor(s):Observable<any>{
+        var link = API_URLS.UPDATE_SENSOR;
+        link+='?sensorID='+s+'&name='+s+'&longitude='+s+'&latitude='+s;
+        return this.http.put(link,null);
+    }
+
+    /*deleteSensor(s):Observable<any>{
+
+        return this.http.delete(API_URLS.TEST);
+    }*/
 }

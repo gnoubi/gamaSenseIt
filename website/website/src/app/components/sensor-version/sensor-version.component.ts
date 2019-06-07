@@ -33,27 +33,28 @@ export class SensorVersionComponent implements OnInit {
 
   onAddNewSensor() {
     console.log('Add New Sensor appelee');
-    /*let sensorName = this.newSensor.get('Name').value;
+    let sensorName = this.newSensor.get('Name').value;
     let sensorType = this.newSensor.get('type').value;
     let sensorLongitude = this.newSensor.get('longitude').value;
-    let sensorLatitude = this.newSensor.get('latitude').value;*/
+    let sensorLatitude = this.newSensor.get('latitude').value;
     let s = this.newSensor.value;
-    this.sensorFormService.addSensor(s).subscribe(
+    this.sensorFormService.addSensor(sensorName,sensorType,sensorLongitude,sensorLatitude,s).subscribe(
       res => {
-        console.log();
+        console.log('Ajout effectuer');
+        //load Sensor
       });
     // Appeler le service ajouter dans la base
   }
 
   onAddMetaData() {
     console.log('Add MetaData appelee');
-    /* let metaDataName = this.metaData.get('Name').value;
+     let metaDataName = this.metaData.get('Name').value;
      let metaDataVersion = this.metaData.get('version').value;
-     let metaDataSeparator = this.metaData.get('separator').value; */
+     let metaDataSeparator = this.metaData.get('separator').value; 
     let m = this.metaData.value;
-    this.sensorFormService.addMetaData(m).subscribe(
+    this.sensorFormService.addMetaData(metaDataName,metaDataVersion,metaDataSeparator,m).subscribe(
       res => {
-
+        console.log();
       });
     //ajouter dans la base
   }

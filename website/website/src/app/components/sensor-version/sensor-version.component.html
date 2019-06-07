@@ -145,5 +145,65 @@
                 </div>
             </div>
         </div>
+        <div class="col-xl-4 col-lg-4">
+            <div class="card card-stats mb-4 mb-xl-0">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            <button type="button" class="btn btn-blue" data-toggle="modal"
+                                data-target="#modal-form2"> MetaData Parameter
+                            </button>
+                            <div class="modal fade" id="modal-form2" tabindex="-1" role="dialog"
+                                aria-labelledby="modal-form2" aria-hidden="false">
+                                <div class="modal-dialog modal- modal-dialog-centered modal-sm" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-body p-0">
+                                            <div class="card bg-secondary shadow border-0">
+                                                <div class="card-body px-lg-5 py-lg-5">
+                                                    <div class="text-center text-muted mb-4">
+                                                        <small>Add MetaData Parameter</small>
+                                                        <!-- -->
+                                                    </div>
+                                                    <form role="form" [formGroup]="metaData">
+                                                        <div class="form-row mb-3">
+                                                            <div class="col">
+                                                                <input type="text" class="form-control"
+                                                                    placeholder="Name" name="name"
+                                                                    formControlName="Name" />
+                                                            </div>
+                                                            <div class="col">
+                                                                <input type="text" class="form-control"
+                                                                    placeholder="Version" name="version"
+                                                                    formControlName="version" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-row mb-3">
+                                                            <div class="col">
+                                                                <input type="text" class="form-control"
+                                                                    placeholder="separator" name="separator"
+                                                                    formControlName="separator" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="col">
+                                                            <button type="button" class="btn btn-primary"
+                                                                (click)="onAddMetaData()">Add MetaData</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="icon icon-shape bg-yellow text-white rounded-circle shadow">
+                                <i class="fas fa-info"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
