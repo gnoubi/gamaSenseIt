@@ -13,6 +13,7 @@ export class SensorVersionComponent implements OnInit {
   SensorView: FormGroup;
   newSensor: FormGroup;
   metaData: FormGroup;
+  metaDataParam: FormGroup;
 
   constructor(private fb: FormBuilder, private sensorFormService: sensorVersionFormService) {
 
@@ -27,6 +28,13 @@ export class SensorVersionComponent implements OnInit {
       version: [''],
       separator: [''],
     });
+    this.metaDataParam = this.fb.group({
+      metaDataId:[''],
+      Name:[''],
+      Unit:[''],
+      dataFormat:[''],
+      measuredParameter:['']
+    });
   }
 
 
@@ -38,7 +46,7 @@ export class SensorVersionComponent implements OnInit {
     let sensorLongitude = this.newSensor.get('longitude').value;
     let sensorLatitude = this.newSensor.get('latitude').value;
     let s = this.newSensor.value;
-    this.sensorFormService.addSensor(sensorName,sensorType,sensorLongitude,sensorLatitude,s).subscribe(
+    this.sensorFormService.addSensor(sensorName, sensorType, sensorLongitude, sensorLatitude, s).subscribe(
       res => {
         console.log('Ajout effectuer');
         //load Sensor
@@ -48,19 +56,24 @@ export class SensorVersionComponent implements OnInit {
 
   onAddMetaData() {
     console.log('Add MetaData appelee');
-     let metaDataName = this.metaData.get('Name').value;
-     let metaDataVersion = this.metaData.get('version').value;
-     let metaDataSeparator = this.metaData.get('separator').value; 
+    let metaDataName = this.metaData.get('Name').value;
+    let metaDataVersion = this.metaData.get('version').value;
+    let metaDataSeparator = this.metaData.get('separator').value;
     let m = this.metaData.value;
-    this.sensorFormService.addMetaData(metaDataName,metaDataVersion,metaDataSeparator,m).subscribe(
+    this.sensorFormService.addMetaData(metaDataName, metaDataVersion, metaDataSeparator, m).subscribe(
       res => {
         console.log();
       });
     //ajouter dans la base
   }
 
-  addMetaDataParam(){
-
+  addMetaDataParam() {
+    console.log('MetaData Param function  ');
+    let id ='' ;
+    let name = '';
+    let unit ='';
+    let dataFormat = '' ;
+    let measuredParam = '';
   }
 
   ngOnInit() {
