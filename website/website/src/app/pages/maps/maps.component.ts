@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { sensorVersionService } from '../sensor-version/sensor-version-service';
 
 declare let L;
 
@@ -12,20 +13,29 @@ declare let L;
 export class MapsComponent implements OnInit {
 
   SearchCapteurForm: FormGroup;
+  sensorMap: any;
+  sensor: any;
+  tabSensor;
+  map;
 
-  constructor(private fb: FormBuilder) {
+
+  constructor(private fb: FormBuilder, private sensorService: sensorVersionService) {
     this.SearchCapteurForm = this.fb.group({
       name: ['', Validators.required],
     });
   }
 
   onSearchSensor() {
-    console.log('search lancee');
-    //let sensorLongitude = this.SearchCapteurForm.get('longitude').value;
-    //let sensorLatitude = this.SearchCapteurForm.get('latitude').value;
+
     let sensorName = this.SearchCapteurForm.get('name').value;
-    console.log(' latitude value ' + sensorName + ' centimetre');
-    // L.map('mapid').setView([sensorLatitude, sensorLongitude], 15);
+    // creer un moteur de recherche par le biais de leaflet
+    this.map.flyTo([43.6316, 3.89706], 15);
+
+    /*for( this.sensor in this.sensorMap){
+        if (this.sensor.name == sensorName ){
+          this.map('mapid').flyTo([this.sensor.latitude, this.sensor.longitude], 15);
+        }
+    }*/
   }
 
   ngOnInit() {
@@ -38,12 +48,11 @@ export class MapsComponent implements OnInit {
       Humidity = L.marker([14.741995, -17.433543]).bindPopup('This is humidity sensor '),
       Temperature = L.marker([14.731095, -17.435143]).bindPopup('This is Temperature sensor'),
       Rain = L.marker([14.721995, -17.437343]).bindPopup('This is Rain Detection Sensor');
-
     var sensors = L.layerGroup([SoilSensor, Humidity, Temperature, Rain]);
     var field = L.tileLayer(mapboxUrl, { id: 'mapbox.satellite', attribution: mapboxAttribution }),
       streets = L.tileLayer(mapboxUrl, { id: 'mapbox.streets', attribution: mapboxAttribution });
 
-    var map = L.map('mapid', {
+    this.map = L.map('mapid', {
       center: [14.731995, -17.433143],
       zoom: 15,
       layers: [field, sensors]
@@ -55,10 +64,10 @@ export class MapsComponent implements OnInit {
       popup
         .setLatLng(e.latlng)
         .setContent("You clicked the map at " + e.latlng.toString())
-        .openOn(map);
+        .openOn(this.map);
     }
 
-    map.on('click', onMapClick);
+    this.map.on('click', onMapClick);
 
     var baseMaps = {
       "Field": field,
@@ -91,4 +100,10 @@ export class MapsComponent implements OnInit {
     mymap.on('click', onMapClick);*/
   }
 
+  loadSensor() {
+    this.sensorService.getSensors()
+      .subscribe(
+        data => { this.sensorMap = data }
+      );
+  }
 }

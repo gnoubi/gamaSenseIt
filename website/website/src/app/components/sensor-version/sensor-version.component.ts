@@ -2,7 +2,6 @@ import { Component, OnInit, Input } from '@angular/core';
 import { SensorVersion } from '../../SensorVersion';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { sensorVersionFormService } from './sensor-version-form-service';
-import { Sensor } from '../../sensor';
 
 @Component({
   selector: 'app-sensor-version',
@@ -16,11 +15,7 @@ export class SensorVersionComponent implements OnInit {
   metaData: FormGroup;
 
   constructor(private fb: FormBuilder, private sensorFormService: sensorVersionFormService) {
-    /*this.SensorView = this.fb.group({
-      Name:[''],
-      latitude:[''],
-      longitude:['']
-    });*/
+
     this.newSensor = this.fb.group({
       Name: [''],
       type: [''],
@@ -37,19 +32,16 @@ export class SensorVersionComponent implements OnInit {
 
 
   onAddNewSensor() {
-
     console.log('Add New Sensor appelee');
     /*let sensorName = this.newSensor.get('Name').value;
     let sensorType = this.newSensor.get('type').value;
     let sensorLongitude = this.newSensor.get('longitude').value;
     let sensorLatitude = this.newSensor.get('latitude').value;*/
     let s = this.newSensor.value;
-
     this.sensorFormService.addSensor(s).subscribe(
       res => {
         console.log();
       });
-
     // Appeler le service ajouter dans la base
   }
 
@@ -62,13 +54,16 @@ export class SensorVersionComponent implements OnInit {
     this.sensorFormService.addMetaData(m).subscribe(
       res => {
 
-    });
-
+      });
     //ajouter dans la base
+  }
+
+  addMetaDataParam(){
 
   }
 
   ngOnInit() {
+
   }
 
 }

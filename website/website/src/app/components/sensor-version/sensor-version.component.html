@@ -2,66 +2,6 @@
     <div class="header-body">
         <!-- Card stats -->
         <div class="row">
-            <!--<div class="col-xl-4 col-lg-4">
-                <div class="card card-stats mb-4 mb-xl-0">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col">
-                                <button type="button" class="btn btn-blue" data-toggle="modal"
-                                    data-target="#modal-form">Sensor View</button>
-                                <div class="modal fade" id="modal-form" tabindex="-1" role="dialog"
-                                    aria-labelledby="modal-form" aria-hidden="false">
-                                    <div class="modal-dialog modal- modal-dialog-centered modal-sm" role="document">
-                                        <div class="modal-content">
-                                            <div class="modal-body p-0">
-                                                <div class="card bg-secondary shadow border-0">
-                                                    <div class="card-body px-lg-5 py-lg-5">
-                                                        <div class="text-center text-muted mb-4">
-                                                            <small> Add a new sensor View</small>
-                                                            <-- pas besoin fait automatiquement en recuperant les donnees->
-                                                        </div>
-                                                        <form role="form" [formGroup]="SensorView">
-                                                            <div class="form-row mb-3 ">
-                                                                <div class="col">
-                                                                    <input type="text" class="form-control"
-                                                                        placeholder="Name" name="Name" formControlName="Name" />
-                                                                </div>
-                                                            </div>
-                                                            <div class="form-row mb-3">
-                                                                <div class="col">
-                                                                    <input type="number" class="form-control"
-                                                                        placeholder="latitude" name="latitude"
-                                                                        id="latitude" formControlName="latitude" />
-                                                                </div>
-                                                                <div class="col">
-                                                                    <input type="number" class="form-control"
-                                                                        placeholder="longitude" name="longitude"
-                                                                        id="longitude" formControlName="longitude"  />
-                                                                </div>
-
-                                                            </div>
-                                                            <br />
-                                                            <div class="col">
-                                                                <button type="button" (click)="onAddSensorView()"
-                                                                class="btn btn-primary" >Add Sensor View</button>
-                                                            </div>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-auto">
-                                <div class="icon icon-shape bg-danger text-white rounded-circle shadow">
-                                    <i class="fas fa-map-marker"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>-->
             <div class="col-xl-4 col-lg-4">
                 <div class="card card-stats mb-4 mb-xl-0">
                     <div class="card-body">
@@ -90,11 +30,23 @@
                                                                 </div>
                                                             </div>
                                                             <div class="form-row mb-3 ">
-                                                                <div class="col">
+                                                                <!--<div class="col">
                                                                     <input type="search" id="version"
-                                                                        class="form-control" placeholder="version"
+                                                                        class="form-control" placeholder="Sensor Type"
                                                                         name="MetaData" formControlName="type" />
                                                                 </div>
+                                                                <div class="form-group">-->
+                                                                    <label for="sel1">Sensor Type</label>
+                                                                    <select class="form-control" id="sel1">
+                                                                        <option>TEMPERATURE</option>
+                                                                        <option>CO2</option>
+                                                                        <option>PM10</option>
+                                                                        <option>PM2_5</option>
+                                                                        <option>PM1</option>
+                                                                        <option>PRESSURE</option>
+                                                                        <option>HUMIDITY</option>
+                                                                    </select>
+                                                                <!--</div>-->
                                                             </div>
                                                             <div class="form-row mb-3">
                                                                 <div class="col">
@@ -195,34 +147,3 @@
         </div>
     </div>
 </div>
-
-<!--
-    <form role="form">
-        <div class="form-group mb-3">
-            <div class="input-group input-group-alternative">
-                <div class="input-group-prepend">
-                    <span class="input-group-text"><i class="ni ni-align-left-2"></i></span>
-                </div>
-                <input class="form-control" placeholder="Type name" type="text">
-            </div>
-        </div>
-        <div class="form-group mb-3">
-            <div class="input-group input-group-alternative">
-                <div class="input-group-prepend">
-                    <span class="input-group-text"><i class="ni ni-align-left-2"></i></span>
-                </div>
-                <input class="form-control" placeholder="Version ID" type="text">
-            </div>
-        </div>
-        <div class="form-group mb-3">
-            <div class="input-group input-group-alternative">
-                <textarea class="form-group" name="doc" placeholder="Documentation" id="doc" cols="30"
-                    rows="5"></textarea>
-            </div>
-        </div>
-        <div class="text-center">
-            <button type="button" class="btn btn-primary my-4">ADD</button>
-        </div>
-    </form>
-
--->
