@@ -8,7 +8,6 @@ import { DiagrammeComponent } from '../../pages/diagramme/diagramme.component';
 export const AdminLayoutRoutes: Routes = [
     { path: 'dashboard',      component: DashboardComponent },
     { path: 'user-profile',   component: SensorVersionPage },
-    { path: 'tables',         component: SensorVersionPage },
     { path: 'maps',           component: MapsComponent },
     {path: 'diagramme',       component:DiagrammeComponent}
 ];

@@ -23,6 +23,10 @@ export class DiagrammeComponent implements OnInit {
   displaySensor; j = 0; k = 0; l = 0;
   dataMesure: [68, 80, 32, 15, 50, 100, 20];
   ctx: HTMLElement;
+  monthsLabel : ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
+  daysLabel :  ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+
 
   datasetSensor = [{
     label: 'My First dataset',
@@ -377,7 +381,32 @@ export class DiagrammeComponent implements OnInit {
     this.myPie = new Chart(this.ctx, this.configpie);
   }
 
+  days(){
+    /*if(this.typeGraph == 'line'){
+      this.myLine.data.labels =this.daysLabel ;
+      this.myLine.update();
+    }else if(this.typeGraph == 'bar'){
+      this.myBar.data.labels=this.daysLabel;
+      this.myBar.update();
+    }else if (this.typeGraph == 'pie'){
+      this.myPie.data.labels =this.daysLabel ;
+      this.myPie.update();
+    }*/
+  }
 
+
+  months(){/*
+    if(this.typeGraph == 'line'){
+      this.myLine.data.labels =this.monthsLabel ;
+      this.myLine.update();
+    }else if(this.typeGraph == 'bar'){
+      this.myBar.data.labels=this.monthsLabel;
+      this.myBar.update();
+    }else if (this.typeGraph == 'pie'){
+      this.myPie.data.labels =this.monthsLabel ;
+      this.myPie.update();
+    }*/
+  }
 
   constructor() { }
 

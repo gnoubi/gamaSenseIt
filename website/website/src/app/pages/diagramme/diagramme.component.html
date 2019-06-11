@@ -8,27 +8,24 @@
               <h2 class="text-white mb-0">Diagramme</h2>
               <h6 class="text-white mb-0 text-uppercase"> {{typeGraph}} Graph</h6>
             </div>
+            <button class="btn btn-light " (click)="line()">Line Graph</button>
+            <button class="btn btn-light " (click)="pie()">Camembert</button>
+            <button class="btn btn-light " (click)="bar()">Bar Graph</button>
             <div class="col-auto">
-                <div class="icon icon-shape bg-danger text-white rounded-circle shadow">
-                    <i class="fas fa-chart-bar"></i>
-                </div>
-            </div>
-            <div class="col-auto">
-                <div class="icon icon-shape bg-danger text-white rounded-circle shadow">
-                    <i class="fas fa-chart-pie "></i>
-                </div>
+              <div class="icon icon-shape bg-info text-white rounded-circle shadow">
+                <i class="fas fa-chart-bar"></i>&nbsp;
+                <i class="fas fa-chart-pie "></i>
+              </div>
             </div>
           </div>
         </div>
         <div class="card-body">
           <div id="chart" class="chart">
-
           </div>
         </div>
         <div class="card-footer bg-dark">
-          <button class="btn btn-light " (click)="line()">Line Graph</button>
-          <button class="btn btn-light " (click)="pie()">Camembert</button>
-          <button class="btn btn-light " (click)="bar()">Bar Graph</button>
+          <!--<button class="btn btn-light " (click)="days()">Days</button>
+          <button class="btn btn-light " (click)="months()">Months</button>-->
         </div>
       </div>
     </div>
