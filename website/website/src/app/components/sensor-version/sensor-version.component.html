@@ -1,9 +1,9 @@
-<div class="container-fluid">
+<div class="container-fluid ">
     <div class="header-body">
         <!-- Card stats -->
         <div class="row">
-            <div class="col-xl-4 col-lg-4">
-                <div class="card card-stats mb-4 mb-xl-0">
+            <div class="col-xl-9 col-lg-9">
+                <div class="card card-stats mb-4 mb-xl-0 bg-gradient-light">
                     <div class="card-body">
                         <div class="row">
                             <div class="col">
@@ -74,21 +74,6 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-auto">
-                                <div class="icon icon-shape bg-warning text-white rounded-circle shadow">
-                                    <i class="fa fa-plug"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-xl-4 col-lg-4">
-                <div class="card card-stats mb-4 mb-xl-0">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col">
                                 <button type="button" class="btn btn-blue" data-toggle="modal"
                                     data-target="#modal-form2"> Sensor MetaData
                                 </button>
@@ -134,81 +119,74 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-auto">
-                                <div class="icon icon-shape bg-yellow text-white rounded-circle shadow">
-                                    <i class="fas fa-info"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-4 col-lg-4">
-            <div class="card card-stats mb-4 mb-xl-0">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col">
-                            <button type="button" class="btn btn-blue" data-toggle="modal" data-target="#modal-form2">
-                                MetaData Parameter
-                            </button>
-                            <div class="modal fade" id="modal-form2" tabindex="-1" role="dialog"
-                                aria-labelledby="modal-form2" aria-hidden="false">
-                                <div class="modal-dialog modal- modal-dialog-centered modal-sm" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-body p-0">
-                                            <div class="card bg-secondary shadow border-0">
-                                                <div class="card-body px-lg-5 py-lg-5">
-                                                    <div class="text-center text-muted mb-4">
-                                                        <small>Add MetaData Parameter</small>
-                                                        <!-- -->
-                                                    </div>
-                                                    <form role="form" [formGroup]="metaData">
-                                                        <div class="form-row mb-3">
-                                                            <div class="col">
-                                                                <input type="text" class="form-control"
-                                                                    placeholder="metaDataId" name="metaDataId"
-                                                                    formControlName="metaDataId" />
-                                                            </div>
-                                                            <div class="col">
-                                                                <input type="text" class="form-control"
-                                                                    placeholder="Name" name="name"
-                                                                    formControlName="Name" />
-                                                            </div>
-                                                            <div class="col">
-                                                                <input type="text" class="form-control"
-                                                                    placeholder="Unit" name="Unit"
-                                                                    formControlName="Unit" />
-                                                            </div>
+                                <button type="button" class="btn btn-blue" data-toggle="modal"
+                                    data-target="#modal-form3">
+                                    MetaData Parameter
+                                </button>
+                                <div class="modal fade" id="modal-form3" tabindex="-1" role="dialog"
+                                    aria-labelledby="modal-form2" aria-hidden="false">
+                                    <div class="modal-dialog modal- modal-dialog-centered modal-sm" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-body p-0">
+                                                <div class="card bg-secondary shadow border-0">
+                                                    <div class="card-body px-lg-5 py-lg-5">
+                                                        <div class="text-center text-muted mb-4">
+                                                            <small>Add MetaData Parameter</small>
+                                                            <!-- -->
                                                         </div>
-                                                        <div class="form-row mb-3">
-                                                            <div class="col">
-                                                                <input type="text" class="form-control"
-                                                                    placeholder="dataFormat" name="dataFormat"
-                                                                    formControlName="dataFormat" />
-                                                            </div>
-                                                            <div class="col">
+                                                        <form role="form" [formGroup]="metaData">
+                                                            <div class="form-row mb-3">
+                                                                <div class="col">
                                                                     <input type="text" class="form-control"
-                                                                        placeholder="measuredParameter" name="measuredParameter"
+                                                                        placeholder="metaDataId" name="metaDataId"
+                                                                        formControlName="metaDataId" />
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-row mb-3">
+                                                                <div class="col">
+                                                                    <input type="text" class="form-control"
+                                                                        placeholder="Name" name="name"
+                                                                        formControlName="Name" />
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-row mb-3">
+                                                                <div class="col">
+                                                                    <input type="text" class="form-control"
+                                                                        placeholder="Unit" name="Unit"
+                                                                        formControlName="Unit" />
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-row mb-3">
+                                                                <div class="col">
+                                                                    <input type="text" class="form-control"
+                                                                        placeholder="dataFormat" name="dataFormat"
+                                                                        formControlName="dataFormat" />
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-row mb-3">
+                                                                <div class="col">
+                                                                    <input type="text" class="form-control"
+                                                                        placeholder="measuredParameter"
+                                                                        name="measuredParameter"
                                                                         formControlName="measuredParameter" />
                                                                 </div>
-                                                        </div>
-                                                        <div class="col">
-                                                            <button type="button" class="btn btn-primary"
-                                                                (click)="addMetaDataParam()">Add MetaData</button>
-                                                        </div>
-                                                    </form>
+                                                            </div>
+                                                            <div class="col">
+                                                                <button type="button" class="btn btn-primary"
+                                                                    (click)="addMetaDataParam()">Add MetaData</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-auto">
-                            <div class="icon icon-shape bg-yellow text-white rounded-circle shadow">
-                                <i class="fas fa-info"></i>
+                            <div class="col-auto">
+                                <div class="icon icon-shape bg-warning text-white rounded-circle shadow">
+                                    <i class="fa fa-plug"></i>
+                                </div>
                             </div>
                         </div>
                     </div>
