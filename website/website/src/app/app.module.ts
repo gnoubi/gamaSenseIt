@@ -6,6 +6,7 @@ import { RouterModule } from '@angular/router';
 
 import { AppComponent } from './app.component';
 import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component';
+import { PMLayoutComponent } from './layouts/pm-layout/pm-layout.component';
 import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout.component';
 
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -13,6 +14,9 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AppRoutingModule } from './app.routing';
 import { ComponentsModule } from './components/components.module';
 import { SensorVersionListComponent } from './sensor-version-list/sensor-version-list.component';
+
+import { PmProgressBarComponent } from './components/pm-progress-bar/pm-progress-bar.component';
+import { NgCircleProgressModule } from 'ng-circle-progress';
 
 @NgModule({
   imports: [
@@ -23,12 +27,15 @@ import { SensorVersionListComponent } from './sensor-version-list/sensor-version
     NgbModule,
     RouterModule,
     AppRoutingModule,
+    NgCircleProgressModule.forRoot({})
   ],
   declarations: [
     AppComponent,
     AdminLayoutComponent,
     AuthLayoutComponent,
+    PMLayoutComponent,
     SensorVersionListComponent,
+    PmProgressBarComponent,
   ],
   providers: [],
   bootstrap: [AppComponent]

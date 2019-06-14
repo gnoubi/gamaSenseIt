@@ -9,9 +9,9 @@ import { NgCircleProgressModule } from 'ng-circle-progress';
   styleUrls: ['./pm-progress-bar.component.css']
 })
 export class PmProgressBarComponent  implements OnInit {
-  DANGER_COLOR: string = "#f5365c";
-  WARNING_COLOR: string = "#fb6340";
-  OK_COLOR: string = "#2dce89";
+  DANGER_COLOR: string = "#C21A00";//"#f5365c";
+  WARNING_COLOR: string = "#FF6D58";
+  OK_COLOR: string = "#00C269";//"#B3D158";//"#2dce89";
   
   
   @Input()
@@ -31,9 +31,9 @@ export class PmProgressBarComponent  implements OnInit {
     this.warmLevel = 50;
     this.dangerLevel = 75;
     this.maxLevel = 100;
-    this.DANGER_COLOR = "#f5365c";
-    this.WARNING_COLOR = "#fb6340";
-    this.OK_COLOR = "#2dce89";
+    this.DANGER_COLOR = "#C21A00";//"#f5365c";
+    this.WARNING_COLOR = "#FF6D58";
+    this.OK_COLOR = "#00C269"; //"#B3D158"; //"#2dce89";
    }
    getColor() : string
    {
