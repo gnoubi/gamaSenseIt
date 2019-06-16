@@ -130,7 +130,7 @@ public class DataController {
     	List<SensorData> dts = this.sensorData.findAllByDate(id,idParam,start, enddate);
     	return buildList(dts);
     }
- 
+  
     @CrossOrigin
     @RequestMapping(value=IDataController.SENSOR_DATA)
     public List<DisplayableData> getDataBetween()
@@ -139,6 +139,16 @@ public class DataController {
     	return buildList(dts);
     	
     }
+    
+    
+    
+    @CrossOrigin
+    @RequestMapping(value=IDataController.SERVER_DATE)
+    public long getServerDate()
+    {
+    	return (long)(Calendar.getInstance().getTimeInMillis()/1000);  	
+    }
+    
     
     private List<DisplayableData> buildList(Iterable<SensorData> dts)
     {

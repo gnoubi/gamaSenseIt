@@ -25,8 +25,6 @@ public class Sensor {
 	private double longitude;
 	private double latitude;
 	
-	
-
 	@ManyToOne
 	private SensorMetadata sensorType;
 	
@@ -85,6 +83,13 @@ public class Sensor {
 	}
 	public void setLatitude(double latitude) {
 		this.latitude = latitude;
+	}
+	
+	public Optional<Set<ParameterMetadata>> getParameters()
+	{
+		if(this.sensorType == null)
+			return Optional.empty();
+		return  Optional.of(this.sensorType.getParameterMetaData());
 	}
 	
 	public Optional<ParameterMetadata> getParameterMetadata(long id)
