@@ -26,7 +26,7 @@ import ummisco.gamaSenseIt.springServer.data.repositories.ISensorDataRepository;
 import ummisco.gamaSenseIt.springServer.data.repositories.ISensorRepository;
 
 @RestController
-@RequestMapping("/Qameleo/")
+@RequestMapping("/qameleo/")
 public class QameleoController {
 	@Autowired
 	DataController dataController;
