@@ -53,7 +53,7 @@ import { NgCircleProgressModule,CircleProgressOptions } from 'ng-circle-progress
     MapsComponent,
     SensorVersionPage,
     DiagrammeComponent,
-    NgCircleProgressModule    
+    NgCircleProgressModule
   ],
   exports: [
     
