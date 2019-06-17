@@ -1,6 +1,6 @@
 <div class="container">
     <div class="row">
-      <div class="col-sm-6">
+      <div class="col-sm-4">
           <div  style="width: 16rem;">
             <div class="card card-stats  mb-1 mb-lg-1">
               <div class="card-body">
@@ -23,7 +23,7 @@
             </div>
           </div>
         </div>
-        <div class="col-sm-6">
+        <div class="col-sm-4">
             <div class="align-right"  style="width: 16rem;">
                 <div class="card card-stats align-right mb-1 mb-lg-1">
                   <div class="card-body">
@@ -48,14 +48,14 @@
         </div>
       </div>
       <div class="row">
-          <div class="col-sm-6">
+          <div class="col-sm-4">
               <div  style="width: 18rem;">
                 <div class="card card-stats  mb-1 mb-lg-1">
                   <div class="card-body">
                     <div class="row">
                       <div class="col">
                         <h5 class="card-title text-uppercase text-muted mb-0">PM 1</h5>
-                        <pm-progress-bar [title]="'PM 1'" [value]=28></pm-progress-bar>
+                        <pm-progress-bar [title]="'PM 1'" [value]="PM_value"></pm-progress-bar>
                       </div>
                       <div class="col-auto">
                         <div class="icon icon-shape bg-danger text-white rounded-circle shadow">
@@ -67,14 +67,14 @@
                 </div>
               </div>
             </div>
-            <div class="col-sm-6">
+            <div class="col-sm-4">
                 <div class="align-right"  style="width: 18rem;">
                     <div class="card card-stats align-right mb-1 mb-lg-1">
                       <div class="card-body">
                         <div class="row">
                           <div class="col">
                             <h5 class="card-title text-uppercase text-muted mb-0">PM 2.5</h5>
-                            <pm-progress-bar [title]="'PM 2.5'"  [value]=55></pm-progress-bar>
+                            <pm-progress-bar [title]="'PM 2.5'"  [value]="PM25_value"></pm-progress-bar>
                           </div>
                           <div class="col-auto">
                             <div class="icon icon-shape bg-danger text-white rounded-circle shadow">
@@ -86,14 +86,14 @@
                     </div>
                   </div>
             </div>
-            <div class="col-sm-6">
+            <div class="col-sm-4">
                 <div class="align-right"  style="width: 18rem;">
                     <div class="card card-stats align-right mb-1 mb-lg-1">
                       <div class="card-body">
                         <div class="row">
                           <div class="col">
                             <h5 class="card-title text-uppercase text-muted mb-0">PM 10</h5>
-                            <pm-progress-bar [title]="'PM 10'"  [value]=85></pm-progress-bar>
+                            <pm-progress-bar [title]="'PM 10'"  [value]="PM10_value"></pm-progress-bar>
                           </div>
                           <div class="col-auto">
                             <div class="icon icon-shape bg-danger text-white rounded-circle shadow">

@@ -18,6 +18,7 @@ import { SensorVersionListComponent } from './sensor-version-list/sensor-version
 import { PmProgressBarComponent } from './components/pm-progress-bar/pm-progress-bar.component';
 import { NgCircleProgressModule } from 'ng-circle-progress';
 import { QrQameleoComponent } from './pages/qr-qameleo/qr-qameleo.component';
+import { sensorVersionService } from './pages/sensor-version/sensor-version-service';
 
 @NgModule({
   imports: [
@@ -39,7 +40,7 @@ import { QrQameleoComponent } from './pages/qr-qameleo/qr-qameleo.component';
     PmProgressBarComponent,
     QrQameleoComponent,
   ],
-  providers: [],
+  providers: [sensorVersionService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

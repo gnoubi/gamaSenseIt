@@ -12,8 +12,8 @@ export class PmProgressBarComponent  implements OnInit {
   DANGER_COLOR: string = "#C21A00";//"#f5365c";
   WARNING_COLOR: string = "#FF6D58";
   OK_COLOR: string = "#00C269";//"#B3D158";//"#2dce89";
-  
-  
+
+
   @Input()
   warmLevel : number = 50;
   @Input()
@@ -22,10 +22,9 @@ export class PmProgressBarComponent  implements OnInit {
   maxLevel : number = 100;
   @Input()
   title: string = "PM 10";
-
-
   @Input()
   value : number;
+  
   constructor() {
     this.title = "PM ?";
     this.warmLevel = 50;
@@ -56,8 +55,8 @@ export class PmProgressBarComponent  implements OnInit {
     }else if(percent > 50){
       return "Medium";
     }else {
-      return "Good"; 
-    } 
+      return "Good";
+    }
   }
 
   ngOnInit() {
