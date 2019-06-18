@@ -2,8 +2,6 @@ import { Component, OnInit, SimpleChanges } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 
-import * as jQuery from 'jquery';
-
 @Component({
   selector: 'qr-qameleo',
   templateUrl: './qr-qameleo.component.html',
@@ -16,8 +14,6 @@ export class QrQameleoComponent implements OnInit {
   private PM10: number = 85;
   private temperature: number = 12;
   private humidity: number = 70;
-  private pmsensor;
-  private test;
   private url = 'http://vmpams.ird.fr:8080';
 
   constructor( private router: Router,
@@ -26,11 +22,13 @@ export class QrQameleoComponent implements OnInit {
   ngOnInit() {
     console.log('Source prevue',this.url = this.url + this.router.url);
     this.url = 'http://vmpams.ird.fr:8080/qameleo/airQualityIndicator?id=48';
+    this.initValues(this.url);
+    this.hideValues();
+  }
 
-    this.http.get(this.url).
+  initValues(url: string){
+    this.http.get(url).
       subscribe((data: PMSensor) => {
-        this.test = data;
-        this.PM1 = data.pm1/2;
         this.PM1 = data.pm1/2;
         this.PM25 = data.pm25/2;
         this.PM10 = data.pm10/2;
@@ -38,7 +36,10 @@ export class QrQameleoComponent implements OnInit {
         this.temperature = Math.round(this.temperature*100)/100;
         this.humidity = data.humidity;
         this.humidity = Math.round(this.humidity*100)/100;
-      });
+    });
+  }
+
+  hideValues(){
   }
 
   ngOnChanges(changes: SimpleChanges){
@@ -50,7 +51,7 @@ export class QrQameleoComponent implements OnInit {
   }
 }
 
-export interface PMSensor {
+interface PMSensor {
   sensorName: string;
   pm1: number;
   pm25: number;
