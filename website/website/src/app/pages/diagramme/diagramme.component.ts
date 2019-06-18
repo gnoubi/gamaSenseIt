@@ -408,6 +408,35 @@ export class DiagrammeComponent implements OnInit {
     }*/
   }
 
+  // test case a cocher
+
+  fruits = [
+    { name: 'apple',    selected: true },
+    { name: 'orange',   selected: false },
+    { name: 'pear',     selected: true },
+    { name: 'naartjie', selected: false }
+  ];
+  fruit:any;
+  
+  selection=[];
+
+  selectedFruits() {
+    for(this.fruit in this.fruits){
+      if(this.fruit.selected){
+        this.selection.push(this.fruit);
+      }
+    }
+  //  return filterFilter(this.fruits, { selected: true });
+  };
+
+/*
+  watch('fruits|filter:{selected:true}', function (nv) {
+    this.selection = nv.map(function (fruit) {
+      return fruit.name;
+    });
+  }, true);
+}]);*/
+
   constructor() { }
 
   ngOnInit() {

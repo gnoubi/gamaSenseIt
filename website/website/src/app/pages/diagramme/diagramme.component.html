@@ -31,16 +31,19 @@
     </div>
     <div class="col-xl-4">
       <div class="card shadow">
-        <div class="card-header bg-transparent">
+        <div class="card-header bg-light">
           <div class="row align-items-center">
             <div class="col">
-              <h6 class="text-uppercase text-muted ls-1 mb-1">Catalogue</h6>
-              <h2 class="mb-0">Sensor List</h2>
+              <!-- <h6 class="text-uppercase text-muted ls-1 mb-1">Catalogue</h6>
+              <h2 class="mb-0">Sensor List</h2>-->
+                  <div class="input-group input-group-alternative">
+                    <input class="form-control" placeholder="Sensor's Name" type="text" formControlName="name">
+                  </div>
             </div>
           </div>
         </div>
         <div class="card-body">
-          <p> Choix des differents Capteurs</p>
+          <!--<p> Choix des differents Capteurs</p>
           <table>
             <tbody>
               <tr *ngFor="let sensor of sensors">
@@ -49,15 +52,40 @@
                 </td>
                 <td>
                   <button class="btn btn-outline-success" (click)="addSensoTest()"> Visualiser</button>
-                  <!--<button class="btn btn-outline-success"> Visualiser</button>-->
+                  <--<button class="btn btn-outline-success"> Visualiser</button>->
 
-                  <!--<button class="btn btn-outline-danger"  > Enlever</button>-->
+                  <--<button class="btn btn-outline-danger"  > Enlever</button>->
+                </td>
+              </tr>
+            </tbody>
+          </table>-->
+          <table>
+            <tbody>
+              <tr *ngFor="let fruit of fruits">
+                <td>
+                  <label>
+                    <!--class="form-check-label"-->
+                    <!--
+                            - Use `value="{{fruit.name}}"` to give the input a real value, in case the form gets submitted
+                              traditionally
+                        
+                            - Use `ng-checked="fruit.selected"` to have the checkbox checked based on some angular expression
+                              (no two-way-data-binding)
+                        
+                            - Use `ng-model="fruit.selected"` to utilize two-way-data-binding. Note that `.selected`
+                              is arbitrary. The property name could be anything and will be created on the object if not present.
+                          -->
+                    <!--class="form-check-input"-->
+                    <input type="checkbox" name="selectedFruits[]" value="{{fruit.name}}" ng-model="fruit.selected">
+                    {{fruit.name}}
+                  </label>
                 </td>
               </tr>
             </tbody>
           </table>
           <br>
           <div class="text-center">
+            <button class="btn btn-outline-success"> Visualiser</button>
             <button class="btn btn-primary " (click)="resetGraph()">Reset Graph</button>
           </div>
         </div>
@@ -65,4 +93,49 @@
     </div>
   </div>
 
+</div>
+<br>
+<div class="container">
+  <div class="mb-3">
+    <div class="card shadow">
+      <div class="card-header bg-transparent">
+        <h3 class="mb-0">Available versions of sensors</h3>
+      </div>
+      <div class="table-responsive">
+        <!-- Projects table -->
+        <table class="table align-items-center table-flush">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Version</th>
+              <th scope="col" class="text-center">Latitude</th>
+              <th scope="col" class="text-center">Longitude</th>
+              <th scope="col" class="text-center">SensorType</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let fruit of fruits">
+              <td *ngIf="fruit.selected== true">
+                {{fruit.name}}
+              </td>
+              <td *ngIf="fruit.selected== true">
+                {{fruit.name}}
+              </td>
+              <td *ngIf="fruit.selected== true">
+                Latitude
+              </td>
+              <td *ngIf="fruit.selected== true">
+                Longitude
+              </td>
+              <td *ngIf="fruit.selected== true">
+                SensorType
+              </td>
+            </tr>
+            <tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
 </div>
