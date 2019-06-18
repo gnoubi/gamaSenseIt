@@ -130,6 +130,17 @@ public class DataController {
     	List<SensorData> dts = this.sensorData.findAllByDate(id,idParam,start, enddate);
     	return buildList(dts);
     }
+    
+    @CrossOrigin
+    @RequestMapping("getSensorDataValue")
+    public String getSensorDataValue( 
+    		@RequestParam(value=IDataController.SENSOR_ID, required=true) String id,
+    		@RequestParam(value="parameterId", required=true) String idParam1)   		
+    	
+    {
+    	
+    	return "returnedValue "+id + " and parameter ID "+idParam1;
+    }
   
     @CrossOrigin
     @RequestMapping(value=IDataController.SENSOR_DATA)
