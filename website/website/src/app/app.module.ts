@@ -40,7 +40,7 @@ import { sensorVersionService } from './pages/sensor-version/sensor-version-serv
     PmProgressBarComponent,
     QrQameleoComponent,
   ],
-  providers: [sensorVersionService],
+  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
