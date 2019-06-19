@@ -12,7 +12,13 @@
       <div class="col-md-4 ml-2 mt-5">
       </div>
       <br><br>
-      Scan the QR code of a sensor
-      <br><br>
+      <h2>Scan the QR code of a sensor</h2>
       <input type="file" accept="image/*" (change)="onFileChange($event)">
+      <br><br>
+      <h3>List of scans:</h3>
+      <ul>
+          <li *ngFor="let url of urlList">
+            <a href="{{ url }}">{{ url }}</a>
+          </li>
+      </ul>
 </div>
