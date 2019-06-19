@@ -16,14 +16,28 @@ export class QrcodeReaderService {
       reader.readAsDataURL(file);
       reader.onload = (e: any) => {
         const data = e.target.result;
-        this.qrcode.callback = (res) => {
-          observer.next(res);
-          observer.complete();
-        };
-        this.qrcode.decode(data);
+        if ( this.qrcode ) {
+          console.log(typeof this.qrcode);
+          this.qrcode.callback = (res) => {
+            observer.next(res);
+            observer.complete();
+          };
+          this.qrcode.decode(data);
+        } else {
+          console.log('qrcode undefined')
+        }
       };
 
     });
   }
 
+  functio(res,obs){
+    obs.next(res);
+    obs.complete();
+  }
+
+  callbackfn = (res,obs) => {
+    obs.next(res);
+    obs.complete();
+  };
 }
