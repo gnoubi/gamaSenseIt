@@ -13,7 +13,9 @@ export class QrQameleoComponent implements OnInit {
   private PM25: number = 55;
   private PM10: number = 85;
   private temperature: number = 12;
+  private temperatureUnite: string = "°C";
   private humidity: number = 70;
+  private humidityUnit: string = "%";
   private url = 'http://vmpams.ird.fr:8080';
 
   constructor( private router: Router,
@@ -35,9 +37,9 @@ export class QrQameleoComponent implements OnInit {
         this.PM10 = data.pm10/2;
         this.PM10 = Math.round(this.PM10*100)/100;
         this.temperature = data.temperature;
-        this.temperature = Math.round(this.temperature*100)/100;
+        this.temperature = Math.round(this.temperature);
         this.humidity = data.humidity;
-        this.humidity = Math.round(this.humidity*100)/100;
+        this.humidity = Math.round(this.humidity);
     });
   }
 
