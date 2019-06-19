@@ -13,7 +13,7 @@ export class QrQameleoComponent implements OnInit {
   private PM25: number = 55;
   private PM10: number = 85;
   private temperature: number = 12;
-  private temperatureUnite: string = "°C";
+  private temperatureUnit: string = "°C";
   private humidity: number = 70;
   private humidityUnit: string = "%";
   private url = 'http://vmpams.ird.fr:8080';
