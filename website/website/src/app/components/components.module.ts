@@ -11,6 +11,7 @@ import {sensorVersionFormService} from './sensor-version/sensor-version-form-ser
 import { RouterModule } from '@angular/router';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { from } from 'rxjs';
+import { QrQameleoFooterComponent } from './qr-qameleo-footer/qr-qameleo-footer.component';
 
 @NgModule({
   imports: [
@@ -25,13 +26,15 @@ import { from } from 'rxjs';
     FooterComponent,
     NavbarComponent,
     SidebarComponent,
-    SensorVersionComponent
+    SensorVersionComponent,
+    QrQameleoFooterComponent
   ],
   exports: [
     FooterComponent,
     NavbarComponent,
     SidebarComponent,
-    SensorVersionComponent
+    SensorVersionComponent,
+    QrQameleoFooterComponent
   ],
   providers:[sensorVersionFormService]
 })

@@ -5,10 +5,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { ClipboardModule } from 'ngx-clipboard';
 
-import { AdminLayoutRoutes } from './admin-layout.routing';
+import { PMLayoutRoutes } from './pm-layout.routing';
 import { DashboardComponent } from '../../pages/dashboard/dashboard.component';
 import { MapsComponent } from '../../pages/maps/maps.component';
-import { QrcodeComponent } from '../../pages/qrcode/qrcode.component';
 import { UserProfileComponent } from '../../pages/user-profile/user-profile.component';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { SensorVersionPage } from '../../pages/sensor-version/sensor-version.component';
@@ -18,6 +17,7 @@ import { DiagrammeComponent } from '../../pages/diagramme/diagramme.component';
 import { sensorVersionService } from '../../pages/sensor-version/sensor-version-service';
 
 
+import { NgCircleProgressModule,CircleProgressOptions } from 'ng-circle-progress';
 
 
 // import { ToastrModule } from 'ngx-toastr';
@@ -25,7 +25,7 @@ import { sensorVersionService } from '../../pages/sensor-version/sensor-version-
 @NgModule({
   imports: [
     CommonModule,
-    RouterModule.forChild(AdminLayoutRoutes),
+    RouterModule.forChild(PMLayoutRoutes),
     FormsModule,
     HttpClientModule,
     NgbModule,
@@ -33,22 +33,32 @@ import { sensorVersionService } from '../../pages/sensor-version/sensor-version-
     FormsModule,
     ReactiveFormsModule,
     FlexLayoutModule,
-    ComponentsModule
-
+    ComponentsModule,
+    CircleProgressOptions,
+    NgCircleProgressModule.forRoot({
+      // set defaults here
+      radius: 100,
+      outerStrokeWidth: 16,
+      innerStrokeWidth: 8,
+      outerStrokeColor: "#78C000",
+      innerStrokeColor: "#C7E596",
+      animationDuration: 300
+    }),
+    
   ],
   declarations: [
-
+  
     DashboardComponent,
     UserProfileComponent,
     MapsComponent,
-    QrcodeComponent,
     SensorVersionPage,
-    DiagrammeComponent
+    DiagrammeComponent,
+    NgCircleProgressModule
   ],
   exports: [
-
+    
   ],
   providers:[sensorVersionService]
 })
 
-export class AdminLayoutModule {}
+export class PMLayoutComponent {}

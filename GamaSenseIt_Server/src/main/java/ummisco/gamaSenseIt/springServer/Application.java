@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.eclipse.paho.client.mqttv3.MqttAsyncClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,7 +35,13 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import ummisco.gamaSenseIt.springServer.data.services.ISensorManagment;
 
 
-@SpringBootApplication(scanBasePackages= {"ummisco.gamaSenseIt.springServer.security","ummisco.gamaSenseIt.springServer.data.model", "ummisco.gamaSenseIt.springServer.data.repositories","ummisco.gamaSenseIt.springServer.data.services","ummisco.gamaSenseIt.springServer.data.controller"})
+@SpringBootApplication(scanBasePackages= {"ummisco.gamaSenseIt.springServer.security",
+		"ummisco.gamaSenseIt.springServer.data.model",
+		"ummisco.gamaSenseIt.springServer.data.repositories",
+		"ummisco.gamaSenseIt.springServer.data.services",
+		"ummisco.gamaSenseIt.springServer.data.controller",
+		"ummisco.gamaSenseIt.springServer.qameleo"
+		})
 @EnableAutoConfiguration
 //@EnableWebSecurity
 
@@ -99,7 +106,7 @@ public class Application {
 	@Bean
 	public MessageProducerSupport mqttInbound() {
 		
-		MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(brokerLoggin,
+		MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(MqttAsyncClient.generateClientId(),
 				mqttClientFactory(), brokerTopic);
 		adapter.setCompletionTimeout(5000);
 		adapter.setConverter(new DefaultPahoMessageConverter());

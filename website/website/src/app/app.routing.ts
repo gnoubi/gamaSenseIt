@@ -4,14 +4,16 @@ import { BrowserModule  } from '@angular/platform-browser';
 import { Routes, RouterModule } from '@angular/router';
 
 import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component';
+import { PMLayoutComponent } from './layouts/pm-layout/pm-layout.component';
 import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout.component';
 
 const routes: Routes =[
+  { path: 'qameleo/:id',      component: PMLayoutComponent },
   {
     path: '',
     redirectTo: 'dashboard',
     pathMatch: 'full',
-  }, {
+  },{
     path: '',
     component: AdminLayoutComponent,
     children: [

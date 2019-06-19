@@ -49,11 +49,31 @@ public class SensorManagment implements ISensorManagment{
 		GeometryFactory gf=new GeometryFactory();
 		
 		SensorMetadata mtype = new SensorMetadata( DEFAULT_SENSOR_TYPE_NAME,DEFAULT_SENSOR_VERSION);
+		SensorMetadata qamelio = new SensorMetadata( "Qamelio","1");
 		sensorMetadataRepo.save(mtype);
 		
-		Point p = gf.createPoint(new Coordinate(12.3, 5.2));
+		
+		qamelio = addSensorMetadata(qamelio);
+		ParameterMetadata pp1 = new ParameterMetadata("pm 1","mg/m3",DataFormat.DOUBLE,DataParameter.PM1);
+		ParameterMetadata pp2 = new ParameterMetadata("pm 2.5","mg/m3",DataFormat.DOUBLE,DataParameter.PM2_5);
+		ParameterMetadata pp10 = new ParameterMetadata("pm 10","mg/m3",DataFormat.DOUBLE,DataParameter.PM10);
+		
+		ParameterMetadata t1 = new ParameterMetadata("temperature","c",DataFormat.DOUBLE,DataParameter.TEMPERATURE);
+		ParameterMetadata h1 = new ParameterMetadata("humidity","%",DataFormat.DOUBLE,DataParameter.HUMIDITY);
+		addParameterToSensorMetadata(qamelio, pp1);
+		addParameterToSensorMetadata(qamelio, pp2);
+		addParameterToSensorMetadata(qamelio, pp10);
+		addParameterToSensorMetadata(qamelio, h1);
+		addParameterToSensorMetadata(qamelio, t1);
+		
+		
+		
+		
+		Point p = gf.createPoint(new Coordinate(0, 0));
 		Sensor s1 = new Sensor(DEFAULT_SENSOR_NAME,p,mtype);
+		Sensor s2 = new Sensor("SENSOR_2",p,qamelio);
 		sensorRepo.save(s1);
+		sensorRepo.save(s2);
 		
 		
 		SensorMetadata smd = new SensorMetadata("capMetadata", "v0", ":");
@@ -110,7 +130,7 @@ public class SensorManagment implements ISensorManagment{
 		
 	 	Date capturedate = new Date(capturedateS*1000);
 	 	
-	 	System.out.println("*************************************************************************************");
+	 /*	System.out.println("*************************************************************************************");
 	 	
 	 	System.out.println("capture date "+capturedateS);
 	 	
@@ -118,12 +138,12 @@ public class SensorManagment implements ISensorManagment{
 	 	System.out.println("sensorName "+sensorName);
 	 	System.out.println("token "+token);
 	 	System.out.println("contents "+contents);
-	 	
+	 */	
 	 	
 	 	SensoredBulkData bulkData = new SensoredBulkData(selectedSensor,token,capturedate,date,contents);
 	 	bulkDataRepo.save(bulkData);
 	 	List<SensorData> aData = dataAnalyser.analyseBulkData(contents, capturedate, selectedSensor);
-	 	System.out.println("*************************************************************************************");
+	 //	System.out.println("*************************************************************************************");
 	 	
 	 	analysedDataRepo.saveAll(aData);
 	}

@@ -11,6 +11,8 @@ public interface IDataController {
 	String SENSOR_DATA					= "getData";
 	String SENSOR_DATA_SINCE_DATE		= "getDataOfSensorSinceDate";
 	String SENSOR_DATA_BETWEEN_DATES	= "getDataOfSensorBetweenDate";
+	String SERVER_DATE					= "serverDateTime";
+	
 	
 	
 	
