@@ -1,5 +1,5 @@
 import { Component, OnInit, SimpleChanges } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 
 @Component({
@@ -17,14 +17,21 @@ export class QrQameleoComponent implements OnInit {
   private humidity: number = 70;
   private humidityUnit: string = "%";
   private url = 'http://vmpams.ird.fr:8080';
+  private browseQRcode = true;
+  private httpGetSucceed = true;
 
   constructor( private router: Router,
     private http: HttpClient ) { }
 
   ngOnInit() {
-    console.log('Source prevue',this.url = this.url + this.router.url);
-    this.url = 'http://vmpams.ird.fr:8080/qameleo/airQualityIndicator?id=48';
-    this.initValues(this.url);
+    if( this.router.url.includes('/',1)) {
+      this.browseQRcode = false;
+      console.log('Source prevue',this.url + this.router.url);
+      // this.url = this.url + this.router.url;
+      this.url = 'http://vmpams.ird.fr:8080/qameleo/airQualityIndicator?id=48';
+      console.log('Source actuelle',this.url);
+      this.initValues(this.url);
+    }
   }
 
   initValues(url: string){
@@ -40,7 +47,18 @@ export class QrQameleoComponent implements OnInit {
         this.temperature = Math.round(this.temperature);
         this.humidity = data.humidity;
         this.humidity = Math.round(this.humidity);
-    });
+    },
+      (err: HttpErrorResponse) => {
+        if (err.error instanceof Error) {
+          // A client-side or network error occurred. Handle it accordingly.
+          console.log('An error occurred:', err.error.message);
+        } else {
+          // The backend returned an unsuccessful response code.
+          // The response body may contain clues as to what went wrong,
+          console.log(`Backend returned code ${err.status}, body was: ${err.error}`);
+          this.httpGetSucceed = false;
+        }
+      });
   }
 
   ngOnChanges(changes: SimpleChanges){

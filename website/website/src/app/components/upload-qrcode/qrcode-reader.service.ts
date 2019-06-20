@@ -10,6 +10,7 @@ declare const qrcode: any;
 export class QrcodeReaderService {
 
   decodeService(file: any): Observable<string> {
+
     return new Observable(observer => {
 
       const reader = new FileReader();
@@ -24,5 +25,4 @@ export class QrcodeReaderService {
       };
     });
   }
-
 }

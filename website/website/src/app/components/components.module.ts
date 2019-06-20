@@ -7,11 +7,13 @@ import { SidebarComponent } from './sidebar/sidebar.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { FooterComponent } from './footer/footer.component';
 import { SensorVersionComponent } from './sensor-version/sensor-version.component';
-import {sensorVersionFormService} from './sensor-version/sensor-version-form-service'; 
+import {sensorVersionFormService} from './sensor-version/sensor-version-form-service';
 import { RouterModule } from '@angular/router';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { from } from 'rxjs';
 import { QrQameleoFooterComponent } from './qr-qameleo-footer/qr-qameleo-footer.component';
+import { QrcodeReaderService } from './upload-qrcode/qrcode-reader.service';
+import { UploadQrcodeComponent } from './upload-qrcode/upload-qrcode.component';
 
 @NgModule({
   imports: [
@@ -27,15 +29,17 @@ import { QrQameleoFooterComponent } from './qr-qameleo-footer/qr-qameleo-footer.
     NavbarComponent,
     SidebarComponent,
     SensorVersionComponent,
-    QrQameleoFooterComponent
+    QrQameleoFooterComponent,
+    UploadQrcodeComponent
   ],
   exports: [
     FooterComponent,
     NavbarComponent,
     SidebarComponent,
     SensorVersionComponent,
-    QrQameleoFooterComponent
+    QrQameleoFooterComponent,
+    UploadQrcodeComponent
   ],
-  providers:[sensorVersionFormService]
+  providers:[sensorVersionFormService, QrcodeReaderService]
 })
 export class ComponentsModule { }
