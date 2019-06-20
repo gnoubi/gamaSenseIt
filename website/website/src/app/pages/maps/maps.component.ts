@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
+import {Observable} from 'rxjs';
+import {map, startWith} from 'rxjs/operators';
+
 import { sensorVersionService } from '../sensor-version/sensor-version-service';
 
 declare let L;
@@ -17,6 +20,25 @@ export class MapsComponent implements OnInit {
   sensor: any;
   tabSensor;
   map;
+  myControl:FormControl = new FormControl();
+  filteredOptions: Observable<any>;
+
+
+  // test autocompletion
+  fruits = [
+    { name: 'apple',    selected: true },
+    { name: 'orange',   selected: false },
+    { name: 'pear',     selected: true },
+    { name: 'naartjie', selected: false },
+    { name: 'apple1',    selected: true },
+    { name: 'orange1',   selected: false },
+    { name: 'pear1',     selected: true },
+    { name: 'naartjie1', selected: false }
+  ];
+
+
+
+  //Fin test
 
 
   constructor(private fb: FormBuilder, private sensorService: sensorVersionService) {
@@ -39,6 +61,8 @@ export class MapsComponent implements OnInit {
   }
 
   ngOnInit() {
+
+    this.autoCompletInit();
 
     let mapboxUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       mapboxAttribution = " UMMISCO Dashboard Sensor's Maps";
@@ -100,6 +124,25 @@ export class MapsComponent implements OnInit {
     mymap.on('click', onMapClick);*/
   }
 
+
+  autoCompletInit() {
+    this.filteredOptions = this.myControl.valueChanges
+      .pipe(
+        startWith(''),
+        map(value => typeof value === 'string' ? value : value.name),
+        map(name => name ? this._filter(name) : this.fruits.slice())
+      );
+  }
+  
+  displayFn(user?: any): string | undefined {
+    return user ? user.name : undefined;
+  }
+
+  private _filter(name: string): any {
+    const filterValue = name.toLowerCase();
+
+    return this.fruits.filter(option => option.name.toLowerCase().indexOf(filterValue) === 0);
+  }
   loadSensor() {
     this.sensorService.getSensors()
       .subscribe(

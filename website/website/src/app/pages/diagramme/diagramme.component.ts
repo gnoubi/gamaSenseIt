@@ -1,7 +1,10 @@
 import { Component, OnInit, Input } from '@angular/core';
+import {Observable} from 'rxjs';
+import {map, startWith} from 'rxjs/operators';
 import Chart from 'chart.js';
 import { SensorVersion } from '../../SensorVersion';
 import { StockCapteurArr } from '../../stock-capteur';
+import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-diagramme',
@@ -20,6 +23,8 @@ export class DiagrammeComponent implements OnInit {
   sensorsCheck; myLine; dataUpdate;
   myBar; myPie;
   element; canvas;
+  myControl: FormControl = new FormControl();
+  filteredOptions: Observable<any>;
   displaySensor; j = 0; k = 0; l = 0;
   dataMesure: [68, 80, 32, 15, 50, 100, 20];
   ctx: HTMLElement;
@@ -417,7 +422,7 @@ export class DiagrammeComponent implements OnInit {
     { name: 'naartjie', selected: false }
   ];
   fruit:any;
-  
+
   selection=[];
 
   selectedFruits() {
@@ -440,7 +445,27 @@ export class DiagrammeComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
+    this.autoCompletInit();
 
+  }
+
+  autoCompletInit() {
+    this.filteredOptions = this.myControl.valueChanges
+      .pipe(
+        startWith(''),
+        map(value => typeof value === 'string' ? value : value.name),
+        map(name => name ? this._filter(name) : this.fruits.slice())
+      );
+  }
+  
+  displayFn(user?: any): string | undefined {
+    return user ? user.name : undefined;
+  }
+
+  private _filter(name: string): any {
+    const filterValue = name.toLowerCase();
+
+    return this.fruits.filter(option => option.name.toLowerCase().indexOf(filterValue) === 0);
   }
 
 

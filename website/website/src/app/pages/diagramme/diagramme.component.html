@@ -31,15 +31,20 @@
     </div>
     <div class="col-xl-4">
       <div class="card shadow">
-        <div class="card-header bg-light">
+        <div class="card-header bg-dark">
           <div class="row align-items-center">
-            <div class="col">
-              <!-- <h6 class="text-uppercase text-muted ls-1 mb-1">Catalogue</h6>
-              <h2 class="mb-0">Sensor List</h2>-->
-                  <div class="input-group input-group-alternative">
-                    <input class="form-control" placeholder="Sensor's Name" type="text" formControlName="name">
-                  </div>
-            </div>
+            <!--<div class="input-group input-group-alternative">  class="form-control"-->
+            <form class="">
+              <mat-form-field floatLabel="never">
+                <input placeholder="Sensor's Name" type="text" matInput [formControl]="myControl" [matAutocomplete]="auto">
+                <mat-autocomplete #auto="matAutocomplete">
+                  <mat-option *ngFor="let option of fruits" value="{{option.name}}">
+                    {{ option.name }}
+                  </mat-option>
+                </mat-autocomplete>
+              </mat-form-field>
+            </form>
+            <!--</div>-->
           </div>
         </div>
         <div class="card-body">
