@@ -14,15 +14,16 @@ export class QrcodeComponent implements OnDestroy {
   constructor(private qrReader: QrcodeReaderService) { }
 
   ngOnDestroy(): void {
-    // this.subscription.unsubscribe();
-    console.log('ngOnDestroy actif');
+    if(this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 
   onFileChange(event) {
     const file = event.target.files[0];
-    this.subscription = this.qrReader.decode(file)
+    this.subscription = this.qrReader.decodeService(file)
       .subscribe(url => {
-        window.open(url, '_blank'); // '_self'
+        window.open(url, '_blank');
       });
   }
 }
