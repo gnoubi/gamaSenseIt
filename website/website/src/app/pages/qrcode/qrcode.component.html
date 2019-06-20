@@ -20,14 +20,7 @@
           </div>
         </div>
         <div class="card-body">
-          <input type="file" class="btn btn-info" accept="image/*" (change)="onFileChange($event)">
-          <br><br>
-          <h3>List of scans:</h3>
-          <ul>
-            <li *ngFor="let url of urlList">
-              <a href="{{ url }}">{{ url }}</a>
-            </li>
-          </ul>
+          <app-upload-qrcode></app-upload-qrcode>
         </div>
       </div>
     </div>

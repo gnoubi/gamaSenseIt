@@ -8,6 +8,7 @@ import { PMLayoutComponent } from './layouts/pm-layout/pm-layout.component';
 import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout.component';
 
 const routes: Routes =[
+  { path: 'qameleo',      component: PMLayoutComponent },
   { path: 'qameleo/:id',      component: PMLayoutComponent },
   {
     path: '',
