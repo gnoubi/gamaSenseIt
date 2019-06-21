@@ -9,16 +9,27 @@
                 <div class="col">
                   <!--Autocompletion & ajout a la liste des capteurs a afficher-->
                   <form role="form" [formGroup]="SearchCapteurForm">
+                    <!--
                     <div class="form-inline mb-3">
                       <div class="input-group input-group-alternative">
                         <input class="form-control" placeholder="Sensor's Name" type="text" formControlName="name">
                       </div>
-                    </div>
+                    </div>-->
+                    <mat-form-field floatLabel="never">
+                      <input placeholder="Sensor's Name" type="text" matInput [formControl]="myControl"
+                        [matAutocomplete]="auto">
+                      <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+                        <mat-option *ngFor="let option of filteredOptions | async" value="{{option.name}}">
+                          {{ option.name }}
+                        </mat-option>
+                      </mat-autocomplete>
+                    </mat-form-field>
                   </form>
+
                 </div>
                 <div class="col-auto">
                   <a class="btn btn-white" (click)="onSearchSensor()" role="button">
-                      <i class="fas fa-search  rounded-circle shadow "></i>
+                    <i class="fas fa-search  rounded-circle shadow "></i>
                   </a>
                   <!--<div class="text-center">
                       <button type="button" (click)="onSearchSensor()" class="btn btn-primary my-4">Research
