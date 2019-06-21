@@ -2,6 +2,8 @@ import { Component, OnInit, Input } from '@angular/core';
 import { SensorVersion } from '../../SensorVersion';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { sensorVersionFormService } from './sensor-version-form-service';
+import { DataParameter, dataParameterToString } from '../../Enums';
+import { range } from 'lodash';
 
 @Component({
   selector: 'app-sensor-version',
@@ -14,30 +16,31 @@ export class SensorVersionComponent implements OnInit {
   newSensor: FormGroup;
   metaData: FormGroup;
   metaDataParam: FormGroup;
+  myrange= range(7);
+  stringParameter: string[];
 
   constructor(private fb: FormBuilder, private sensorFormService: sensorVersionFormService) {
 
     this.newSensor = this.fb.group({
-      Name: [''],
+      name: [''],
+      version: [''],
       type: [''],
       longitude: [''],
       latitude: [''],
     });
-    this.metaData = this.fb.group({
-      Name: [''],
+    // this.metaData = this.fb.group({
+    //   Name: [''],
+    //   version: [''],
+    //   separator: [''],
+    // });
+    this.metaDataParam = this.fb.group({
+      name:[''],
       version: [''],
       separator: [''],
-    });
-    this.metaDataParam = this.fb.group({
-      metaDataId:[''],
-      Name:[''],
-      Unit:[''],
-      dataFormat:[''],
       measuredParameter:['']
     });
+    this.stringParameter = this.stringDataParemeter()
   }
-
-
 
   onAddNewSensor() {
     console.log('Add New Sensor appelee');
@@ -69,10 +72,7 @@ export class SensorVersionComponent implements OnInit {
 
   addMetaDataParam() {
     console.log('MetaData Param function  ');
-    let id ='' ;
     let name = '';
-    let unit ='';
-    let dataFormat = '' ;
     let measuredParam = '';
   }
 
@@ -80,4 +80,11 @@ export class SensorVersionComponent implements OnInit {
 
   }
 
+  stringDataParemeter(): string[]{
+    let res: string[] = new Array();
+    for(var i = 0; i<7; i++){
+      res.push(dataParameterToString(i));
+    }
+    return res;
+  }
 }
