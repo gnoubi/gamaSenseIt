@@ -28,6 +28,7 @@ export class sensorVersionService {
     updateSensor(s):Observable<any>{
         var link = API_URLS.UPDATE_SENSOR;
         link+='?sensorID='+s+'&name='+s+'&longitude='+s+'&latitude='+s;
+        console.log(link);
         return this.http.put(link,null);
     }
 

@@ -32,6 +32,7 @@ public interface IDataController {
 	String END_DATE						= "endDate";
 	String DATA_FORMAT					= "dataFormat";
 	String MEASURED_PARAMETER			= "measuredParameter";
+	String MEASURED_DATA_ORDER				= "measuredDataOrder";
 	
 	String DATE_PATTERN					= "MMddyyyy";
 	

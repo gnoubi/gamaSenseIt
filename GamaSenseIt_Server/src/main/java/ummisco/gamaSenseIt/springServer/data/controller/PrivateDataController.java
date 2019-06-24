@@ -86,7 +86,6 @@ public class PrivateDataController {
     	return s;
 	}
 	
-    @CrossOrigin
 	@RequestMapping(IDataController.ADD_SENSOR)
     public DisplayableSensor addSensor(@RequestParam(value=IDataController.NAME, required=true, defaultValue=NIL_VALUE) String name, 
 			@RequestParam(value=IDataController.LONGITUDE, required=true, defaultValue="0") double longi,
@@ -112,7 +111,6 @@ public class PrivateDataController {
 		return new DisplayableSensor(s);
 	}
 	
-    @CrossOrigin	
     @RequestMapping(IDataController.UPDATE_SENSOR)
     public DisplayableSensor updateSensor(@RequestParam(value=IDataController.SENSOR_ID, required=true) long id,
     			@RequestParam(value=IDataController.NAME, required=false, defaultValue=NIL_VALUE) String name, 
@@ -140,22 +138,25 @@ public class PrivateDataController {
     	sensors.save(s);
         return new DisplayableSensor(s);
     }
-    @CrossOrigin	
+    @CrossOrigin
     @RequestMapping(IDataController.ADD_SENSOR_METADATA)
     public SensorMetadata addSensorMetaData(
     		@RequestParam(value=IDataController.NAME, required=true) String varName,
     		@RequestParam(value=IDataController.VERSION, required=true) String version,
-    		@RequestParam(value=IDataController.DATA_SEPARATOR, required=false, defaultValue=SensorMetadata.DEFAULT_DATA_SEPARATOR) String sep)
+    		@RequestParam(value=IDataController.DATA_SEPARATOR, required=false, defaultValue=SensorMetadata.DEFAULT_DATA_SEPARATOR) String sep,
+    		@RequestParam(value=IDataController.MEASURED_DATA_ORDER, required=true) String measuredDataOrder)
     {
     	List<SensorMetadata> lsm = sensorMetadata.findByNameAndVersion(varName, version);
     	SensorMetadata st = null;
     	if(lsm.size()==0) {
     		st = new SensorMetadata(varName, version,sep);
+    		st.setMeasuredDataOrder(measuredDataOrder);
     		st= this.sensorMetadata.save(st);
     	}
     	
     	return st;
     }
+      
     
     
     @CrossOrigin

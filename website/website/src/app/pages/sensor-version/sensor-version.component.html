@@ -12,7 +12,7 @@
     <div class="col-xl-8 mb-0 mb-xl-0">
       <div class="card shadow">
         <div class="card-header bg-transparent">
-          <h3 class="mb-0">Available versions of sensors</h3>
+          <h3 class="mb-0">Available sensors</h3>
         </div>
         <div class="table-responsive">
           <!-- Projects table -->
@@ -20,7 +20,6 @@
             <thead class="thead-light">
               <tr>
                 <th scope="col">Name</th>
-                <th scope="col">Version</th>
                 <th scope="col" class="text-center">Actions</th>
               </tr>
             </thead>
@@ -29,9 +28,6 @@
               <tr *ngFor="let sensor of sensors">
                 <td>
                   {{sensor.name}}
-                </td>
-                <td>
-                  {{sensor.version}}
                 </td>
                 <td>
                   <button class="btn btn-outline-success" (click)="displaySensor=sensor;operation='details';">

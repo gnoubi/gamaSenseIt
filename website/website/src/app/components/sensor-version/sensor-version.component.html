@@ -20,7 +20,6 @@
                                                     <div class="card-body px-lg-5 py-lg-5">
                                                         <div class="text-center text-muted mb-4">
                                                             <small>Add a New Sensor</small>
-                                                            <!--Name,Longitude,Latitude,idSensorType-->
                                                         </div>
                                                         <form role="form" [formGroup]="newSensor">
                                                             <div class="form-row mb-3">
@@ -30,18 +29,21 @@
                                                                         formControlName="name" />
                                                                 </div>
                                                             </div>
-                                                            <div class="form-row mb-3">
+                                                            <!-- <div class="form-row mb-3">
                                                                 <div class="col">
                                                                     <input type="text" class="form-control"
                                                                         placeholder="Version" name="version"
                                                                         formControlName="version" />
                                                                 </div>
-                                                            </div>
+                                                            </div> -->
                                                             <div class="form-row mb-3">
                                                                 <div class="col">
-                                                                    <input type="text" class="form-control"
-                                                                        placeholder="Type" name="type"
-                                                                        formControlName="type" />
+                                                                  Select a Type of Sensor
+                                                                  <select class="custom-select" formControlName="type">
+                                                                    <option *ngFor="let type of typeList; index as i"
+                                                                      [value]="i">
+                                                                      {{type}}</option>
+                                                                  </select>
                                                                 </div>
                                                             </div>
                                                             <div class="form-row mb-3">
@@ -129,9 +131,8 @@
                                                     <div class="card-body px-lg-5 py-lg-5">
                                                         <div class="text-center text-muted mb-4">
                                                             <small>Add a New Sensor Datatype</small>
-                                                            <!-- -->
                                                         </div>
-                                                        <form role="form" [formGroup]="metaDataParam">
+                                                        <form role="form" [formGroup]="metaData">
                                                             <div class="form-row mb-3">
                                                                 <div class="col">
                                                                     <input type="text" class="form-control"
@@ -149,25 +150,37 @@
                                                             <div class="form-row mb-3">
                                                                 <div class="col">
                                                                     <input type="text" class="form-control"
-                                                                        placeholder="Separator" name="separator"
+                                                                        placeholder="Separator (default is ':')" name="separator"
                                                                         formControlName="separator" />
                                                                 </div>
                                                             </div>
-                                                            <div *ngFor="let parameter of stringParameter">
-                                                               <button class="btn btn-warning">{{parameter}}</button>
+                                                            Select Measured Parameters
+                                                            <br>
+                                                            <div class="row">
+                                                              <div *ngFor="let parameter of stringDataParameter;">
+                                                                <div class="col-auto">
+                                                                  <button type="button"
+                                                                    class="{{changeIcon(parameter)}}"
+                                                                    [title]="parameter.name"
+                                                                    (click)="addMetaData(parameter)">
+                                                                    <i class="{{parameter.icon}}"></i>
+                                                                  </button>
+                                                                </div>
+                                                              </div>
                                                             </div>
                                                             <br>
                                                             <div class="form-row mb-3">
                                                                 <div class="col">
-                                                                    <input type="text" class="form-control"
-                                                                        placeholder="Id of Measured parameters"
-                                                                        name="measuredParameter"
-                                                                        formControlName="measuredParameter" />
+                                                                    <input type="text"
+                                                                        class="form-control"
+                                                                        placeholder="Id of measured parameters"
+                                                                        name="measuredDataOrder"
+                                                                        formControlName="measuredDataOrder" readonly>
                                                                 </div>
                                                             </div>
                                                             <div class="col" align="center">
                                                                 <button type="button" class="btn btn-primary"
-                                                                    (click)="addMetaDataParam()">Add a New Sensor Datatype</button>
+                                                                    (click)="onAddMetaData()">Add a New Sensor Datatype</button>
                                                             </div>
                                                         </form>
                                                     </div>

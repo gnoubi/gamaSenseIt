@@ -1,5 +1,5 @@
-let PRIVATE: 'http://localhost:8080/private';
-let PUBLIC: 'http://localhost:8080/public';
+let PRIVATE = 'http://localhost:8080/private/';
+let PUBLIC = 'http://localhost:8080/public/';
 
 export const API_URLS = {
     TEST: '',
@@ -9,7 +9,7 @@ export const API_URLS = {
     SENSOR_DATA_URL: PUBLIC + 'getData', //GET- JSON
     ADD_SENSOR: PRIVATE + 'addSensor',// name,lat,long,metadata
     UPDATE_SENSOR: PRIVATE + 'updateSensor',// sensorid,nom, lat,long
-    ADD_SENSOR_METADATA: PRIVATE + 'addSensorMetaData',// name,version,separator
+    ADD_SENSOR_METADATA: PRIVATE + 'addSensorMetadata',// name,version,separator
     ADD_PARAMETER_META_DATA: PRIVATE + 'addParameterMetaData',// idMeta,name,unit,dataformat,measuredparam
 
 }
