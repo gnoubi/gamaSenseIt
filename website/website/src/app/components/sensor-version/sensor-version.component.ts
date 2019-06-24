@@ -47,7 +47,8 @@ export class SensorVersionComponent {
       measuredDataOrder: ['']
     });
     this.stringDataParameter = stringifyDataParameter();
-    this.typeList = ["type 0", "type 1"] ;// + this.sensorService.getSensors();
+    this.sensorService.getSensorTypeNames().
+      subscribe( (res) => { this.typeList = res } );
   }
 
   onAddNewSensor() {
@@ -103,18 +104,7 @@ export class SensorVersionComponent {
   }
 
   addMetaData(parameter) {
-    // actualisation du separateur
-    if(this.metaData.get('separator').value){
-      let oldSeparator = this.separator;
-      this.separator = this.metaData.get('separator').value;
-      let regex = new RegExp(oldSeparator,"gi");
-      this.metaData.patchValue({
-        measuredDataOrder: this.metaData.get('measuredDataOrder').value.replace(regex,this.separator)
-      });
-    } else {
-      // separateur par defaut
-      this.metaData.patchValue({ separator: ':' });
-    }
+    this.refreshSeparator();
     // test si l'élément est déjà présent
     if ( this.metaData.get('measuredDataOrder').value.includes(parameter.id) ) {
       // si oui, on l'enlève
@@ -136,6 +126,22 @@ export class SensorVersionComponent {
       return "icon icon-shape bg-success text-white";
     }
     return "icon icon-shape bg-danger text-white";
+  }
+
+  refreshSeparator(){
+    // actualisation du separateur
+    if(this.metaData.get('separator').value){
+      let oldSeparator = this.separator;
+      this.separator = this.metaData.get('separator').value;
+      let regex = new RegExp(oldSeparator,"gi");
+      this.metaData.patchValue({
+        measuredDataOrder: this.metaData.get('measuredDataOrder').value.
+          replace(regex,this.metaData.get('separator').value)
+      });
+    } else {
+      // separateur par defaut
+      this.metaData.patchValue({ separator: ':' });
+    }
   }
 
 }

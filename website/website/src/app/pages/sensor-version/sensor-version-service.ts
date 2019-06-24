@@ -12,9 +12,16 @@ export class sensorVersionService {
 
     }
 
-    getSensors():Observable<any>{
-        // console.log(API_URLS.SENSOR_DATA_URL);
-        return this.http.get(API_URLS.SENSOR_DATA_URL);
+    getData():Observable<any>{
+        return this.http.get(API_URLS.SENSOR_DATA);
+    }
+
+    getSensorsNames():Observable<any>{
+        return this.http.get(API_URLS.ALL_SENSORS);
+    }
+
+    getSensorTypeNames():Observable<any>{
+        return this.http.get(API_URLS.SENSOR_META_DATA_FULLNAMES);
     }
 
     getSensorsBetween():Observable<any>{
