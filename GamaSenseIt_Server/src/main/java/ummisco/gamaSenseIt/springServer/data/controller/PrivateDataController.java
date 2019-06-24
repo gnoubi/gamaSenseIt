@@ -86,6 +86,7 @@ public class PrivateDataController {
     	return s;
 	}
 	
+	@CrossOrigin
 	@RequestMapping(IDataController.ADD_SENSOR)
     public DisplayableSensor addSensor(@RequestParam(value=IDataController.NAME, required=true, defaultValue=NIL_VALUE) String name, 
 			@RequestParam(value=IDataController.LONGITUDE, required=true, defaultValue="0") double longi,
