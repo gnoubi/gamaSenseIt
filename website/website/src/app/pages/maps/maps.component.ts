@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
-import {Observable} from 'rxjs';
-import {map, startWith} from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
 
 import { sensorVersionService } from '../sensor-version/sensor-version-service';
 
@@ -133,7 +133,7 @@ export class MapsComponent implements OnInit {
         map(name => name ? this._filter(name) : this.fruits.slice())
       );
   }
-  
+
   displayFn(user?: any): string | undefined {
     return user ? user.name : undefined;
   }
@@ -144,7 +144,7 @@ export class MapsComponent implements OnInit {
     return this.fruits.filter(option => option.name.toLowerCase().indexOf(filterValue) === 0);
   }
   loadSensor() {
-    this.sensorService.getSensors()
+    this.sensorService.getData()
       .subscribe(
         data => { this.sensorMap = data }
       );

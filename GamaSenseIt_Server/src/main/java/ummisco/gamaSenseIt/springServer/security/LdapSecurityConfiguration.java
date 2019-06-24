@@ -12,17 +12,19 @@ import org.springframework.security.crypto.password.LdapShaPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.ldap.DefaultSpringSecurityContextSource;
 
+
 @Configuration
 public class LdapSecurityConfiguration  extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		 http.authorizeRequests().antMatchers("/","/public/**","/qameleo/**").permitAll()
+		 http.authorizeRequests().antMatchers("/","/public/**","/qameleo/**","/private/**").permitAll()
          .anyRequest().authenticated()
          .and()
          .formLogin()
          .and()
          .logout().permitAll();
+		 
 		
 //	http
 //			.authorizeRequests()
@@ -31,6 +33,7 @@ public class LdapSecurityConfiguration  extends WebSecurityConfigurerAdapter {
 //			.formLogin();
 	}
 
+	
 	
 	@Override
 	public void configure(AuthenticationManagerBuilder auth) throws Exception {

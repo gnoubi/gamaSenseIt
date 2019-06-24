@@ -89,10 +89,20 @@ public class DataController {
     	return s;
 	}
 	
-    
+	@CrossOrigin
+    @RequestMapping(IDataController.SENSORS_NAMES)
+    public List<String> getAllSensors() {
+    		ArrayList<String> res = new ArrayList<>();
+    		Iterable<Sensor> mt = sensors.findAll();
+    		for(Sensor s:mt)
+    		{
+    			res.add(s.getName()); // +" -- "+s.getMetadata().getName()+" -- "+s.getLongitude()+" -- "+s.getLatitude()
+    		}
+    		return res;
+    }
     
     @CrossOrigin
-    @RequestMapping(IDataController.SENSOR_METATA_DATA_FULLNAMES)
+    @RequestMapping(IDataController.SENSOR_META_DATA_FULLNAMES)
     public List<String> getSensorMetaDataName() {
     		ArrayList<String> res = new ArrayList<>();
     		Iterable<SensorMetadata> mt = sensorMetadata.findAll();
@@ -132,17 +142,6 @@ public class DataController {
     }
     
     @CrossOrigin
-    @RequestMapping("getSensorDataValue")
-    public String getSensorDataValue( 
-    		@RequestParam(value=IDataController.SENSOR_ID, required=true) String id,
-    		@RequestParam(value="parameterId", required=true) String idParam1)   		
-    	
-    {
-    	
-    	return "returnedValue "+id + " and parameter ID "+idParam1;
-    }
-  
-    @CrossOrigin
     @RequestMapping(value=IDataController.SENSOR_DATA)
     public List<DisplayableData> getDataBetween()
     {
@@ -150,8 +149,6 @@ public class DataController {
     	return buildList(dts);
     	
     }
-    
-    
     
     @CrossOrigin
     @RequestMapping(value=IDataController.SERVER_DATE)

@@ -3,4 +3,6 @@ export class Sensor{
   name: string;
   type: string;
   value : number ;
+  longitude: number;
+  latitude: number;
 }
