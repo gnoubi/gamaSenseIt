@@ -36,11 +36,23 @@
             <!--<div class="input-group input-group-alternative">  class="form-control"-->
             <form class="">
               <mat-form-field floatLabel="never">
-                <input placeholder="Sensor's Name" type="text" matInput [formControl]="myControl" [matAutocomplete]="auto">
+                <input placeholder="Sensor's Name" type="text" matInput [formControl]="myControl"
+                  [matAutocomplete]="auto">
                 <mat-autocomplete #auto="matAutocomplete">
-                  <mat-option *ngFor="let option of fruits" value="{{option.name}}">
+                  <!--<mat-option *ngFor="let option of fruits" value="{{option.name}}">
                     {{ option.name }}
-                  </mat-option>
+                  </mat-option>-->
+                  <div>
+                    <ul>
+                      <li *ngFor="let fruit of fruits">
+                        <label>
+                          <input type="checkbox" name="selectedFruits[]" value="{{fruit.name}}"
+                            ng-model="fruit.selected">
+                          {{fruit.name}}
+                        </label>
+                      </li>
+                    </ul>
+                  </div>
                 </mat-autocomplete>
               </mat-form-field>
             </form>
@@ -66,7 +78,7 @@
           </table>-->
           <table>
             <tbody>
-              <tr *ngFor="let fruit of fruits">
+              <tr *ngFor="let fruit of checkValue">
                 <td>
                   <label>
                     <!--class="form-check-label"-->
@@ -81,8 +93,8 @@
                               is arbitrary. The property name could be anything and will be created on the object if not present.
                           -->
                     <!--class="form-check-input"-->
-                    <input type="checkbox" name="selectedFruits[]" value="{{fruit.name}}" ng-model="fruit.selected">
-                    {{fruit.name}}
+                    <input type="checkbox" name="selectedFruits[]" value="{{fruit.sensor}}" ng-model="fruit.selected" (change)="selectedFruits(fruit)">
+                    {{fruit.sensor.name}}
                   </label>
                 </td>
               </tr>
@@ -119,12 +131,12 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let fruit of fruits">
+            <tr *ngFor="let fruit of checkValue">
               <td *ngIf="fruit.selected== true">
-                {{fruit.name}}
+                {{fruit.sensor.name}}
               </td>
               <td *ngIf="fruit.selected== true">
-                {{fruit.name}}
+                {{fruit.sensor.name}}
               </td>
               <td *ngIf="fruit.selected== true">
                 Latitude

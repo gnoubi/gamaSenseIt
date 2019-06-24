@@ -27,6 +27,7 @@ export class DiagrammeComponent implements OnInit {
   filteredOptions: Observable<any>;
   displaySensor; j = 0; k = 0; l = 0;
   dataMesure: [68, 80, 32, 15, 50, 100, 20];
+  checkValue=[];
   ctx: HTMLElement;
   monthsLabel : ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
   daysLabel :  ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
@@ -416,39 +417,38 @@ export class DiagrammeComponent implements OnInit {
   // test case a cocher
 
   fruits = [
-    { name: 'apple',    selected: true },
+    { name: 'apple',    selected: false },
     { name: 'orange',   selected: false },
-    { name: 'pear',     selected: true },
+    { name: 'pear',     selected: false },
     { name: 'naartjie', selected: false }
   ];
   fruit:any;
 
   selection=[];
 
-  selectedFruits() {
-    for(this.fruit in this.fruits){
-      if(this.fruit.selected){
-        this.selection.push(this.fruit);
-      }
-    }
-  //  return filterFilter(this.fruits, { selected: true });
+  selectedFruits(value:any) {
+    
+    //console.log('on chaange');
+    value.selected = !value.selected;
+    console.log(value.selected)  //  return filterFilter(this.fruits, { selected: true });
+  
   };
 
-/*
-  watch('fruits|filter:{selected:true}', function (nv) {
-    this.selection = nv.map(function (fruit) {
-      return fruit.name;
-    });
-  }, true);
-}]);*/
 
   constructor() { }
 
   ngOnInit() {
     this.autoCompletInit();
+    this.initValueChecked();
 
   }
 
+  initValueChecked(){
+    for(let sensor of this.sensors){
+        let value = {sensor,selected:false};
+        this.checkValue.push(value);
+    }
+  }
   autoCompletInit() {
     this.filteredOptions = this.myControl.valueChanges
       .pipe(
