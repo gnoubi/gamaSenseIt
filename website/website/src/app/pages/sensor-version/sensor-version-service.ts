@@ -16,12 +16,36 @@ export class sensorVersionService {
         return this.http.get(API_URLS.SENSOR_DATA);
     }
 
+    getSensors():Observable<any>{
+        return this.http.get(API_URLS.SENSORS);
+    }
+
     getSensorsNames():Observable<any>{
-        return this.http.get(API_URLS.ALL_SENSORS);
+        return this.http.get(API_URLS.SENSORS_NAMES);
+    }
+
+    getSensorType():Observable<any>{
+        return this.http.get(API_URLS.SENSOR_META_DATA);
+    }
+
+    getSensorParameter(metadataId: number):Observable<any>{
+      let link = API_URLS.SENSOR_META_DATA_ID;
+      link += "?metadataId="+metadataId;
+        return this.http.get(link);
     }
 
     getSensorTypeNames():Observable<any>{
         return this.http.get(API_URLS.SENSOR_META_DATA_FULLNAMES);
+    }
+
+    getMetaData(){
+      return this.http.get(API_URLS.META_DATA);
+    }
+
+    getMetaDataId(parameterId: number){
+      let link = API_URLS.META_DATA_ID;
+      link += "?parameterId="+parameterId;
+      return this.http.get(link);
     }
 
     getSensorsBetween():Observable<any>{

@@ -8,7 +8,7 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col">
-                                <button type="button" class="btn btn-blue" data-toggle="modal"
+                                <button type="button" class="btn btn-white" data-toggle="modal"
                                     data-target="#modal-form1">Sensor</button>
                                 <div class="modal fade" id="modal-form1" tabindex="-1" role="dialog"
                                     aria-labelledby="modal-form1" aria-hidden="false">
@@ -59,7 +59,7 @@
                                                             </div>
                                                             <div class="col" align="center">
                                                                 <button type="button" class="btn btn-primary"
-                                                                    (click)="onAddNewSensor()">Add New Sensor</button>
+                                                                    (click)="onAddNewSensor()">Add</button>
                                                             </div>
                                                         </form>
                                                     </div>
@@ -115,9 +115,9 @@
                                     </div>
                                 </div>
                                 -->
-                                <button type="button" class="btn btn-blue" data-toggle="modal"
+                                <button type="button" class="btn btn-white" data-toggle="modal"
                                     data-target="#modal-form3">
-                                    Sensor Datatype
+                                    Type of Sensor
                                 </button>
                                 <div class="modal fade" id="modal-form3" tabindex="-1" role="dialog"
                                     aria-labelledby="modal-form2" aria-hidden="false">
@@ -127,7 +127,7 @@
                                                 <div class="card bg-secondary shadow border-0">
                                                     <div class="card-body px-lg-5 py-lg-5">
                                                         <div class="text-center text-muted mb-4">
-                                                            <small>Add a New Sensor Datatype</small>
+                                                            <small>Add a New Type of Sensor</small>
                                                         </div>
                                                         <form class="was-validated" role="form" [formGroup]="metaData">
                                                             <div class="form-row mb-3">
@@ -184,7 +184,7 @@
                                                             </div>
                                                             <div class="col" align="center">
                                                                 <button type="button" class="btn btn-primary"
-                                                                    (click)="onAddMetaData()">Add a New Sensor Datatype</button>
+                                                                    (click)="onAddMetaData()">Add</button>
                                                             </div>
                                                         </form>
                                                     </div>

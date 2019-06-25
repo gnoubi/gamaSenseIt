@@ -115,7 +115,18 @@
     </div>
   </div>
   <ng-template #elseBlock2>
-    <h1>La requête http n'a pas fonctionnée.</h1>
-    <h2>Le lecture du QR code n'a peut-être pas fonctionné.</h2>
+    <div class="row">
+      <div class="col-xs col-md-3 col-lg-3">
+      </div>
+      <div class="col-xs col-md-6 col-lg-6">
+        <div class="alert alert-warning alert-dismissible">
+          <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+          <h5>La requête http n'a pas fonctionnée.</h5>
+        </div>
+      </div>
+      <div class="col-xs col-md-3 col-lg-3">
+      </div>
+    </div>
+    <h1></h1>
   </ng-template>
 </ng-template>

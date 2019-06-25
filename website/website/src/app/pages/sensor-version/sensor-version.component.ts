@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 
 import { SensorVersion } from '../../SensorVersion';
-import { StockCapteurArr } from '../../stock-capteur';
 import { sensorVersionService } from './sensor-version-service';
-
+import { Sensor } from '../../sensor';
+import { MesuredParameter } from '../../MesuredParameter';
 
 @Component({
   selector: 'page-sensor-version',
@@ -12,34 +12,78 @@ import { sensorVersionService } from './sensor-version-service';
 })
 export class SensorVersionPage implements OnInit {
 
-  sensors: Array<SensorVersion> = StockCapteurArr;
-  displaySensor;
-  sensorUpdate;
-  sensorDelete;
-  operation: String = 'details';
+  sensorType: Array<SensorVersion> = new Array();
+  sensors: Array<Sensor> = new Array();
+  displaySensorType: SensorVersion;
+  sensorTypeUpdate: SensorVersion;
+  sensorTypeDelete: SensorVersion;
+  operationType: String = 'details';
+  displaySensor: Sensor;
+  sensorUpdate: Sensor;
+  sensorDelete: Sensor;
+  operationSensor: String = 'details';
   sensors1: any;
+  metaData: Array<MesuredParameter> = new Array();
+  metaDataList: Array<MesuredParameter> = new Array();
 
   constructor(private sensorService: sensorVersionService) { }
 
   ngOnInit() {
+    this.loadSensors();
+    this.loadSensorType();
+    this.loadMetaDataId(3);
+    this.loadMetaData(10);
+    this.initSensorType();
     this.initSensor();
   }
 
-  sensorDisplay(s: SensorVersion) {
-    this.displaySensor = s;
+  initSensorType() {
+    this.displaySensorType = new SensorVersion(0, '', '', '', '');
+  }
+
+  loadSensorType() {
+    this.sensorService.getSensorType().
+      subscribe(
+        data => {
+          for(let sensor of data) {
+            this.sensorType.push(JSON.parse(JSON.stringify(sensor)));
+          }
+        },
+        error => { console.log('error was occured') }
+      );
+  }
+
+  updateSensorType(s) {
+       /* this.sensorService.updateSensor(s).subscribe(
+          res => {
+            this.loadSensor();
+          }
+        );*/
+  }
+
+  deleteSensorType(s) {
+    /*this.sensorService.deleteSensor(s)
+      .subscribe(
+        res=>{
+          this.loadSensor();
+        }
+      );*/
   }
 
   initSensor() {
-    this.displaySensor = new SensorVersion(0, '', '', '', []);
-
+    this.displaySensor= new Sensor(0, '', 0,0,0,'');
   }
 
-  loadSensor() {
-    /*this.sensorService.getSensors().subscribe(
-     data => { this.sensors1 = data },
-     error => { console.log('error was occured') },
-     () => { console.log('Donnees bien chargee') }
-    );*/
+  loadSensors() {
+    this.sensorService.getSensors().
+      subscribe(
+        data => {
+          for(let sensor of data) {
+            this.sensors.push(JSON.parse(JSON.stringify(sensor)));
+          }
+        },
+        error => { console.log('error was occured') }
+      );
   }
 
   updateSensor(s) {
@@ -57,5 +101,26 @@ export class SensorVersionPage implements OnInit {
           this.loadSensor();
         }
       );*/
+  }
+
+  loadMetaDataId(paramterId: number) {
+    this.sensorService.getMetaDataId(paramterId).
+      subscribe(
+        (data: MesuredParameter) => { this.metaData.push(data) },
+        error => { console.log('error was occured') }
+
+      );
+  }
+
+  loadMetaData(metadataId: number) {
+    this.sensorService.getSensorParameter(metadataId).
+      subscribe(
+        (data: MesuredParameter[]) => {
+          for (let parameter of data) {
+            this.metaDataList.push(parameter);
+          }
+        },
+        error => { console.log('error was occured') }
+      );
   }
 }
