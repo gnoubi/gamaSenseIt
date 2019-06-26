@@ -28,6 +28,7 @@ import ummisco.gamaSenseIt.springServer.data.repositories.ISensorDataRepository;
 import ummisco.gamaSenseIt.springServer.data.repositories.ISensorMetadataRepository;
 import ummisco.gamaSenseIt.springServer.data.services.ISensorManagment;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/private/")
 public class PrivateDataController {
@@ -86,7 +87,7 @@ public class PrivateDataController {
     	return s;
 	}
 	
-	@CrossOrigin
+	@CrossOrigin()
 	@RequestMapping(IDataController.ADD_SENSOR)
     public DisplayableSensor addSensor(@RequestParam(value=IDataController.NAME, required=true, defaultValue=NIL_VALUE) String name, 
 			@RequestParam(value=IDataController.LONGITUDE, required=true, defaultValue="0") double longi,

@@ -29,7 +29,7 @@ export class sensorVersionService {
     }
 
     getSensorParameter(metadataId: number):Observable<any>{
-      let link = API_URLS.SENSOR_META_DATA_ID;
+      let link = API_URLS.META_DATA_SENSOR_META_DATA_ID;
       link += "?metadataId="+metadataId;
         return this.http.get(link);
     }
