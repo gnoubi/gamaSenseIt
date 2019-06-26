@@ -13,18 +13,17 @@ export class PmProgressBarComponent  implements OnInit {
   WARNING_COLOR: string = "#FF6D58";
   OK_COLOR: string = "#00C269";//"#B3D158";//"#2dce89";
 
-
   @Input()
-  warmLevel : number = 50;
+  warmLevel : number = 0;
   @Input()
-  dangerLevel : number = 75;
+  dangerLevel : number = 0;
   @Input()
-  maxLevel : number = 100;
+  maxLevel : number = 0;
   @Input()
-  title: string = "PM 10";
+  title: string = "";
   @Input()
   value : number;
-  
+
   constructor() {
     this.title = "PM ?";
     this.warmLevel = 50;

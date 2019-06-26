@@ -9,12 +9,12 @@ import { Router } from '@angular/router';
 })
 export class QrQameleoComponent implements OnInit {
 
-  private PM1: number = 28;
-  private PM25: number = 55;
-  private PM10: number = 85;
-  private temperature: number = 12;
+  private PM1: number = 0;
+  private PM25: number = 0;
+  private PM10: number = 0;
+  private temperature: number = 0;
   private temperatureUnit: string = "°C";
-  private humidity: number = 70;
+  private humidity: number = 0;
   private humidityUnit: string = "%";
   private url = 'http://vmpams.ird.fr:8080';
   public browseQRcode = true;
