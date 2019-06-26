@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
+import { PathLocationStrategy, LocationStrategy } from '@angular/common';
 
 import { AppComponent } from './app.component';
 import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component';
@@ -18,7 +19,6 @@ import { SensorVersionListComponent } from './sensor-version-list/sensor-version
 import { PmProgressBarComponent } from './components/pm-progress-bar/pm-progress-bar.component';
 import { NgCircleProgressModule } from 'ng-circle-progress';
 import { QrQameleoComponent } from './pages/qr-qameleo/qr-qameleo.component';
-import { sensorVersionService } from './pages/sensor-version/sensor-version-service';
 
 @NgModule({
   imports: [
@@ -38,9 +38,9 @@ import { sensorVersionService } from './pages/sensor-version/sensor-version-serv
     PMLayoutComponent,
     SensorVersionListComponent,
     PmProgressBarComponent,
-    QrQameleoComponent,
+    QrQameleoComponent
   ],
-  providers: [],
+  providers: [{provide: LocationStrategy, useClass: PathLocationStrategy}],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

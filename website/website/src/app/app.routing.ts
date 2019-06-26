@@ -8,14 +8,29 @@ import { PMLayoutComponent } from './layouts/pm-layout/pm-layout.component';
 import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout.component';
 
 const routes: Routes =[
-  { path: 'qameleo',      component: PMLayoutComponent },
-  { path: 'qameleo/:id',      component: PMLayoutComponent },
+  { path: 'qameleo',      component: PMLayoutComponent,
+  children: [
+    {
+      path: 'qameleo',
+      loadChildren: './layouts/pm-layout/pm-layout.module'
+    } 
+  ]
+},
+  { path: 'qameleo/:id',      
+  component: PMLayoutComponent,
+  children: [
+    {
+      path: 'qameleo/:id',
+      loadChildren: './layouts/pm-layout/pm-layout.module'
+    } 
+  ]
+ },
   {
     path: '',
     redirectTo: 'dashboard',
     pathMatch: 'full',
   },{
-    path: '',
+    path: '', 
     component: AdminLayoutComponent,
     children: [
       {

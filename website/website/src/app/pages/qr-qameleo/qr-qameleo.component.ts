@@ -17,7 +17,7 @@ export class QrQameleoComponent implements OnInit {
   private humidity: number = 70;
   private humidityUnit: string = "%";
   private url = 'http://vmpams.ird.fr:8080';
-  private browseQRcode = true;
+  public browseQRcode = true;
   private httpGetSucceed = true;
 
   constructor( private router: Router,
