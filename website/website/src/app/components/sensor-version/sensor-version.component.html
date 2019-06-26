@@ -24,6 +24,7 @@
                                                         <form class="was-validated" role="form" [formGroup]="newSensor">
                                                             <div class="form-row mb-3">
                                                                 <div class="col">
+                                                                    <label>Name</label>
                                                                     <input type="text" class="form-control"
                                                                         placeholder="Name" name="name"
                                                                         formControlName="name" required>
@@ -32,6 +33,7 @@
                                                             </div>
                                                             <div class="form-row mb-3">
                                                                 <div class="col">
+                                                                  <label>Select a Type of Sensor</label>
                                                                   <select class="custom-select" formControlName="type" required>
                                                                     <option value="">Select a Type of Sensor</option>
                                                                     <option *ngFor="let type of typeList; index as i"
@@ -43,18 +45,20 @@
                                                             </div>
                                                             <div class="form-row mb-3">
                                                                 <div class="col">
-                                                                    <input type="number" class="form-control"
-                                                                        placeholder="Latitude" name="latitude"
-                                                                        id="latitude" formControlName="latitude" required>
-                                                                    <div class="invalid-feedback">This field must be filled.</div>
+                                                                  <label>Latitude</label>
+                                                                  <input type="number" class="form-control"
+                                                                    placeholder="Latitude" name="latitude"
+                                                                    id="latitude" formControlName="latitude" required>
+                                                                  <div class="invalid-feedback">This field must be filled.</div>
                                                                 </div>
                                                             </div>
                                                             <div class="form-row mb-3">
                                                                 <div class="col">
-                                                                    <input type="number" class="form-control"
-                                                                        placeholder="Longitude" name="longitude"
-                                                                        id="longitude" formControlName="longitude" required>
-                                                                    <div class="invalid-feedback">This field must be filled.</div>
+                                                                  <label>Longitude</label>
+                                                                  <input type="number" class="form-control"
+                                                                      placeholder="Longitude" name="longitude"
+                                                                      id="longitude" formControlName="longitude" required>
+                                                                  <div class="invalid-feedback">This field must be filled.</div>
                                                                 </div>
                                                             </div>
                                                             <div class="col" align="center">
@@ -129,9 +133,10 @@
                                                         <div class="text-center text-muted mb-4">
                                                             <small>Add a New Type of Sensor</small>
                                                         </div>
-                                                        <form class="was-validated" role="form" [formGroup]="metaData">
+                                                        <form class="was-validated" role="form" [formGroup]="newSensorMetaData">
                                                             <div class="form-row mb-3">
                                                                 <div class="col">
+                                                                  <label>Name</label>
                                                                     <input type="text" class="form-control is-valid"
                                                                         placeholder="Name" name="name"
                                                                         formControlName="name" required>
@@ -140,6 +145,7 @@
                                                             </div>
                                                             <div class="form-row mb-3">
                                                                 <div class="col">
+                                                                  <label>Version</label>
                                                                     <input type="text" class="form-control"
                                                                         placeholder="Version" name="version"
                                                                         formControlName="version" required>
@@ -148,27 +154,34 @@
                                                             </div>
                                                             <div class="form-row mb-3">
                                                                 <div class="col">
-                                                                    <input type="text" class="form-control"
-                                                                        placeholder="Separator (default is ':')" name="separator"
-                                                                        formControlName="separator" />
+                                                                  <label>Separator</label>
+                                                                  <input type="text" class="form-control"
+                                                                    placeholder="Separator (default is ':')" name="separator"
+                                                                    formControlName="separator" />
                                                                 </div>
                                                                 <button type="button"
                                                                   class="btn btn-primary"
+                                                                  style="height:47px; top:31px"
                                                                   (click)="refreshSeparator()">
                                                                   <i class="fas fa-check"></i>
                                                                 </button>
                                                             </div>
-                                                            Select Measured Parameters
-                                                            <br>
+                                                            <label>Select measured parameters</label>
                                                             <div class="row">
-                                                              <div *ngFor="let parameter of stringDataParameter;">
+                                                              <div *ngFor="let parameter of metaData;">
                                                                 <div class="col-auto">
-                                                                  <button type="button"
-                                                                    class="{{changeIcon(parameter)}}"
-                                                                    title="{{parameter.name}}"
-                                                                    (click)="addMetaData(parameter)">
-                                                                    <i class="{{parameter.icon}}"></i>
-                                                                  </button>
+                                                                  <div class="icon-wrapper" style="position:relative;float:left;">
+                                                                    <button type="button"
+                                                                      class="{{changeIcon(parameter.id)}}"
+                                                                      title="{{parameter.parameter}}"
+                                                                      (click)="addMetaData(parameter.id)">
+                                                                        <i class="{{iconList[parameter.id]}}"></i>
+                                                                      </button>
+                                                                      <span class="badge rounded btn-white"
+                                                                        style="position:absolute; top:-4px; right:-4px;">
+                                                                        {{parameter.id}}
+                                                                      </span>
+                                                                   </div>
                                                                 </div>
                                                               </div>
                                                             </div>
@@ -184,7 +197,7 @@
                                                             </div>
                                                             <div class="col" align="center">
                                                                 <button type="button" class="btn btn-primary"
-                                                                    (click)="onAddMetaData()">Add</button>
+                                                                    (click)="onAddNewSensorMetaData()">Add</button>
                                                             </div>
                                                         </form>
                                                     </div>

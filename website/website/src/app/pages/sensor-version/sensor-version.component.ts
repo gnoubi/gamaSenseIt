@@ -32,7 +32,7 @@ export class SensorVersionPage implements OnInit {
     this.loadSensors();
     this.loadSensorType();
     this.loadMetaDataId(3);
-    this.loadMetaData(10);
+    this.loadSensorMetaDataParameter(10);
     this.initSensorType();
     this.initSensor();
   }
@@ -103,8 +103,8 @@ export class SensorVersionPage implements OnInit {
       );*/
   }
 
-  loadMetaDataId(paramterId: number) {
-    this.sensorService.getMetaDataId(paramterId).
+  loadMetaDataId(parameterId: number) {
+    this.sensorService.getMetaDataId(parameterId).
       subscribe(
         (data: MesuredParameter) => { this.metaData.push(data) },
         error => { console.log('error was occured') }
@@ -112,7 +112,7 @@ export class SensorVersionPage implements OnInit {
       );
   }
 
-  loadMetaData(metadataId: number) {
+  loadSensorMetaDataParameter(metadataId: number) {
     this.sensorService.getSensorParameter(metadataId).
       subscribe(
         (data: MesuredParameter[]) => {
