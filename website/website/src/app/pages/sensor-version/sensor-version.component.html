@@ -34,18 +34,19 @@
                   {{sensor.version}}
                 </td>
                 <td>
-                  <button class="btn btn-outline-success"
-                  (click)="displaySensorType=sensor;operationType='details'">
-                    Details
-                  </button>
-                  <button class="btn btn-outline-success"
-                  (click)="sensorTypeUpdate=sensor;operationType='update'">
-                  Update
-                </button>
-                  <button class="btn btn-outline-danger"
-                  (click)="sensorTypeDelete=sensor;operationType='delete'">
-                  Delete
-                </button>
+                  <i class="fas fa-info-circle fa-lg text-success"
+                    title="Details"
+                    (click)="displaySensorType=sensor;operationType='details'">
+                  </i>
+                  <i class="fas fa-edit fa-lg text-success"
+                    title="Update"
+                    style="margin-left:10px ; margin-right:10px"
+                    (click)="sensorTypeUpdate=sensor;operationType='update'">
+                  </i>
+                  <i class="fas fa-trash-alt fa-lg text-danger"
+                    title="Delete"
+                    (click)="sensorTypeDelete=sensor;operationType='delete'">
+                  </i>
                 </td>
               </tr>
               <tr>
@@ -145,18 +146,19 @@
                   {{sensor.sensorMetadataName}}
                 </td>
                 <td>
-                  <button class="btn btn-outline-success"
-                    (click)="displaySensor=sensor;operationSensor='details';">
-                    Details
-                  </button>
-                  <button class="btn btn-outline-success"
+                  <i class="fas fa-info-circle fa-lg text-success"
+                    title="Details"
+                    (click)="displaySensor=sensor;operationSensor='details'">
+                  </i>
+                  <i class="fas fa-edit fa-lg text-success"
+                    title="Update"
+                    style="margin-left:10px ; margin-right:10px"
                     (click)="sensorUpdate=sensor;operationSensor='update'">
-                    Update
-                  </button>
-                  <button class="btn btn-outline-danger"
+                  </i>
+                  <i class="fas fa-trash-alt fa-lg text-danger"
+                    title="Delete"
                     (click)="sensorDelete=sensor;operationSensor='delete'">
-                    Delete
-                  </button>
+                  </i>
                 </td>
               </tr>
             </tbody>

@@ -24,12 +24,9 @@ export class QrQameleoComponent implements OnInit {
     private http: HttpClient ) { }
 
   ngOnInit() {
-    if( this.router.url.includes('/',1)) {
+    if( this.router.url !== '/qameleo/airQualityIndicator') { //this.router.url.includes('/',1)
       this.browseQRcode = false;
-      console.log('Source prevue ?',this.url + this.router.url);
-      // this.url = this.url + this.router.url;
-      this.url = 'http://vmpams.ird.fr:8080/qameleo/airQualityIndicator?id=48';
-      console.log('Source actuelle',this.url);
+      this.url = this.url + this.router.url;
       this.initValues(this.url);
     }
   }
