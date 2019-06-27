@@ -3,68 +3,179 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-import {API_URLS} from '../../config/api.url.config';
-// all Form add to a Database new Sensor.. SensorView and Metadata
+import { API_URLS } from '../../config/api.url.config';
+import { MesuredParameter } from '../../MesuredParameter';
+import { Sensor } from '../../sensor';
+import { SensorVersion } from '../../SensorVersion';
 
 @Injectable()
 export class sensorVersionService {
-    constructor(private http: HttpClient){
+  constructor(private http: HttpClient){
 
-    }
+  }
 
-    getData():Observable<any>{
-        return this.http.get(API_URLS.SENSOR_DATA);
-    }
+  getData():Observable<any>{
+      return this.http.get(API_URLS.SENSOR_DATA);
+  }
 
-    getSensors():Observable<any>{
-        return this.http.get(API_URLS.SENSORS);
-    }
+  getSensors():Observable<any>{
+      return this.http.get(API_URLS.SENSORS);
+  }
 
-    getSensorsNames():Observable<any>{
-        return this.http.get(API_URLS.SENSORS_NAMES);
-    }
+  loadSensors(): Array<Sensor> {
+    let sensors: Array<Sensor> = new Array();
+    this.getSensors().
+      subscribe(
+        (data: Array<Sensor>) => {
+          for(let sensor of data) {
+            sensors.push(JSON.parse(JSON.stringify(sensor)));
+          }
+        },
+        error => { console.log('error was occured') }
+      );
+    return sensors;
+  }
 
-    getSensorType():Observable<any>{
-        return this.http.get(API_URLS.SENSOR_META_DATA);
-    }
+  getSensorsNames():Observable<any>{
+      return this.http.get(API_URLS.SENSORS_NAMES);
+  }
 
-    getSensorParameter(metadataId: number):Observable<any>{
-      let link = API_URLS.META_DATA_SENSOR_META_DATA_ID;
-      link += "?metadataId="+metadataId;
-        return this.http.get(link);
-    }
+  getSensorTypeNames():Observable<any>{
+      return this.http.get(API_URLS.SENSOR_META_DATA_FULLNAMES);
+  }
 
-    getSensorTypeNames():Observable<any>{
-        return this.http.get(API_URLS.SENSOR_META_DATA_FULLNAMES);
-    }
+  getSensorTypes():Observable<any>{
+      return this.http.get(API_URLS.SENSOR_META_DATA);
+  }
 
-    getMetaData(){
-      return this.http.get(API_URLS.META_DATA);
-    }
+  loadSensorTypes(): Array<SensorVersion> {
+    let sensorTypes: Array<SensorVersion> = new Array();
+    this.getSensorTypes().
+      subscribe(
+        (data: Array<SensorVersion>) => {
+          for(let sensor of data) {
+            sensorTypes.push(JSON.parse(JSON.stringify(sensor)));
+          }
+        },
+        error => { console.log('error was occured') }
+      );
+    return sensorTypes;
+  }
 
-    getMetaDataId(parameterId: number){
-      let link = API_URLS.META_DATA_ID;
-      link += "?parameterId="+parameterId;
+  getSensorMetaDataParameters(metadataId: number):Observable<any>{
+    let link = API_URLS.META_DATA_SENSOR_META_DATA_ID;
+    link += "?metadataId="+metadataId;
       return this.http.get(link);
-    }
+  }
 
-    getSensorsBetween():Observable<any>{
-        return null;
-    }
+  loadSensorMetaDataParameters(metadataId: number): Array<MesuredParameter> {
+    let metaData: Array<MesuredParameter> = new Array();
+    this.getSensorMetaDataParameters(metadataId).
+      subscribe(
+        (data: Array<MesuredParameter>) => {
+          for (let parameter of data) {
+            metaData.push(parameter);
+          }
+        },
+        error => { console.log('error was occured') }
+      );
+      return metaData;
+  }
 
-    getSince():Observable<any>{
-        return null;
-    }
+  getMetaData(){
+    return this.http.get(API_URLS.META_DATA);
+  }
 
-    updateSensor(s):Observable<any>{
-        var link = API_URLS.UPDATE_SENSOR;
-        link+='?sensorID='+s+'&name='+s+'&longitude='+s+'&latitude='+s;
-        console.log(link);
-        return this.http.put(link,null);
-    }
+  loadMetaData(): Array<MesuredParameter> {
+    let metaData: Array<MesuredParameter> = new Array();
+    this.getMetaData().
+      subscribe(
+        (data: Array<MesuredParameter>) => {
+          for(let parameter of data) {
+            metaData.push(JSON.parse(JSON.stringify(parameter)));
+          }
+        },
+        error => { console.log('error was occured') }
+      );
+    return metaData;
+  }
 
-    /*deleteSensor(s):Observable<any>{
+  getMetaDataId(parameterId: number) {
+    let link = API_URLS.META_DATA_ID;
+    link += "?parameterId="+parameterId;
+    return this.http.get(link);
+  }
 
-        return this.http.delete(API_URLS.TEST);
-    }*/
+  loadMetaDataId(parameterId: number): Array<MesuredParameter> {
+    let metaData: Array<MesuredParameter> = new Array();
+    this.getMetaDataId(parameterId).
+      subscribe(
+        (data: MesuredParameter) => { metaData.push(data) },
+        error => { console.log('error was occured') }
+      );
+    return metaData;
+  }
+
+  getSensorsBetween():Observable<any>{
+      return null;
+  }
+
+  getSince():Observable<any>{
+      return null;
+  }
+
+  updateSensor(s):Observable<any>{
+      var link = API_URLS.UPDATE_SENSOR;
+      link+='?sensorID='+s+'&name='+s+'&longitude='+s+'&latitude='+s;
+      console.log(link);
+      return this.http.put(link,null);
+  }
+
+  /*deleteSensor(s):Observable<any>{
+      return this.http.delete(API_URLS.TEST);
+  }*/
+
+  initSensorType(): SensorVersion {
+    let displaySensorType: SensorVersion = new SensorVersion(0, '', '', '', '');
+    return displaySensorType;
+  }
+
+  updateSensorType(s) {
+       /* this.sensorService.updateSensor(s).subscribe(
+          res => {
+            this.loadSensor();
+          }
+        );*/
+  }
+
+  deleteSensorType(s) {
+    /*this.sensorService.deleteSensor(s)
+      .subscribe(
+        res=>{
+          this.loadSensor();
+        }
+      );*/
+  }
+
+  initSensor(): Sensor {
+    let displaySensor: Sensor = new Sensor(0, '', 0,0,0,'');
+    return displaySensor;
+  }
+
+  //updateSensor(s) {
+       /* this.sensorService.updateSensor(s).subscribe(
+          res => {
+            this.loadSensor();
+          }
+        );*/
+  //}
+
+  deleteSensor(s) {
+    /*this.sensorService.deleteSensor(s)
+      .subscribe(
+        res=>{
+          this.loadSensor();
+        }
+      );*/
+  }
 }

@@ -12,8 +12,8 @@ import { MesuredParameter } from '../../MesuredParameter';
 })
 export class SensorVersionPage implements OnInit {
 
-  sensorType: Array<SensorVersion> = new Array();
-  sensors: Array<Sensor> = new Array();
+  sensorTypes: Array<SensorVersion>;
+  sensors: Array<Sensor>;
   displaySensorType: SensorVersion;
   sensorTypeUpdate: SensorVersion;
   sensorTypeDelete: SensorVersion;
@@ -23,104 +23,39 @@ export class SensorVersionPage implements OnInit {
   sensorDelete: Sensor;
   operationSensor: String = 'details';
   sensors1: any;
-  metaData: Array<MesuredParameter> = new Array();
-  metaDataList: Array<MesuredParameter> = new Array();
+  metaData: Array<MesuredParameter>;
 
   constructor(private sensorService: sensorVersionService) { }
 
   ngOnInit() {
-    this.loadSensors();
-    this.loadSensorType();
-    this.loadMetaDataId(3);
-    this.loadSensorMetaDataParameter(10);
-    this.initSensorType();
-    this.initSensor();
+    this.sensors = this.sensorService.loadSensors();
+    this.sensorTypes = this.sensorService.loadSensorTypes();
+    this.displaySensorType = this.sensorService.initSensorType();
+    this.displaySensor = this.sensorService.initSensor();
+    this.metaData = this.sensorService.loadMetaData();
   }
 
-  initSensorType() {
-    this.displaySensorType = new SensorVersion(0, '', '', '', '');
-  }
-
-  loadSensorType() {
-    this.sensorService.getSensorType().
-      subscribe(
-        data => {
-          for(let sensor of data) {
-            this.sensorType.push(JSON.parse(JSON.stringify(sensor)));
+  metaDataParameters(sensorType: SensorVersion): Array<MesuredParameter> {
+    if (sensorType.measuredDataOrder) {
+      let splitedDataOrder: Array<string> = sensorType.measuredDataOrder.
+        split(sensorType.dataSeparator);
+      splitedDataOrder.pop();
+      let dataOrderId: Array<number> = new Array();
+      let parameter: Array<MesuredParameter> = new Array();
+      splitedDataOrder.forEach(
+        (element: string) => { dataOrderId.push( Number(element) ) });
+      for (let id of dataOrderId) {
+        console.log('id',id);
+        for (let md of this.metaData) {
+          if (md.id === id) {
+            parameter.push(md);
           }
-        },
-        error => { console.log('error was occured') }
-      );
-  }
-
-  updateSensorType(s) {
-       /* this.sensorService.updateSensor(s).subscribe(
-          res => {
-            this.loadSensor();
-          }
-        );*/
-  }
-
-  deleteSensorType(s) {
-    /*this.sensorService.deleteSensor(s)
-      .subscribe(
-        res=>{
-          this.loadSensor();
         }
-      );*/
+      }
+      return parameter;
+    } else {
+      return null;
+    }
   }
 
-  initSensor() {
-    this.displaySensor= new Sensor(0, '', 0,0,0,'');
-  }
-
-  loadSensors() {
-    this.sensorService.getSensors().
-      subscribe(
-        data => {
-          for(let sensor of data) {
-            this.sensors.push(JSON.parse(JSON.stringify(sensor)));
-          }
-        },
-        error => { console.log('error was occured') }
-      );
-  }
-
-  updateSensor(s) {
-       /* this.sensorService.updateSensor(s).subscribe(
-          res => {
-            this.loadSensor();
-          }
-        );*/
-  }
-
-  deleteSensor(s) {
-    /*this.sensorService.deleteSensor(s)
-      .subscribe(
-        res=>{
-          this.loadSensor();
-        }
-      );*/
-  }
-
-  loadMetaDataId(parameterId: number) {
-    this.sensorService.getMetaDataId(parameterId).
-      subscribe(
-        (data: MesuredParameter) => { this.metaData.push(data) },
-        error => { console.log('error was occured') }
-
-      );
-  }
-
-  loadSensorMetaDataParameter(metadataId: number) {
-    this.sensorService.getSensorParameter(metadataId).
-      subscribe(
-        (data: MesuredParameter[]) => {
-          for (let parameter of data) {
-            this.metaDataList.push(parameter);
-          }
-        },
-        error => { console.log('error was occured') }
-      );
-  }
 }

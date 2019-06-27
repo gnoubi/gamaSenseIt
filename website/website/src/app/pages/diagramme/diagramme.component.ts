@@ -114,7 +114,7 @@ export class DiagrammeComponent implements OnInit {
      var $green = this.randomScalingFactor()*255;
      var $blue = this.randomScalingFactor()*255;
  
-     for( let i of displaySensor.mesuredParameters){
+     for( let i of displaySensor.measuredParameters){
        dataMesure.push(i.DataParameter.PRESSURE)
      }
  

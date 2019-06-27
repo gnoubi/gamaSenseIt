@@ -24,7 +24,6 @@ public class SensorMetadata {
 	private String name;
 	private String measuredDataOrder;
 	private String dataSeparator = ":";
-	
  
 	@OneToMany(cascade = CascadeType.ALL,
 			fetch = FetchType.EAGER,
