@@ -18,6 +18,7 @@ public interface IDataController {
 	String META_DATA					= "getMetaData";
 	String META_DATA_ID					= "getMetaDataById";
 	String META_DATA_SENSOR_META_DATA_ID= "getMetaDataBySensorMetadataId";
+	String DEFAULT_DATA_SEPARATOR		= "getDefaultDataSeparator";
 
 	
 	String SENSOR_ID					= "sensorId";

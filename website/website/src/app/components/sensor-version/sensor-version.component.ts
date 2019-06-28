@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
-
+import {NgbModal, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
 import { remove } from 'lodash';
 
 import { SensorVersion } from '../../SensorVersion';
@@ -18,13 +18,16 @@ export class SensorVersionComponent {
   SensorView: FormGroup;
   newSensor: FormGroup;
   newSensorMetaData: FormGroup;
-  typeList: string[];
+  typeList;
   metaData: Array<MesuredParameter>;
   idList: Array<number>;
+  openMap: boolean = true;
+  closeResult: string;
 
   constructor(private fb: FormBuilder,
               private sensorFormService: sensorVersionFormService,
-              private sensorService: sensorVersionService)
+              private sensorService: sensorVersionService,
+            private modalService: NgbModal)
   {
     this.newSensor = this.fb.group({
       name: [''],
@@ -40,33 +43,41 @@ export class SensorVersionComponent {
     });
     this.metaData = new Array();
     this.metaData = this.sensorService.loadMetaData();
-    this.sensorService.getSensorTypeNames().
-      subscribe( (res) => { this.typeList = res } );
+    this.typeList = this.sensorService.loadSensorTypes();
+    // this.sensorService.getSensorTypeNames().
+    //   subscribe( (res) => { this.typeList = res } );
     this.idList = new Array();
   }
 
+
+    open(content) {
+      this.modalService.open(
+        content, {ariaLabelledBy: 'modal-basic-title'});
+      this.openMap = true;
+    }
+
   onAddNewSensor() {
     let sensorName: string;
-    let sensorType: string;
+    let sensorType: number;
     let sensorLongitude: number;
     let sensorLatitude: number;
     let s = this.newSensor.value;
-    if (this.newSensor.get('name').value) {
+    if (this.newSensor.get('name').value != "") {
       sensorName = this.newSensor.get('name').value;
     } else {
       sensorName = "UNKNOWN_SENSOR_NAME";
     }
-    if (this.newSensor.get('type').value) {
+    if (this.newSensor.get('type').value != 1) {
       sensorType  = this.newSensor.get('type').value;
     } else {
-      sensorType = "UNKNOWN_SENSOR_TYPE";
+      sensorType = 1;
     }
-    if (this.newSensor.get('longitude').value) {
+    if (this.newSensor.get('longitude').value != 0) {
       sensorLongitude = this.newSensor.get('longitude').value;
     } else {
       sensorLongitude = 0;
     }
-    if (this.newSensor.get('latitude').value) {
+    if (this.newSensor.get('latitude').value != 0) {
       sensorLatitude = this.newSensor.get('latitude').value;
     } else {
       sensorLatitude = 0;
@@ -75,6 +86,10 @@ export class SensorVersionComponent {
       subscribe( res => {
         console.log('Ajout effectue');
       });
+    this.resetSensorForm();
+  }
+
+  resetSensorForm() {
     this.newSensor.reset({
       name: [''],
       type: [''],
@@ -113,6 +128,10 @@ export class SensorVersionComponent {
       subscribe(res => {
         console.log('Ajout effectue');
       });
+    this.resetSensorMetaDataForm();
+  }
+
+  resetSensorMetaDataForm() {
     this.newSensorMetaData.reset({
       name:[''],
       version: [''],

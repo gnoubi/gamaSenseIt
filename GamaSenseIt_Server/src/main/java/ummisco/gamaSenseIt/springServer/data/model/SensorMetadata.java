@@ -15,7 +15,7 @@ import javax.persistence.OneToMany;
 @Entity
 public class SensorMetadata {
 	public final static String MEASURE_ORDER_SEPARATOR = ":";
-	public final static String DEFAULT_DATA_SEPARATOR =":";	
+	public final static String DEFAULT_DATA_SEPARATOR =":";
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)

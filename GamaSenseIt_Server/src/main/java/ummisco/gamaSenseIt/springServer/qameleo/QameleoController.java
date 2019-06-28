@@ -1,6 +1,6 @@
 package ummisco.gamaSenseIt.springServer.qameleo;
 
-import java.util.ArrayList;
+// import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -9,15 +9,15 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
+// import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import ummisco.gamaSenseIt.springServer.data.controller.DataController;
-import ummisco.gamaSenseIt.springServer.data.controller.IDataController;
-import ummisco.gamaSenseIt.springServer.data.model.DisplayableData;
+// import ummisco.gamaSenseIt.springServer.data.controller.IDataController;
+// import ummisco.gamaSenseIt.springServer.data.model.DisplayableData;
 import ummisco.gamaSenseIt.springServer.data.model.ParameterMetadata;
 import ummisco.gamaSenseIt.springServer.data.model.Sensor;
 import ummisco.gamaSenseIt.springServer.data.model.SensorData;

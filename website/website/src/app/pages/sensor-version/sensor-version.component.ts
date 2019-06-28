@@ -40,12 +40,11 @@ export class SensorVersionPage implements OnInit {
       let splitedDataOrder: Array<string> = sensorType.measuredDataOrder.
         split(sensorType.dataSeparator);
       splitedDataOrder.pop();
-      let dataOrderId: Array<number> = new Array();
-      let parameter: Array<MesuredParameter> = new Array();
+      let dataOrderId: Array<number> = [];
+      let parameter: Array<MesuredParameter> = [];
       splitedDataOrder.forEach(
         (element: string) => { dataOrderId.push( Number(element) ) });
       for (let id of dataOrderId) {
-        console.log('id',id);
         for (let md of this.metaData) {
           if (md.id === id) {
             parameter.push(md);

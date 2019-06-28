@@ -14,16 +14,16 @@ export class sensorVersionService {
 
   }
 
-  getData():Observable<any>{
+  getData(): Observable<any> {
       return this.http.get(API_URLS.SENSOR_DATA);
   }
 
-  getSensors():Observable<any>{
+  getSensors(): Observable<any>{
       return this.http.get(API_URLS.SENSORS);
   }
 
   loadSensors(): Array<Sensor> {
-    let sensors: Array<Sensor> = new Array();
+    let sensors: Array<Sensor> = [];
     this.getSensors().
       subscribe(
         (data: Array<Sensor>) => {
@@ -36,20 +36,20 @@ export class sensorVersionService {
     return sensors;
   }
 
-  getSensorsNames():Observable<any>{
+  getSensorsNames(): Observable<any> {
       return this.http.get(API_URLS.SENSORS_NAMES);
   }
 
-  getSensorTypeNames():Observable<any>{
+  getSensorTypeNames(): Observable<any> {
       return this.http.get(API_URLS.SENSOR_META_DATA_FULLNAMES);
   }
 
-  getSensorTypes():Observable<any>{
+  getSensorTypes(): Observable<any> {
       return this.http.get(API_URLS.SENSOR_META_DATA);
   }
 
   loadSensorTypes(): Array<SensorVersion> {
-    let sensorTypes: Array<SensorVersion> = new Array();
+    let sensorTypes: Array<SensorVersion> = [];
     this.getSensorTypes().
       subscribe(
         (data: Array<SensorVersion>) => {
@@ -62,14 +62,14 @@ export class sensorVersionService {
     return sensorTypes;
   }
 
-  getSensorMetaDataParameters(metadataId: number):Observable<any>{
+  getSensorMetaDataParameters(metadataId: number): Observable<any> {
     let link = API_URLS.META_DATA_SENSOR_META_DATA_ID;
     link += "?metadataId="+metadataId;
       return this.http.get(link);
   }
 
   loadSensorMetaDataParameters(metadataId: number): Array<MesuredParameter> {
-    let metaData: Array<MesuredParameter> = new Array();
+    let metaData: Array<MesuredParameter> = [];
     this.getSensorMetaDataParameters(metadataId).
       subscribe(
         (data: Array<MesuredParameter>) => {
@@ -82,12 +82,12 @@ export class sensorVersionService {
       return metaData;
   }
 
-  getMetaData(){
+  getMetaData(): Observable<any> {
     return this.http.get(API_URLS.META_DATA);
   }
 
   loadMetaData(): Array<MesuredParameter> {
-    let metaData: Array<MesuredParameter> = new Array();
+    let metaData: Array<MesuredParameter> = [];
     this.getMetaData().
       subscribe(
         (data: Array<MesuredParameter>) => {
@@ -100,14 +100,14 @@ export class sensorVersionService {
     return metaData;
   }
 
-  getMetaDataId(parameterId: number) {
+  getMetaDataId(parameterId: number): Observable<any> {
     let link = API_URLS.META_DATA_ID;
     link += "?parameterId="+parameterId;
     return this.http.get(link);
   }
 
   loadMetaDataId(parameterId: number): Array<MesuredParameter> {
-    let metaData: Array<MesuredParameter> = new Array();
+    let metaData: Array<MesuredParameter> = [];
     this.getMetaDataId(parameterId).
       subscribe(
         (data: MesuredParameter) => { metaData.push(data) },
@@ -116,15 +116,20 @@ export class sensorVersionService {
     return metaData;
   }
 
-  getSensorsBetween():Observable<any>{
+  getSensorsBetween(): Observable<any> {
       return null;
   }
 
-  getSince():Observable<any>{
+  getSince(): Observable<any> {
       return null;
   }
 
-  updateSensor(s):Observable<any>{
+  getDefaultDataSeparator(): Observable<any> {
+    return this.http.get(API_URLS.DEFAULT_DATA_SEPARATOR,
+      {responseType: 'text'});
+  }
+
+  updateSensor(s): Observable<any> {
       var link = API_URLS.UPDATE_SENSOR;
       link+='?sensorID='+s+'&name='+s+'&longitude='+s+'&latitude='+s;
       console.log(link);

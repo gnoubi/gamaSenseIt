@@ -35,17 +35,20 @@
                 </td>
                 <td>
                   <i class="fas fa-info-circle fa-lg text-success"
-                    title="Details"
+                    placement="bottom"
+                    ngbTooltip="Details"
                     (click)="displaySensorType=sensor;operationType='details'">
                   </i>
                   <i class="fas fa-edit fa-lg text-success"
-                    title="Update"
+                    placement="bottom"
+                    ngbTooltip="Update"
                     style="margin-left:10px ; margin-right:10px"
                     data-toggle="modal" data-target="#modal-form1"
                     (click)="sensorTypeUpdate=sensor;operationType='update'">
                   </i>
                   <i class="fas fa-trash-alt fa-lg text-danger"
-                    title="Delete"
+                    placement="bottom"
+                    ngbTooltip="Delete"
                     (click)="sensorTypeDelete=sensor;operationType='delete'">
                   </i>
                 </td>
@@ -78,9 +81,17 @@
             <div class="row">
               <div *ngFor="let parameter of metaDataParameters(displaySensorType)"
               class="col-auto pt-1">
+                <ng-template #popContent>
+                  Measured parameter: {{parameter.parameter}}<br>
+                  Unit: {{parameter.unit}}<br>
+                  Data format: {{parameter.dataFormat}}<br>
+                </ng-template>
                 <button type="button"
                 class="icon icon-shape bg-gray text-white"
-                title="{{parameter.parameter}} ({{parameter.unit}}) | (dataFormat = {{parameter.dataFormat}})">
+                placement="bottom"
+                ngbTooltip="Click for details"
+                data-html="true"
+                [ngbPopover]="popContent">
                   <i class="{{parameter.icon}}"></i>
                 </button>
               </div>
@@ -157,17 +168,20 @@
                 </td>
                 <td>
                   <i class="fas fa-info-circle fa-lg text-success"
-                    title="Details"
+                    placement="bottom"
+                    ngbTooltip="Details"
                     (click)="displaySensor=sensor;operationSensor='details'">
                   </i>
                   <i class="fas fa-edit fa-lg text-success"
-                    title="Update"
+                    placement="bottom"
+                    ngbTooltip="Update"
                     style="margin-left:10px ; margin-right:10px"
                     data-toggle="modal" data-target="#modal-form3"
                     (click)="sensorUpdate=sensor;operationSensor='update'">
                   </i>
                   <i class="fas fa-trash-alt fa-lg text-danger"
-                    title="Delete"
+                    placement="bottom"
+                    ngbTooltip="Delete"
                     (click)="sensorDelete=sensor;operationSensor='delete'">
                   </i>
                 </td>
@@ -190,12 +204,12 @@
         </div>
         <div class="card-body">
           <div *ngIf="operationSensor == 'details'">
-            <ul class="text-white mt-1" *ngIf="displaySensor.idSensor!=0">
-              <li>Name: {{displaySensor.name}}</li>
-              <li>Type: {{displaySensor.sensorMetadataName}}</li>
-              <li>Longitude: {{displaySensor.longitude}}</li>
-              <li>Latitude: {{displaySensor.latitude}}</li>
-            </ul>
+            <div class="text-white mt-1" *ngIf="displaySensor.idSensor!=0">
+              Name: {{displaySensor.name}}<br>
+              Type: {{displaySensor.sensorMetadataName}}<br>
+              Longitude: {{displaySensor.longitude}}<br>
+              Latitude: {{displaySensor.latitude}}<br>
+            </div>
           </div>
           <!-- <div *ngIf="operationSensor =='update'">
             <h3 class="text-white">Update Sensor</h3>

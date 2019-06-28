@@ -252,5 +252,10 @@ public class DataController {
     	return dpl;
     }
     
+    @CrossOrigin
+    @RequestMapping(value=IDataController.DEFAULT_DATA_SEPARATOR)
+    public String getDefaultDataSeparator() {
+    	return SensorMetadata.DEFAULT_DATA_SEPARATOR;
+    }
 
 }
