@@ -10,8 +10,16 @@ public class DisplayableParameterMetaData {
 	private DataFormat dataFormat;
 	private DataParameter parameter;
 	private long sensorMetadata;
-	public DisplayableParameterMetaData(long id, String varName, String unit, DataFormat dataFormat,
-			DataParameter parameter, long sensorMetadata) {
+	private String icon;
+	public DisplayableParameterMetaData(
+			long id,
+			String varName,
+			String unit,
+			DataFormat dataFormat,
+			DataParameter parameter,
+			long sensorMetadata,
+			String icon
+			) {
 		super();
 		this.id = id;
 		this.varName = varName;
@@ -19,16 +27,19 @@ public class DisplayableParameterMetaData {
 		this.dataFormat = dataFormat;
 		this.parameter = parameter;
 		this.sensorMetadata = sensorMetadata;
+		this.icon = icon;
 	}
 	public DisplayableParameterMetaData(ParameterMetadata mt)
 	{
-		this(mt.getId(),
-				mt.getVarName(),
-				mt.getUnit(),
-				mt.getDataFormat(),
-				mt.getParameter(),
-				mt.getSensorMetadata().getIdType()
-				);
+		this(
+			mt.getId(),
+			mt.getVarName(),
+			mt.getUnit(),
+			mt.getDataFormat(),
+			mt.getParameter(),
+			mt.getSensorMetadata().getIdType(),
+			mt.getIcon()
+		);
 	}
 	
 	
@@ -68,6 +79,10 @@ public class DisplayableParameterMetaData {
 	public void setSensorMetadata(long sensorMetadata) {
 		this.sensorMetadata = sensorMetadata;
 	}
-	
-	
+	public String getIcon() {
+		return icon;
+	}
+	public void setIcon(String icon) {
+		this.icon = icon;
+	}	
 }

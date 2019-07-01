@@ -2,25 +2,26 @@ import { MesuredParameter } from "./MesuredParameter";
 import { version } from 'punycode';
 
 export class SensorVersion{
-  id : number;
+  idType: number;
   name: string;
   version: string;
+  dataSeparator: string;
   measuredDataOrder: string;
-  documentation : string;
-  mesuredParameters : Array<MesuredParameter>;
+  // parameterMetaData : Array<MesuredParameter>;
 
-  constructor(pid: number, n: string, v : string, d:string, mp:Array<MesuredParameter>)
+  constructor(pid: number, n: string, v : string, sep: string, ord: string)
   {
-    this.id = pid;
+    this.idType = pid;
     this.version = v;
     this.name= n;
-    this.documentation = d;
-    this.mesuredParameters = mp;
-    this.mesuredParameters.forEach(function (value) {
-      this.measuredDataOrder = this.measuredDataOrder + value.id+":";
-    })
-    
+    this.dataSeparator = sep;
+    this.measuredDataOrder = ord;
+    // this.parameterMetaData = mp;
+    // this.parameterMetaData.forEach(function (value) {
+    //   this.parameterMetaData = this.measuredDataOrder + value.id+this.dataSeparator;
+    // })
+
   }
-  
+
 
 }

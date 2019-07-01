@@ -12,7 +12,7 @@
     <div class="col-xl-8 mb-0 mb-xl-0">
       <div class="card shadow">
         <div class="card-header bg-transparent">
-          <h3 class="mb-0">Available sensors</h3>
+          <h3 class="mb-0">Available Types of Sensor</h3>
         </div>
         <div class="table-responsive">
           <!-- Projects table -->
@@ -20,7 +20,141 @@
             <thead class="thead-light">
               <tr>
                 <th scope="col">Name</th>
-                <th scope="col" class="text-center">Actions</th>
+                <th scope="col">Version</th>
+                <th scope="col">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!--sensors1 o lieu de sensors-->
+              <tr *ngFor="let sensor of sensorTypes">
+                <td>
+                  {{sensor.name}}
+                </td>
+                <td>
+                  {{sensor.version}}
+                </td>
+                <td>
+                  <i class="fas fa-info-circle fa-lg text-success"
+                    placement="bottom"
+                    ngbTooltip="Details"
+                    (click)="displaySensorType=sensor;operationType='details'">
+                  </i>
+                  <i class="fas fa-edit fa-lg text-success"
+                    placement="bottom"
+                    ngbTooltip="Update"
+                    style="margin-left:10px ; margin-right:10px"
+                    data-toggle="modal" data-target="#modal-form1"
+                    (click)="sensorTypeUpdate=sensor;operationType='update'">
+                  </i>
+                  <i class="fas fa-trash-alt fa-lg text-danger"
+                    placement="bottom"
+                    ngbTooltip="Delete"
+                    (click)="sensorTypeDelete=sensor;operationType='delete'">
+                  </i>
+                </td>
+              </tr>
+              <tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-4">
+      <div class="card bg-gradient-default shadow mt-3">
+        <div class="card-header bg-transparent">
+          <div class="row align-items-center">
+            <div class="col">
+              <h2 class="text-white mb-0">
+                Sensor Type's Details
+              </h2>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div *ngIf="operationType == 'details'">
+            <div class="text-white mt-1" *ngIf="displaySensorType.idType!=0">
+              Name: {{displaySensorType.name}}<br>
+              Version: {{displaySensorType.version}}<br>
+              Data Separator: {{displaySensorType.dataSeparator}}<br>
+              Measured Parameters (in order): <br>
+            </div>
+            <div class="row">
+              <div *ngFor="let parameter of metaDataParameters(displaySensorType)"
+              class="col-auto pt-1">
+                <ng-template #popContent>
+                  Measured parameter: {{parameter.parameter}}<br>
+                  Unit: {{parameter.unit}}<br>
+                  Data format: {{parameter.dataFormat}}<br>
+                </ng-template>
+                <button type="button"
+                class="icon icon-shape bg-gray text-white"
+                placement="bottom"
+                ngbTooltip="Click for details"
+                data-html="true"
+                [ngbPopover]="popContent">
+                  <i class="{{parameter.icon}}"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- <div *ngIf="operationType=='update'">
+            <h3 class="text-white">Update Sensor Type</h3>
+            <br>
+            <form role="form">
+              <div class="form-row mb-3 ">
+                <div class="col">
+                  <input type="text" class="form-control" placeholder="Name"
+                  name="Name" [(ngModel)]="sensorUpdate.name"/>
+                </div>
+              </div>
+              <br />
+              <div class="form-row mb-3 ">
+                <div class="col">
+                  <input type="text" class="form-control" placeholder="Version"
+                  name="Version" [(ngModel)]="sensorUpdate.version"/>
+                </div>
+              </div>
+              <br />
+              <div class="col">
+                <button type="button" class="btn btn-primary">Update</button>
+              </div>
+            </form>
+          </div> -->
+          <div *ngIf="operationType == 'delete' ">
+            <h3 class="text-white">Remove Sensor Type</h3>
+            <br>
+            <form role="form">
+              <div class="form-row mb-3 ">
+                <div class="col">
+                  <input type="text" class="form-control" placeholder="Name"
+                  name="Name" formControlName="Name" />
+                </div>
+              </div>
+              <div class="col">
+                <button type="button" class="btn btn-primary">Remove</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="row mt-5">
+    <div class="col-xl-8 mb-0 mb-xl-0">
+      <div class="card shadow">
+        <div class="card-header bg-transparent">
+          <h3 class="mb-0">Available Sensors</h3>
+        </div>
+        <div class="table-responsive">
+          <!-- Projects table -->
+          <table class="table align-items-center table-flush">
+            <thead class="thead-light">
+              <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Type</th>
+                <th scope="col">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -30,81 +164,97 @@
                   {{sensor.name}}
                 </td>
                 <td>
-                  <button class="btn btn-outline-success" (click)="displaySensor=sensor;operation='details';">
-                    Details</button>
-                  <button class="btn btn-outline-success" (click)="operation='update';sensorUpdate=sensor"> Update</button>
-                  <button class="btn btn-outline-danger" (click)="operation='delete';sensorDelete=sensor"> Delete</button>
+                  {{sensor.sensorMetadataName}}
+                </td>
+                <td>
+                  <i class="fas fa-info-circle fa-lg text-success"
+                    placement="bottom"
+                    ngbTooltip="Details"
+                    (click)="displaySensor=sensor;operationSensor='details'">
+                  </i>
+                  <i class="fas fa-edit fa-lg text-success"
+                    placement="bottom"
+                    ngbTooltip="Update"
+                    style="margin-left:10px ; margin-right:10px"
+                    data-toggle="modal" data-target="#modal-form3"
+                    (click)="sensorUpdate=sensor;operationSensor='update'">
+                  </i>
+                  <i class="fas fa-trash-alt fa-lg text-danger"
+                    placement="bottom"
+                    ngbTooltip="Delete"
+                    (click)="sensorDelete=sensor;operationSensor='delete'">
+                  </i>
                 </td>
               </tr>
-              <tr>
             </tbody>
           </table>
         </div>
-
       </div>
     </div>
     <div class="col-xl-4">
-      <div class="card bg-gradient-default shadow">
+      <div class="card bg-gradient-default shadow mt-3">
         <div class="card-header bg-transparent">
           <div class="row align-items-center">
             <div class="col">
               <h2 class="text-white mb-0">
-                Sensor's Operation
+                Sensor's Details
               </h2>
             </div>
           </div>
         </div>
         <div class="card-body">
-          <div *ngIf="operation == 'details'">
-            <h3 class="text-white">Sensor Details</h3>
-            <ul class="text-white mt-1" *ngIf="displaySensor.id!=0">
-              <li>Name: {{displaySensor.name}}</li>
-              <li>Version: {{displaySensor.version}}</li>
-              <li>Documentation: {{displaySensor.documentation}}</li>
-              <li>Other: {{displaySensor.mesuredParameters[0].varName}}</li>
-            </ul>
+          <div *ngIf="operationSensor == 'details'">
+            <div class="text-white mt-1" *ngIf="displaySensor.idSensor!=0">
+              Name: {{displaySensor.name}}<br>
+              Type: {{displaySensor.sensorMetadataName}}<br>
+              Longitude: {{displaySensor.longitude}}<br>
+              Latitude: {{displaySensor.latitude}}<br>
+            </div>
           </div>
-          <div *ngIf="operation=='update'">
-            <h3 class="text-white">Update Sensor </h3>
+          <!-- <div *ngIf="operationSensor =='update'">
+            <h3 class="text-white">Update Sensor</h3>
             <br>
             <form role="form">
               <div class="form-row mb-3 ">
                 <div class="col">
-                  <input type="text" class="form-control" placeholder="Name" name="Name" [(ngModel)]="sensorUpdate.name"/>
+                  <input type="text" class="form-control" placeholder="Name"
+                    name="Name" [(ngModel)]="sensorUpdate.name"/>
                 </div>
               </div>
               <div class="form-row mb-3">
                 <div class="col">
-                  <input type="number" class="form-control" placeholder="latitude" name="latitude" id="latitude" />
+                  <input type="number" class="form-control" placeholder="latitude"
+                    name="latitude" [(ngModel)]="sensorUpdate.latitude" />
                 </div>
                 <div class="col">
-                  <input type="number" class="form-control" placeholder="longitude" name="longitude" id="longitude" />
+                  <input type="number" class="form-control" placeholder="longitude"
+                    name="longitude" [(ngModel)]="sensorUpdate.longitude" />
                 </div>
 
               </div>
               <br />
               <div class="col">
-                <button type="button" class="btn btn-primary">Update Sensor</button>
+                <button type="button" class="btn btn-primary">Update</button>
               </div>
             </form>
-          </div>
-          <div *ngIf="operation == 'delete' ">
+          </div> -->
+          <div *ngIf="operationSensor == 'delete' ">
             <h3 class="text-white">Remove Sensor</h3>
             <br>
             <form role="form">
               <div class="form-row mb-3 ">
                 <div class="col">
-                  <input type="text" class="form-control" placeholder="Name" name="Name" formControlName="Name" />
+                  <input type="text" class="form-control" placeholder="Name"
+                    name="Name" formControlName="Name" />
                 </div>
               </div>
               <div class="col">
-                <button type="button" class="btn btn-primary">Remove Sensor</button>
+                <button type="button" class="btn btn-primary">Remove</button>
               </div>
             </form>
           </div>
         </div>
       </div>
     </div>
-
   </div>
 </div>

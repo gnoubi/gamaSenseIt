@@ -1,10 +1,10 @@
 package ummisco.gamaSenseIt.springServer.data.services;
 
-import java.text.NumberFormat;
-import java.util.Calendar;
+// import java.text.NumberFormat;
+// import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
+// import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ import com.vividsolutions.jts.geom.Point;
 
 import ummisco.gamaSenseIt.springServer.data.model.Sensor;
 import ummisco.gamaSenseIt.springServer.data.model.SensorData;
-import ummisco.gamaSenseIt.springServer.data.model.DisplayableData;
+// import ummisco.gamaSenseIt.springServer.data.model.DisplayableData;
 import ummisco.gamaSenseIt.springServer.data.model.ParameterMetadata;
 import ummisco.gamaSenseIt.springServer.data.model.ParameterMetadata.DataFormat;
 import ummisco.gamaSenseIt.springServer.data.model.ParameterMetadata.DataParameter;

@@ -10,6 +10,8 @@ import { Subscription } from 'rxjs';
 export class UploadQrcodeComponent implements OnDestroy {
 
     subscription: Subscription;
+    errorMessage: string = "The QR Code decoder cannot find the QR Code.\nPlease try again.";
+    failed: boolean;
 
     constructor(private qrReader: QrcodeReaderService) { }
 
@@ -23,7 +25,13 @@ export class UploadQrcodeComponent implements OnDestroy {
       const file = event.target.files[0];
       this.subscription = this.qrReader.decodeService(file)
         .subscribe(url => {
-          window.open(url, '_blank');
+          if(url == 'error decoding QR Code') {
+            this.failed = true;
+            alert(this.errorMessage);
+          } else {
+            window.open(url, '_blank');
+            this.failed = false;
+          }
         });
     }
 }

@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { ClipboardModule } from 'ngx-clipboard';
-import { MatIconModule, MatAutocompleteModule, MatFormFieldModule, MatInputModule, MatOptionModule } from '@angular/material';
+import { MatIconModule, MatAutocompleteModule, MatFormFieldModule, MatInputModule } from '@angular/material';
 
 
 import { AdminLayoutRoutes } from './admin-layout.routing';

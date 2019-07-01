@@ -15,16 +15,15 @@ import javax.persistence.OneToMany;
 @Entity
 public class SensorMetadata {
 	public final static String MEASURE_ORDER_SEPARATOR = ":";
-	public final static String DEFAULT_DATA_SEPARATOR =":";	
+	public final static String DEFAULT_DATA_SEPARATOR =":";
 	
- @Id
- @GeneratedValue(strategy = GenerationType.AUTO)
- private Long idType;
- private String version;
- private String name;
- private String measuredDataOrder;
- private String dataSeparator = ":";
-	
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long idType;
+	private String version;
+	private String name;
+	private String measuredDataOrder;
+	private String dataSeparator = ":";
  
 	@OneToMany(cascade = CascadeType.ALL,
 			fetch = FetchType.EAGER,

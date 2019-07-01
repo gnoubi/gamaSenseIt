@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 
 import { SensorVersion } from '../../SensorVersion';
-import { StockCapteurArr } from '../../stock-capteur';
 import { sensorVersionService } from './sensor-version-service';
-
+import { Sensor } from '../../sensor';
+import { MesuredParameter } from '../../MesuredParameter';
 
 @Component({
   selector: 'page-sensor-version',
@@ -12,50 +12,49 @@ import { sensorVersionService } from './sensor-version-service';
 })
 export class SensorVersionPage implements OnInit {
 
-  sensors: Array<SensorVersion> = StockCapteurArr;
-  displaySensor;
-  sensorUpdate;
-  sensorDelete;
-  operation: String = 'details';
+  sensorTypes: Array<SensorVersion>;
+  sensors: Array<Sensor>;
+  displaySensorType: SensorVersion;
+  sensorTypeUpdate: SensorVersion;
+  sensorTypeDelete: SensorVersion;
+  operationType: String = 'details';
+  displaySensor: Sensor;
+  sensorUpdate: Sensor;
+  sensorDelete: Sensor;
+  operationSensor: String = 'details';
   sensors1: any;
+  metaData: Array<MesuredParameter>;
 
   constructor(private sensorService: sensorVersionService) { }
 
   ngOnInit() {
-    this.initSensor();
+    this.sensors = this.sensorService.loadSensors();
+    this.sensorTypes = this.sensorService.loadSensorTypes();
+    this.displaySensorType = this.sensorService.initSensorType();
+    this.displaySensor = this.sensorService.initSensor();
+    this.metaData = this.sensorService.loadMetaData();
   }
 
-  sensorDisplay(s: SensorVersion) {
-    this.displaySensor = s;
-  }
-
-  initSensor() {
-    this.displaySensor = new SensorVersion(0, '', '', '', []);
-
-  }
-
-  loadSensor() {
-    /*this.sensorService.getSensors().subscribe(
-     data => { this.sensors1 = data },
-     error => { console.log('error was occured') },
-     () => { console.log('Donnees bien chargee') }
-    );*/
-  }
-
-  updateSensor(s) {
-       /* this.sensorService.updateSensor(s).subscribe(
-          res => {
-            this.loadSensor();
+  metaDataParameters(sensorType: SensorVersion): Array<MesuredParameter> {
+    if (sensorType.measuredDataOrder) {
+      let splitedDataOrder: Array<string> = sensorType.measuredDataOrder.
+        split(sensorType.dataSeparator);
+      splitedDataOrder.pop();
+      let dataOrderId: Array<number> = [];
+      let parameter: Array<MesuredParameter> = [];
+      splitedDataOrder.forEach(
+        (element: string) => { dataOrderId.push( Number(element) ) });
+      for (let id of dataOrderId) {
+        for (let md of this.metaData) {
+          if (md.id === id) {
+            parameter.push(md);
           }
-        );*/
+        }
+      }
+      return parameter;
+    } else {
+      return null;
+    }
   }
 
-  deleteSensor(s) {
-    /*this.sensorService.deleteSensor(s)
-      .subscribe(
-        res=>{
-          this.loadSensor();
-        }
-      );*/
-  }
 }

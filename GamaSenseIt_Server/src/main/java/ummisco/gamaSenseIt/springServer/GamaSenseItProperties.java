@@ -33,7 +33,4 @@ public class GamaSenseItProperties {
 		public void setBrokerPassword(String brokerPassword) {
 			this.brokerPassword = brokerPassword;
 		}
-	 
-		
-	    // standard getters and setters
 	}
