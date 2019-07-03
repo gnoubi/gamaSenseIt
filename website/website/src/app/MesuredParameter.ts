@@ -1,7 +1,7 @@
 import {DataFormat} from './Enums';
 
 export class MesuredParameter{
-  id : number;
+  id: number;
   varName: string;
   unit: string;
   dataFormat: DataFormat;

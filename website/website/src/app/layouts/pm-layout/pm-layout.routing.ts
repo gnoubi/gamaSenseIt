@@ -9,5 +9,5 @@ export const PMLayoutRoutes: Routes = [
     { path: 'dashboard',      component: DashboardComponent },
     { path: 'user-profile',   component: SensorVersionPage },
     { path: 'maps',           component: MapsComponent },
-    {path: 'diagramme',       component:DiagrammeComponent}
+    { path: 'diagramme',       component:DiagrammeComponent }
 ];

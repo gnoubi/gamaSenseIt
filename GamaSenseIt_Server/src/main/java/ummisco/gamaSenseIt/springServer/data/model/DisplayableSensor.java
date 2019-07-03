@@ -1,61 +1,106 @@
 package ummisco.gamaSenseIt.springServer.data.model;
 
 public class DisplayableSensor {
-	private long idSensor;
-	private String name;
-	private double longitude;
-	private double latitude;
-	private long sensorMetadata;
-	private String sensorMetadataName;
-	public DisplayableSensor(long idSensor, String name, double longitude, double latitude, long sensorMetadata, String sensorMetadataName) {
-		super();
-		this.idSensor = idSensor;
-		this.name = name;
-		this.longitude = longitude;
-		this.latitude = latitude;
-		this.sensorMetadata = sensorMetadata;
-		this.sensorMetadataName = sensorMetadataName;
-	}
-	public DisplayableSensor(Sensor s)
-	{
-		this(s.getIdSensor(), s.getName(), s.getLongitude(), s.getLatitude(), s.getMetadata().getIdType(), s.getMetadata().getName()+" -- "+s.getMetadata().getVersion());
-	}
-	public long getIdSensor() {
-		return idSensor;
-	}
-	public void setIdSensor(long idSensor) {
-		this.idSensor = idSensor;
-	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public double getLongitude() {
-		return longitude;
-	}
-	public void setLongitude(double longitude) {
-		this.longitude = longitude;
-	}
-	public double getLatitude() {
-		return latitude;
-	}
-	public void setLatitude(double latitude) {
-		this.latitude = latitude;
-	}
-	public long getSensorMetadata() {
-		return sensorMetadata;
-	}
-	public void setSensorMetadata(long sensorMetadata) {
-		this.sensorMetadata = sensorMetadata;
-	}
-	public String getSensorMetadataName() {
-		return sensorMetadataName;
-	}
-	public void setSensorMetadataName(String sensorMetadataName) {
-		this.sensorMetadataName = sensorMetadataName;
-	}
-	
-	
+  private long idSensor;
+  private String name;
+  private String displayName;
+  private String place;
+  private double longitude;
+  private double latitude;
+  private long sensorMetadata;
+  private String sensorMetadataName;
+  private String description;
+
+  public DisplayableSensor(long idSensor, String name, String displayName, String place, double longitude,
+      double latitude, long sensorMetadata, String sensorMetadataName, String description) {
+    super();
+    this.idSensor = idSensor;
+    this.name = name;
+    this.displayName = displayName;
+    this.setPlace(place);
+    this.longitude = longitude;
+    this.latitude = latitude;
+    this.sensorMetadata = sensorMetadata;
+    this.sensorMetadataName = sensorMetadataName;
+    this.setDescription(description);
+  }
+
+  public DisplayableSensor(Sensor s) {
+    this(s.getIdSensor(), s.getName(), s.getDisplayName(), s.getPlace(), s.getLongitude(), s.getLatitude(),
+        s.getMetadata().getIdType(), s.getMetadata().getName() + " -- " + s.getMetadata().getVersion(),
+        s.getDescription());
+  }
+
+  public long getIdSensor() {
+    return idSensor;
+  }
+
+  public void setIdSensor(long idSensor) {
+    this.idSensor = idSensor;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public String getDisplayName() {
+    return displayName;
+  }
+
+  public void setDisplayName(String displayName) {
+    this.displayName = displayName;
+  }
+
+  public double getLongitude() {
+    return longitude;
+  }
+
+  public void setLongitude(double longitude) {
+    this.longitude = longitude;
+  }
+
+  public double getLatitude() {
+    return latitude;
+  }
+
+  public void setLatitude(double latitude) {
+    this.latitude = latitude;
+  }
+
+  public long getSensorMetadata() {
+    return sensorMetadata;
+  }
+
+  public void setSensorMetadata(long sensorMetadata) {
+    this.sensorMetadata = sensorMetadata;
+  }
+
+  public String getSensorMetadataName() {
+    return sensorMetadataName;
+  }
+
+  public void setSensorMetadataName(String sensorMetadataName) {
+    this.sensorMetadataName = sensorMetadataName;
+  }
+
+  public String getPlace() {
+    return place;
+  }
+
+  public void setPlace(String place) {
+    this.place = place;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
 }

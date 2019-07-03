@@ -9,7 +9,7 @@ import { FormControl } from '@angular/forms';
 @Component({
   selector: 'app-diagramme',
   templateUrl: './diagramme.component.html',
-  styleUrls: ['./diagramme.component.css']
+  styleUrls: ['./diagramme.component.scss']
 })
 export class DiagrammeComponent implements OnInit {
 
@@ -19,7 +19,7 @@ export class DiagrammeComponent implements OnInit {
     return Math.round(Math.random() * 100);
   };
 
-  sensors: Array<SensorVersion> = StockCapteurArr;
+  sensors: SensorVersion[] = StockCapteurArr;
   sensorsCheck; myLine; dataUpdate;
   myBar; myPie;
   element; canvas;
@@ -114,11 +114,11 @@ export class DiagrammeComponent implements OnInit {
      var $red = this.randomScalingFactor()*255;
      var $green = this.randomScalingFactor()*255;
      var $blue = this.randomScalingFactor()*255;
- 
+
      for( let i of displaySensor.measuredParameters){
        dataMesure.push(i.DataParameter.PRESSURE)
      }
- 
+
      var dataSensor= {
        label:displaySensor.id,
        backgroundColor:"rgba("+$red+","+$green+","+$blue+",0.5)",
@@ -428,25 +428,23 @@ export class DiagrammeComponent implements OnInit {
   selection=[];
 
   selectedFruits(value:any,check:boolean) {
-    
+
     //console.log('on chaange');
     //value.selected = !value.selected;
     //console.log(value.selected)  //  return filterFilter(this.fruits, { selected: true });*/
     if (check){
-      for(let item of this.checkValue){
-        if (item.sensor.name === value.name){
+      for (let item of this.checkValue) {
+        if (item.sensor.name === value.name) {
+          item.selected = !item.selected;
+        }
+      }
+    } else {
+      for (let item of this.checkValue) {
+        if (item.sensor.name === value.name) {
           item.selected = !item.selected;
         }
       }
     }
-    else{
-      for(let item of this.checkValue){
-        if (item.sensor.name === value.name){
-          item.selected = !item.selected;
-        }
-      }
-    }
-  
   };
 
 
@@ -472,7 +470,7 @@ export class DiagrammeComponent implements OnInit {
         map(name => name ? this._filter(name) : this.fruits.slice())
       );
   }
-  
+
   displayFn(user?: any): string | undefined {
     return user ? user.name : undefined;
   }

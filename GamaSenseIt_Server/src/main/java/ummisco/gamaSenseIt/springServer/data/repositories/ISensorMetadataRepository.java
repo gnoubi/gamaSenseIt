@@ -7,8 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import ummisco.gamaSenseIt.springServer.data.model.SensorMetadata;
 
-
 @Repository
-public interface ISensorMetadataRepository extends CrudRepository<SensorMetadata, Long>{
-	List<SensorMetadata> findByNameAndVersion(String name, String version);
+public interface ISensorMetadataRepository extends CrudRepository<SensorMetadata, Long> {
+  List<SensorMetadata> findByNameAndVersion(String name, String version);
 }

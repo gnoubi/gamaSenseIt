@@ -2,7 +2,7 @@ import { SensorVersion } from './SensorVersion';
 import { MesuredParameter } from './MesuredParameter';
 import {DataFormat, DataParameter} from './Enums'
 //
-// export  const metatData1: Array<MesuredParameter> = [
+// export  const metatData1: MesuredParameter[] = [
 //     {varName:"p1", id:1,parameter : DataParameter.PRESSURE, dataFormat:DataFormat.INTEGER,unit:"cb"},
 //     {varName:"p2", id:1,parameter : DataParameter.PRESSURE, dataFormat:DataFormat.INTEGER,unit:"cb"},
 //     {varName:"p3", id:1,parameter : DataParameter.PRESSURE, dataFormat:DataFormat.INTEGER,unit:"cb"},
@@ -11,7 +11,7 @@ import {DataFormat, DataParameter} from './Enums'
 //     {varName:"p6", id:1,parameter : DataParameter.PRESSURE, dataFormat:DataFormat.INTEGER,unit:"cb"}
 // ];
 //
-// export  const metatData2: Array<MesuredParameter> = [
+// export  const metatData2: MesuredParameter[] = [
 //     {varName:"p1", id:2,parameter : DataParameter.PRESSURE, dataFormat:DataFormat.INTEGER,unit:"cb"},
 //     {varName:"p2", id:2,parameter : DataParameter.PRESSURE, dataFormat:DataFormat.INTEGER,unit:"cb"},
 //     {varName:"p3", id:2,parameter : DataParameter.PRESSURE, dataFormat:DataFormat.INTEGER,unit:"cb"},
@@ -21,7 +21,7 @@ import {DataFormat, DataParameter} from './Enums'
 // ];
 
 export  const StockCapteur: SensorVersion = {name: 'paris', version: "V1", idType:1, measuredDataOrder:"", dataSeparator:':'};
-export  const StockCapteurArr: Array<SensorVersion> = [
+export  const StockCapteurArr: SensorVersion[] = [
     StockCapteur,
     {name: 'vegas', version: "V1", idType:2, measuredDataOrder:"", dataSeparator:':'},
     {name: 'Dakar', version: "V3", idType:3, measuredDataOrder:"", dataSeparator:':'},

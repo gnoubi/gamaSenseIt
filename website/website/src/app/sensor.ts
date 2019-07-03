@@ -1,19 +1,33 @@
 export class Sensor{
   idSensor: number;
   name: string;
+  displayName: string;
+  place: string;
   longitude: number;
   latitude: number;
   sensorMetadata: number;
   sensorMetadataName: string;
+  description: string;
 
-  constructor(id: number, n: string, long: number, lat: number, md: number, mdn: string)
+  constructor(
+    idSensor: number,
+    name: string,
+    displayName: string,
+    place: string,
+    longitude: number,
+    latitude: number,
+    sensorMetadata: number,
+    sensorMetadataName: string,
+    description: string)
   {
-    this.idSensor = id;
-    this.name= n;
-    this.longitude = long;
-    this.latitude = lat;
-    this.sensorMetadata = md;
-    this.sensorMetadataName = mdn;
+    this.idSensor = idSensor;
+    this.name= name;
+    this.displayName = displayName;
+    this.place = place;
+    this.longitude = longitude;
+    this.latitude = latitude;
+    this.sensorMetadata = sensorMetadata;
+    this.sensorMetadataName = sensorMetadataName;
+    this.description = description;
   }
-
 }

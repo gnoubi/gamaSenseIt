@@ -7,5 +7,5 @@ import ummisco.gamaSenseIt.springServer.data.model.Sensor;
 import ummisco.gamaSenseIt.springServer.data.model.SensorData;
 
 public interface ISensorDataAnalyser {
-	List<SensorData> analyseBulkData(String data, Date captureDate,Sensor s);
+  List<SensorData> analyseBulkData(String data, Date captureDate, Sensor s);
 }

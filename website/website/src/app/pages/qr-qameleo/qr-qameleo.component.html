@@ -6,22 +6,36 @@
     <div class="container">
       <div class="row">
         <div class="col-xs col-md col-lg-6">
-          <div  style="width: 15rem;">
-            <div class="card card-stats  mb-1 mb-lg-1">
+          <div  class="card-lg">
+            <div class="card card-stats mb-1 mb-lg-1">
               <div class="card-body">
                 <div class="row">
-                  <div class="col">
-                    <h5 class="card-title text-uppercase text-muted mb-0">Temperature</h5>
-                    <span class="h2 font-weight-bold mb-0">{{ temperature }} {{ temperatureUnit }}</span>
+                  <div class="col-7">
+                    <h5 class="card-title text-uppercase text-muted mb-0">
+                      Température
+                    </h5>
+                    <span class="h2 font-weight-bold mb-0">
+                      {{ temperature }} {{ temperatureUnit }}
+                    </span>
                   </div>
-                  <div class="col-auto">
-                    <div class="icon icon-shape bg-danger text-white rounded-circle shadow">
+                  <div class="col-3">
+                    <!-- <ng-template #popTitleTemp>Température</ng-template>
+                    <ng-template #popContentTemp>
+                      Température en {{ temperatureUnit }}.
+                    </ng-template> -->
+                    <button class="icon icon-shape bg-danger text-white"
+                      mat-fab
+                      matTooltip="Température en {{ temperatureUnit }}."
+                      matTooltipClass="multi-line">
                       <i class="fas fa-thermometer-three-quarters"></i>
-                    </div>
+                    </button>
                   </div>
                 </div>
-<!---               <p class="mt-3 mb-0 text-muted text-sm">
-                  <span class="text-success mr-2"><i class="fa fa-arrow-up"></i> 3.48%</span>
+<!---           <p class="mt-3 mb-0 text-muted text-sm">
+                  <span class="text-success mr-2">
+                    <i class="fa fa-arrow-up"></i>
+                    3.48%
+                  </span>
                   <span class="text-nowrap">Since last month</span>
                 </p>-->
               </div>
@@ -29,22 +43,36 @@
           </div>
         </div>
         <div class="col-xs col-md col-lg-6">
-          <div  style="width: 15rem;">
+          <div  class="card-lg">
             <div class="card card-stats align-right mb-1 mb-lg-1">
               <div class="card-body">
                 <div class="row">
-                  <div class="col">
-                    <h5 class="card-title text-uppercase text-muted mb-0">Humidité</h5>
-                    <span class="h2 font-weight-bold mb-0">{{ humidity }} {{ humidityUnit }}</span>
+                  <div class="col-7">
+                    <h5 class="card-title text-uppercase text-muted mb-0">
+                      Humidité
+                    </h5>
+                    <span class="h2 font-weight-bold mb-0">
+                      {{ humidity }} {{ humidityUnit }}
+                    </span>
                   </div>
-                  <div class="col-auto">
-                    <div class="icon icon-shape bg-danger text-white rounded-circle shadow">
+                  <div class="col-3">
+                    <!-- <ng-template #popTitleHum>Humidité</ng-template>
+                    <ng-template #popContentHum>
+                      Humidité en {{ humidityUnit }}.
+                    </ng-template> -->
+                    <button class="icon icon-shape bg-danger text-white"
+                      mat-fab
+                      matTooltip="Humidité en {{ humidityUnit }}."
+                      matTooltipClass="multi-line">
                       <i class="fas fa-tint"></i>
-                    </div>
+                    </button>
                   </div>
                 </div>
- <!---               <p class="mt-3 mb-0 text-muted text-sm">
-                  <span class="text-success mr-2"><i class="fa fa-arrow-up"></i> 3.48%</span>
+ <!---          <p class="mt-3 mb-0 text-muted text-sm">
+                  <span class="text-success mr-2">
+                    <i class="fa fa-arrow-up"></i>
+                    3.48%
+                  </span>
                   <span class="text-nowrap">Since last month</span>
                 </p>-->
               </div>
@@ -54,18 +82,35 @@
       </div>
       <div class="row">
         <div class="col-xs col-md col-lg-4">
-          <div  style="width: 15rem;">
-            <div class="card card-stats  mb-1 mb-lg-1">
+          <div  class="card-lg">
+            <div class="card card-stats mb-1 mb-lg-1">
               <div class="card-body">
                 <div class="row">
-                  <div class="col">
-                    <h5 class="card-title text-uppercase text-muted mb-0">PM 1</h5>
-                    <pm-progress-bar [title]="'PM 1'" [value]="PM1"></pm-progress-bar>
+                  <div class="col-7">
+                    <h5 class="card-title text-uppercase text-muted mb-0">
+                      PM<sub>1</sub>
+                    </h5>
+                    <pm-progress-bar
+                      [title]="'PM 1'"
+                      [value]="pm1">
+                    </pm-progress-bar>
                   </div>
-                  <div class="col-auto">
-                    <div class="icon icon-shape bg-danger text-white rounded-circle shadow">
+                  <div class="col-3">
+                    <!-- <ng-template #popTitlePM1>
+                      PM<sub>1</sub>
+                    </ng-template>
+                    <ng-template #popContentPM1>
+                      Concentration en particules de<br>
+                      diamètres inférieurs à 1 micron.<br>
+                      Mesuré en {{ PMUnit }}.
+                    </ng-template> -->
+                    <button class="icon icon-shape bg-danger text-white"
+                      mat-fab
+                      matTooltip="Concentration en particules de diamètres inférieurs à 1 micron.
+                      Mesuré en {{ PMUnit }}."
+                      matTooltipClass="multi-line">
                       <i class="fab fa-cloudversify"></i>
-                    </div>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -73,18 +118,35 @@
           </div>
         </div>
         <div class="col-xs col-md col-lg-4">
-          <div style="width: 15rem;">
+          <div class="card-lg">
             <div class="card card-stats align-right mb-1 mb-lg-1">
               <div class="card-body">
                 <div class="row">
-                  <div class="col">
-                    <h5 class="card-title text-uppercase text-muted mb-0">PM 2.5</h5>
-                    <pm-progress-bar [title]="'PM 2.5'"  [value]="PM25"></pm-progress-bar>
+                  <div class="col-7">
+                    <h5 class="card-title text-uppercase text-muted mb-0">
+                      PM<sub>2,5</sub>
+                    </h5>
+                    <pm-progress-bar
+                      [title]="'PM 2.5'"
+                      [value]="pm25">
+                    </pm-progress-bar>
                   </div>
-                  <div class="col-auto">
-                    <div class="icon icon-shape bg-danger text-white rounded-circle shadow">
+                  <div class="col-3">
+                    <!-- <ng-template #popTitlePM25>
+                      PM<sub>2,5</sub>
+                    </ng-template>
+                    <ng-template #popContentPM25>
+                      Concentration en particules de<br>
+                      diamètres inférieurs à 2,5 microns.<br>
+                      Mesuré en {{ PMUnit }}.
+                    </ng-template> -->
+                    <button class="icon icon-shape bg-danger text-white"
+                      mat-fab
+                      matTooltip="Concentration en particules de diamètres inférieurs à 2,5 microns.
+                      Mesuré en {{ PMUnit }}."
+                      matTooltipClass="multi-line">
                       <i class="fab fa-cloudversify"></i>
-                    </div>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -92,18 +154,35 @@
           </div>
         </div>
         <div class="col-xs col-md col-lg-4">
-          <div  style="width: 15rem;">
-            <div class="card card-stats  mb-1 mb-lg-1">
+          <div  class="card-lg">
+            <div class="card card-stats mb-1 mb-lg-1">
               <div class="card-body">
                 <div class="row">
-                  <div class="col">
-                    <h5 class="card-title text-uppercase text-muted mb-0">PM 10</h5>
-                    <pm-progress-bar [title]="'PM 10'"  [value]="PM10"></pm-progress-bar>
+                  <div class="col-7">
+                    <h5 class="card-title text-uppercase text-muted mb-0">
+                      PM<sub>10</sub>
+                    </h5>
+                    <pm-progress-bar
+                      [title]="'PM 10'"
+                      [value]="pm10">
+                    </pm-progress-bar>
                   </div>
-                  <div class="col-auto">
-                    <div class="icon icon-shape bg-danger text-white rounded-circle shadow">
+                  <div class="col-3">
+                    <!-- <ng-template #popTitlePM10>
+                      PM<sub>10</sub>
+                    </ng-template>
+                    <ng-template #popContentPM10>
+                      Concentration en particules de<br>
+                      diamètres inférieurs à 10 microns.<br>
+                      Mesuré en {{ PMUnit }}.
+                    </ng-template> -->
+                    <button class="icon icon-shape bg-danger text-white tip"
+                      mat-fab
+                      matTooltip="Concentration en particules de diamètres inférieurs à 10 microns.
+                      Mesuré en {{ PMUnit }}."
+                      matTooltipClass="multi-line">
                       <i class="fab fa-cloudversify"></i>
-                    </div>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -115,15 +194,25 @@
   </div>
   <ng-template #elseBlock2>
     <div class="row">
-      <div class="col-xs col-md-3 col-lg-3">
+      <div class="col-xs col-sm col-md-3 col-lg-3">
       </div>
-      <div class="col-xs col-md-6 col-lg-6">
-        <div class="alert alert-warning alert-dismissible">
-          <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+      <div class="col-xs col-sm col-md-6 col-lg-6">
+        <div class="alert alert-warning alert-dismissible ml-1 mr-1">
+          <a class="close"
+            href="#"
+            data-dismiss="alert"
+            aria-label="close">
+            &times;
+          </a>
           <h5>La requête http n'a pas fonctionnée.</h5>
         </div>
+        <a class="btn btn-info ml-1 mr-1"
+          routerLinkActive="active"
+          [routerLink]="['/qameleo']">
+          Charger à nouveau le QR Code
+        </a>
       </div>
-      <div class="col-xs col-md-3 col-lg-3">
+      <div class="col-xs col-sm col-md-3 col-lg-3">
       </div>
     </div>
     <h1></h1>

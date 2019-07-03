@@ -14,10 +14,11 @@ import ummisco.gamaSenseIt.springServer.data.model.SensorData;
 @CrossOrigin
 //@RepositoryRestResource(collectionResourceRel = "sensorData", path = "sensorData")
 @Repository
-public interface ISensorDataRepository extends CrudRepository<SensorData, Long>{
-	public List<SensorData> findAllByCaptureDateLessThanEqualAndCaptureDateGreaterThanEqual(Date endDate, Date startDate);
-	
-	@Query("select a from SensorData a where a.sensor.id = :idSensor and a.parameter.id = :idParameter and a.captureDate >= :start and  a.captureDate <= :end ")
-	public List<SensorData> findAllByDate(@Param(value="idSensor")long idSensor,@Param(value="idParameter")long parameter, @Param(value="start") Date start, @Param(value="end") Date end);
+public interface ISensorDataRepository extends CrudRepository<SensorData, Long> {
+  public List<SensorData> findAllByCaptureDateLessThanEqualAndCaptureDateGreaterThanEqual(Date endDate, Date startDate);
+
+  @Query("select a from SensorData a where a.sensor.id = :idSensor and a.parameter.id = :idParameter and a.captureDate >= :start and  a.captureDate <= :end ")
+  public List<SensorData> findAllByDate(@Param(value = "idSensor") long idSensor,
+      @Param(value = "idParameter") long parameter, @Param(value = "start") Date start, @Param(value = "end") Date end);
 
 }

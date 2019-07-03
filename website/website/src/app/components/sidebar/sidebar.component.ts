@@ -8,12 +8,12 @@ declare interface RouteInfo {
     class: string;
 }
 export const ROUTES: RouteInfo[] = [
-    { path: '/dashboard', title: 'Dashboard',  icon: 'ni-tv-2 text-primary', class: '' },
-    { path: '/qrcode', title: 'Scan QR codes', icon: 'ni-camera-compact text-info', class: ''},
-    { path: '/maps', title: "Sensor's Maps",  icon:'ni-pin-3 text-success', class: '' },
-    { path: '/user-profile', title: 'User profile',  icon:'ni-single-02 text-dark', class: '' },
-    { path: '/login', title: 'Login',  icon:'ni-key-25 text-primary', class: '' },
-    { path: '/register', title: 'Register',  icon:'ni-circle-08 text-danger', class: '' }
+    { path: '/dashboard', title: 'Dashboard',  icon: 'fas fa-desktop text-primary', class: '' },
+    { path: '/qrcode', title: 'Scan QR codes', icon: 'fas fa-qrcode text-info', class: ''},
+    { path: '/maps', title: "Sensor's Maps",  icon:'fas fa-map-marker-alt text-success', class: '' },
+    { path: '/user-profile', title: 'User profile',  icon:'fas fa-user-alt text-dark', class: '' },
+    { path: '/login', title: 'Login',  icon:'fas fa-user-lock text-primary', class: '' },
+    { path: '/register', title: 'Register',  icon:'fas fa-user-plus text-danger', class: '' }
 ];
 
 @Component({
@@ -30,8 +30,9 @@ export class SidebarComponent implements OnInit {
 
   ngOnInit() {
     this.menuItems = ROUTES.filter(menuItem => menuItem);
-    this.router.events.subscribe((event) => {
+    this.router.events.subscribe(
+      (event) => {
       this.isCollapsed = true;
-   });
+    });
   }
 }
