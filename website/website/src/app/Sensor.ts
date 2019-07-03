@@ -8,7 +8,7 @@ export class Sensor{
   sensorMetadata: number;
   sensorMetadataName: string;
   description: string;
-
+ 
   constructor(
     idSensor: number,
     name: string,
