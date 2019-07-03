@@ -2,19 +2,19 @@ package ummisco.gamaSenseIt.springServer.data.controller;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
+//import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.MediaType;
+//import org.springframework.format.annotation.DateTimeFormat;
+//import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+//import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+//import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import ummisco.gamaSenseIt.springServer.data.model.DisplayableData;
+//import ummisco.gamaSenseIt.springServer.data.model.DisplayableData;
 import ummisco.gamaSenseIt.springServer.data.model.DisplayableParameterMetaData;
 import ummisco.gamaSenseIt.springServer.data.model.DisplayableSensor;
 import ummisco.gamaSenseIt.springServer.data.model.ParameterMetadata;
@@ -22,7 +22,7 @@ import ummisco.gamaSenseIt.springServer.data.model.SensorMetadata;
 import ummisco.gamaSenseIt.springServer.data.model.ParameterMetadata.DataFormat;
 import ummisco.gamaSenseIt.springServer.data.model.ParameterMetadata.DataParameter;
 import ummisco.gamaSenseIt.springServer.data.model.Sensor;
-import ummisco.gamaSenseIt.springServer.data.model.SensorData;
+//import ummisco.gamaSenseIt.springServer.data.model.SensorData;
 import ummisco.gamaSenseIt.springServer.data.repositories.ISensorRepository;
 import ummisco.gamaSenseIt.springServer.data.repositories.ISensorDataRepository;
 import ummisco.gamaSenseIt.springServer.data.repositories.ISensorMetadataRepository;
@@ -52,19 +52,19 @@ public class PrivateDataController {
   public PrivateDataController() {
   }
 
-  private Sensor findSensor(String id, String name) {
-    Sensor s = null;
-    if (!id.equals("nil")) {
-      Optional<Sensor> o = sensors.findById(Long.valueOf(id).longValue());
-      if (o.isPresent())
-        s = o.get();
-    } else {
-      List<Sensor> ls = sensors.findByName(name);
-      if (ls.size() > 0)
-        s = ls.get(0);
-    }
-    return s;
-  }
+//  private Sensor findSensor(String id, String name) {
+//    Sensor s = null;
+//    if (!id.equals("nil")) {
+//      Optional<Sensor> o = sensors.findById(Long.valueOf(id).longValue());
+//      if (o.isPresent())
+//        s = o.get();
+//    } else {
+//      List<Sensor> ls = sensors.findByName(name);
+//      if (ls.size() > 0)
+//        s = ls.get(0);
+//    }
+//    return s;
+//  }
 
   private Sensor findSensor(long id) {
     Long lid = null;

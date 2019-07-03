@@ -12,6 +12,6 @@ import ummisco.gamaSenseIt.springServer.data.model.Sensor;
 @CrossOrigin
 //@RepositoryRestResource(collectionResourceRel = "sensors_rest", path = "sensors_rest")
 @Repository
-public interface ISensorRepository extends CrudRepository<Sensor, Long>{
-	List<Sensor> findByName(String name);
+public interface ISensorRepository extends CrudRepository<Sensor, Long> {
+  List<Sensor> findByName(String name);
 }

@@ -28,56 +28,55 @@ import ummisco.gamaSenseIt.springServer.data.repositories.ISensorRepository;
 @RestController
 @RequestMapping("/qameleo/")
 public class QameleoController {
-	@Autowired
-	DataController dataController;
-	
-	@Autowired
-	ISensorRepository sensors;
-	
-	@Autowired
-	ISensorDataRepository sensorData;
-	
-	
-	@CrossOrigin
-    @RequestMapping(value=IQameleoController.AIR_QUALITY)
-	public QameleoData getLastData(@RequestParam(value=IQameleoController.SENSOR_ID, required=true)  long sensorID)
-	{
-		Optional<Sensor> sns = sensors.findById(sensorID);
-		if(!sns.isPresent()) return null;
-		Sensor s = sns.get();
-		Optional<Set<ParameterMetadata>> ps = s.getParameters();
-		if(!ps.isPresent()) return null;
-		Set<ParameterMetadata> parameters = ps.get();
-		
-		HashMap<DataParameter, Double>  res = new HashMap<DataParameter, Double>();
-		Calendar start = Calendar.getInstance();
-		Calendar enddate = Calendar.getInstance();
-		enddate.add(Calendar.DAY_OF_MONTH, 1);
-		start.add(Calendar.DAY_OF_MONTH, -1);
-    	
-		for(ParameterMetadata p :parameters) {
-			long idParam =p.getId();
-			Double mean = getMeanValue(sensorID,idParam,start.getTime(),enddate.getTime());
-			if(mean != null)
-				res.put(p.getParameter(), mean);
-			else
-				res.put(p.getParameter(), Double.valueOf(0));
-		}
-		return new QameleoData(s.getName(), res);
-	}
-	
-	private Double getMeanValue(long id,long idParam, Date start,Date enddate)
-	{
-		List<SensorData> dts = this.sensorData.findAllByDate(id,idParam,start, enddate);
-		if(dts.isEmpty())
-			return null;
-		double res = 0;
-		for(SensorData d:dts)
-			res +=((Double)d.getDataObject()).doubleValue();
-		res= res / dts.size();
-		
-		return Double.valueOf(res);
-		
-	}
+  @Autowired
+  DataController dataController;
+
+  @Autowired
+  ISensorRepository sensors;
+
+  @Autowired
+  ISensorDataRepository sensorData;
+
+  @CrossOrigin
+  @RequestMapping(value = IQameleoController.AIR_QUALITY)
+  public QameleoData getLastData(@RequestParam(value = IQameleoController.SENSOR_ID, required = true) long sensorID) {
+    Optional<Sensor> sns = sensors.findById(sensorID);
+    if (!sns.isPresent())
+      return null;
+    Sensor s = sns.get();
+    Optional<Set<ParameterMetadata>> ps = s.getParameters();
+    if (!ps.isPresent())
+      return null;
+    Set<ParameterMetadata> parameters = ps.get();
+
+    HashMap<DataParameter, Double> res = new HashMap<DataParameter, Double>();
+    Calendar start = Calendar.getInstance();
+    Calendar enddate = Calendar.getInstance();
+    enddate.add(Calendar.DAY_OF_MONTH, 1);
+    start.add(Calendar.DAY_OF_MONTH, -1);
+
+    for (ParameterMetadata p : parameters) {
+      long idParam = p.getId();
+      Double mean = getMeanValue(sensorID, idParam, start.getTime(), enddate.getTime());
+      if (mean != null)
+        res.put(p.getParameter(), mean);
+      else
+        res.put(p.getParameter(), Double.valueOf(0));
+    }
+    return new QameleoData(s.getName(), res);
+  }
+
+  private Double getMeanValue(long id, long idParam, Date start, Date enddate) {
+    List<SensorData> dts = this.sensorData.findAllByDate(id, idParam, start, enddate);
+    if (dts.isEmpty())
+      return null;
+    double res = 0;
+    for (SensorData d : dts)
+      res += ((Double) d.getDataObject()).doubleValue();
+    res = res / dts.size();
+
+    return Double.valueOf(res);
+
+  }
 
 }

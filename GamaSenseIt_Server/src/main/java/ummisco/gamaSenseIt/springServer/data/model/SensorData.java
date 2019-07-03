@@ -1,6 +1,5 @@
 package ummisco.gamaSenseIt.springServer.data.model;
 
-
 import java.nio.ByteBuffer;
 import java.util.Date;
 
@@ -14,99 +13,95 @@ import javax.persistence.ManyToOne;
 @Entity
 public class SensorData {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
-	@Lob
-	private byte[] data;
-	private Date captureDate;
-	@ManyToOne
-	private Sensor sensor;
-	@ManyToOne
-	private ParameterMetadata parameter;
-	
-	
-	
-	public SensorData() {}
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private long id;
+  @Lob
+  private byte[] data;
+  private Date captureDate;
+  @ManyToOne
+  private Sensor sensor;
+  @ManyToOne
+  private ParameterMetadata parameter;
 
-	private SensorData( Date captureDate, ParameterMetadata metaData, Sensor s) {
-		super();
-		this.sensor = s;
-		this.captureDate = captureDate;
-		this.parameter=metaData;
-	}
-	public SensorData(double data, Date captureDate, ParameterMetadata metaData, Sensor s) {
-		this(captureDate, metaData,s);
-		this.data = ByteBuffer.allocate(Double.BYTES).putDouble(data).array();
-	}
+  public SensorData() {
+  }
 
-	public SensorData(long data, Date captureDate, ParameterMetadata metaData, Sensor s) {
-		this(captureDate, metaData,s);
-		this.data = ByteBuffer.allocate(Integer.BYTES).putLong(data).array();
-	}
+  private SensorData(Date captureDate, ParameterMetadata metaData, Sensor s) {
+    super();
+    this.sensor = s;
+    this.captureDate = captureDate;
+    this.parameter = metaData;
+  }
 
-	public SensorData(String data, Date captureDate, ParameterMetadata metaData, Sensor s) {
-		this(captureDate, metaData,s);
-		this.data = data.getBytes();
-	}
+  public SensorData(double data, Date captureDate, ParameterMetadata metaData, Sensor s) {
+    this(captureDate, metaData, s);
+    this.data = ByteBuffer.allocate(Double.BYTES).putDouble(data).array();
+  }
 
-	public byte[] getData() {
-		return data;
-	}
-	public Object getDataObject() {
-		return parameter.getDataFormat().convertToObject(data);
-	}
-	public void setData(byte[] data) {
-		this.data = data;
-	}
-	public String toString()
-	{
-		return this.getDataObject().toString();
-	}
-	
-	public Date getCaptureDate() {
-		return captureDate;
-	}
+  public SensorData(long data, Date captureDate, ParameterMetadata metaData, Sensor s) {
+    this(captureDate, metaData, s);
+    this.data = ByteBuffer.allocate(Integer.BYTES).putLong(data).array();
+  }
 
-	public void setCaptureDate(Date captureDate) {
-		this.captureDate = captureDate;
-	}
+  public SensorData(String data, Date captureDate, ParameterMetadata metaData, Sensor s) {
+    this(captureDate, metaData, s);
+    this.data = data.getBytes();
+  }
 
-	public ParameterMetadata getParameter() {
-		return parameter;
-	}
+  public byte[] getData() {
+    return data;
+  }
 
-	public void setParameter(ParameterMetadata metaData) {
-		this.parameter = metaData;
-	}
+  public Object getDataObject() {
+    return parameter.getDataFormat().convertToObject(data);
+  }
 
-	public long getId() {
-		return id;
-	}
+  public void setData(byte[] data) {
+    this.data = data;
+  }
 
-	public void setId(long id) {
-		this.id = id;
-	}
+  public String toString() {
+    return this.getDataObject().toString();
+  }
 
-	public Sensor getSensor() {
-		return sensor;
-	}
+  public Date getCaptureDate() {
+    return captureDate;
+  }
 
-	public void setSensor(Sensor sensor) {
-		this.sensor = sensor;
-	}
-	
-	
-/*	void setBlob() throws SerialException, SQLException
-	{
-		SerialBlob sb = new SerialBlob((new String("tioti")).getBytes());
-	}
-	
-	void loadData()
-	{
-		Blob blob = rs.getBlob(cloumnName[i]);
-		byte[] bdata = blob.getBytes(1, (int) blob.length());
-		String s = new String(bdata);
-	}
-*/	
+  public void setCaptureDate(Date captureDate) {
+    this.captureDate = captureDate;
+  }
+
+  public ParameterMetadata getParameter() {
+    return parameter;
+  }
+
+  public void setParameter(ParameterMetadata metaData) {
+    this.parameter = metaData;
+  }
+
+  public long getId() {
+    return id;
+  }
+
+  public void setId(long id) {
+    this.id = id;
+  }
+
+  public Sensor getSensor() {
+    return sensor;
+  }
+
+  public void setSensor(Sensor sensor) {
+    this.sensor = sensor;
+  }
+
+  /*
+   * void setBlob() throws SerialException, SQLException { SerialBlob sb = new
+   * SerialBlob((new String("tioti")).getBytes()); }
+   * 
+   * void loadData() { Blob blob = rs.getBlob(cloumnName[i]); byte[] bdata =
+   * blob.getBytes(1, (int) blob.length()); String s = new String(bdata); }
+   */
 }
