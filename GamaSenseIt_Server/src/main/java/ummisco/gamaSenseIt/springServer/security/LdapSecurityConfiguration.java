@@ -17,7 +17,7 @@ public class LdapSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
-    http.authorizeRequests().antMatchers("/", "/public/**", "/qameleo/**", "/private/**").permitAll().anyRequest()
+    http.authorizeRequests().antMatchers("/", "/public/**", "/qameleo/**"/*, "/private/**"*/).permitAll().anyRequest()
         .authenticated().and().formLogin().and().logout().permitAll();
 
 //	http
