@@ -87,14 +87,19 @@ export class MapsComponent implements OnInit {
 
     let popup = L.popup();
 
-    function onMapClick(e) {
-      popup
-        .setLatLng(e.latlng)
-        .setContent("You clicked the map at " + e.latlng.toString())
-        .openOn(this.map);
-    }
+    // function onMapClick(e) {
+    //   popup
+    //     .setLatLng(e.latlng)
+    //     .setContent("You clicked the map at " + e.latlng.toString())
+    //     .openOn(this.map);
+    // }
 
-    this.map.on('click', onMapClick);
+    this.map.on('click', (e) => {
+      L.popup()
+      .setLatLng(e.latlng)
+      .setContent("You clicked the map at " + e.latlng.toString())
+      .openOn(this.map);
+    });
 
     var baseMaps = {
       "Field": field,
