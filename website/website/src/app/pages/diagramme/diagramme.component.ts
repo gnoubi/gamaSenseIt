@@ -25,6 +25,7 @@ export class DiagrammeComponent implements OnInit {
   element; canvas;
   myControl: FormControl = new FormControl();
   filteredOptions: Observable<any>;
+  searchText:any;
   displaySensor; j = 0; k = 0; l = 0;
   dataMesure: [68, 80, 32, 15, 50, 100, 20];
   checkValue=[];
@@ -426,12 +427,24 @@ export class DiagrammeComponent implements OnInit {
 
   selection=[];
 
-  selectedFruits(value:any) {
+  selectedFruits(value:any,check:boolean) {
 
     //console.log('on chaange');
-    value.selected = !value.selected;
-    console.log(value.selected)  //  return filterFilter(this.fruits, { selected: true });
-
+    //value.selected = !value.selected;
+    //console.log(value.selected)  //  return filterFilter(this.fruits, { selected: true });*/
+    if (check){
+      for (let item of this.checkValue) {
+        if (item.sensor.name === value.name) {
+          item.selected = !item.selected;
+        }
+      }
+    } else {
+      for (let item of this.checkValue) {
+        if (item.sensor.name === value.name) {
+          item.selected = !item.selected;
+        }
+      }
+    }
   };
 
 
