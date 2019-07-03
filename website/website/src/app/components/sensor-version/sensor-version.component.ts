@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { remove } from 'lodash';
@@ -8,13 +8,19 @@ import { SensorVersionService } from '../../pages/sensor-version/sensor-version-
 import { SensorVersionFormService } from './sensor-version-form-service';
 import { MesuredParameter } from '../../MesuredParameter';
 
+declare let L; // import * as L from 'leaflet' : ERROR 77,78
+
 @Component({
   selector: 'app-sensor-version',
   templateUrl: './sensor-version.component.html',
   styleUrls: ['./sensor-version.component.scss']
 })
-export class SensorVersionComponent {
-  @Input() sensorVersion: SensorVersion;
+export class SensorVersionComponent implements OnInit {
+  ROUND = 100000;
+
+  @Input()
+  sensorVersion: SensorVersion;
+
   SensorView: FormGroup;
   newSensor: FormGroup;
   newSensorMetaData: FormGroup;
@@ -22,7 +28,8 @@ export class SensorVersionComponent {
   metaData: MesuredParameter[];
   idList: number[];
   openMap: boolean = true;
-  closeResult: string;
+  map;
+  coord;
 
   constructor(
     private fb: FormBuilder,
@@ -34,8 +41,10 @@ export class SensorVersionComponent {
       name: [''],
       displayName: [''],
       type: [''],
+      place: [''],
       longitude: [''],
       latitude: [''],
+      description: ['']
     });
     this.newSensorMetaData = this.fb.group({
       name: [''],
@@ -49,6 +58,33 @@ export class SensorVersionComponent {
     this.idList = [];
   }
 
+  ngOnInit() {
+    const myIcon = L.icon({
+      iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/images/marker-icon.png'
+    });
+    let mapboxUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      mapboxAttribution = " UMMISCO New Sensor's Map";
+
+    let SoilSensor = L.marker([14.731812, -17.433000], {icon: myIcon}).bindPopup('This is Soil Sensor ');
+    let sensors = L.layerGroup([SoilSensor]);
+    let field = L.tileLayer(mapboxUrl,
+      { id: 'mapbox.satellite', attribution: mapboxAttribution });
+
+    this.map = L.map('mapid', {
+      center: [14.731995, -17.433143],
+      zoom: 10,
+      layers: [field, sensors]
+    });
+    this.map.on('click', (e) => {
+      L.popup()
+      .setLatLng(e.latlng)
+      .setContent("Lat = " + Math.round(e.latlng.lat*this.ROUND)/this.ROUND +
+        ", Lng = " + Math.round(e.latlng.lng*this.ROUND)/this.ROUND)
+      .openOn(this.map);
+      this.coord = e.latlng;
+    });
+  }
+
   open(content): void {
     this.modalService.open(
       content, {ariaLabelledBy: 'modal-basic-title'});
@@ -59,8 +95,10 @@ export class SensorVersionComponent {
     let sensorName: string;
     let sensorDisplayName: string;
     let sensorType: number;
+    let sensorPlace: string;
     let sensorLongitude: number;
     let sensorLatitude: number;
+    let sensorDescription: string;
     let s = this.newSensor.value;
 
     if (this.newSensor.get('name').value != "") {
@@ -78,23 +116,37 @@ export class SensorVersionComponent {
     } else {
       sensorType = 1;
     }
-    if (this.newSensor.get('longitude').value != 0) {
+    if (this.newSensor.get('place').value != "") {
+      sensorPlace = this.newSensor.get('place').value;
+    } else {
+      sensorPlace = "UNKNOWN_PLACE";
+    }
+    // inputs has priority on map
+    if (typeof(this.newSensor.get('longitude').value) === 'number' &&
+        typeof(this.newSensor.get('latitude').value) === 'number') {
       sensorLongitude = this.newSensor.get('longitude').value;
+      sensorLatitude = this.newSensor.get('latitude').value;
+    } else if (this.coord) {
+      sensorLongitude = this.coord.lng;
+      sensorLatitude = this.coord.lat;
     } else {
       sensorLongitude = 0;
-    }
-    if (this.newSensor.get('latitude').value != 0) {
-      sensorLatitude = this.newSensor.get('latitude').value;
-    } else {
       sensorLatitude = 0;
+    }
+    if (this.newSensor.get('description').value != "") {
+      sensorDescription = this.newSensor.get('description').value;
+    } else {
+      sensorDescription = "UNKNOWN_DESCRIPTION";
     }
 
     this.sensorFormService.addSensor(
       sensorName,
       sensorDisplayName,
       sensorType,
+      sensorPlace,
       sensorLongitude,
       sensorLatitude,
+      sensorDescription,
       s).subscribe(
         res => {
           console.log('Ajout effectue');
@@ -108,9 +160,12 @@ export class SensorVersionComponent {
       name: [''],
       displayName: [''],
       type: [''],
+      place: [''],
       longitude: [''],
       latitude: [''],
+      description: ['']
     });
+    this.coord = undefined;
   }
 
   onAddNewSensorMetaData(): void {

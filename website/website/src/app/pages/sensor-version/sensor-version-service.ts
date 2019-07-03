@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 
 import { API_URLS } from '../../config/api.url.config';
 import { MesuredParameter } from '../../MesuredParameter';
-import { Sensor } from '../../sensor';
+import { Sensor } from '../../Sensor';
 import { SensorVersion } from '../../SensorVersion';
 
 @Injectable()
@@ -157,7 +157,7 @@ export class SensorVersionService {
   }
 
   initSensor(): Sensor {
-    let displaySensor: Sensor = new Sensor(0,'', '', 0,0,0,'');
+    let displaySensor: Sensor = new Sensor(0,'', '','',0,0,0,'','');
     return displaySensor;
   }
 

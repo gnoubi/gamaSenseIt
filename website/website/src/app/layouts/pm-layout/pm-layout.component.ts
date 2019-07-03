@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-import { Sensor } from '../../sensor';
+import { Sensor } from '../../Sensor';
 import { SensorVersionService } from '../../pages/sensor-version/sensor-version-service';
 
 @Component({

@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import {API_URLS} from '../../config/api.url.config';
-import { Sensor } from '../../sensor';
+import { Sensor } from '../../Sensor';
 
 const httpOptions = {
   headers: new HttpHeaders({
@@ -23,16 +23,20 @@ export class SensorVersionFormService {
       sensorName: string,
       sensorDisplayName: string,
       sensorType: number,
+      sensorPlace: string,
       sensorLongitude: number,
       sensorLatitude: number,
+      sensorDescription: string,
       s:Sensor): Observable<any>
     {
       let link = API_URLS.ADD_SENSOR;
       link += '?&name=' + sensorName +
               '&displayName=' + sensorDisplayName +
+              '&place=' + sensorPlace +
               '&longitude=' + sensorLongitude +
               '&latitude=' + sensorLatitude +
-              '&sensormetadata=' + sensorType;
+              '&sensormetadata=' + sensorType
+              '&description=' + sensorDescription;
       return this.http.post(link,s,httpOptions);
     }
 

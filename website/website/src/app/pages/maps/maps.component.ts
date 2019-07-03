@@ -3,9 +3,6 @@ import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms'
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 
-import { Sensor } from '../../sensor';
-import { SensorVersionService } from '../sensor-version/sensor-version-service';
-
 declare let L; // import * as L from 'leaflet' : ERROR 77,78
 
 @Component({
@@ -18,12 +15,10 @@ export class MapsComponent implements OnInit {
 
   SearchCapteurForm: FormGroup;
   sensorMap: any;
-  sensor: any;
   tabSensor;
   map;
   myControl:FormControl = new FormControl();
   filteredOptions: Observable<any>;
-  sensors: Sensor[];
 
   // test autocompletion
   fruits = [
@@ -38,14 +33,10 @@ export class MapsComponent implements OnInit {
   ];
   //Fin test
 
-  constructor(
-    private fb: FormBuilder,
-    private sensorService: SensorVersionService
-  ) {
+  constructor(private fb: FormBuilder) {
     this.SearchCapteurForm = this.fb.group({
       name: ['', Validators.required],
     });
-    this.sensors = this.sensorService.loadSensors();
   }
 
   onSearchSensor() {
@@ -69,7 +60,6 @@ export class MapsComponent implements OnInit {
 
     let mapboxUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       mapboxAttribution = " UMMISCO Dashboard Sensor's Maps";
-
 
     let SoilSensor = L.marker([14.731812, -17.433000], {icon: myIcon}).bindPopup('This is Soil Sensor '),
       Humidity = L.marker([14.741995, -17.433543], {icon: myIcon}).bindPopup('This is humidity sensor '),

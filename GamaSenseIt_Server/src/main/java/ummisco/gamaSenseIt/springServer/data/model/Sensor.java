@@ -15,92 +15,145 @@ import javax.persistence.OneToMany;
 
 import com.vividsolutions.jts.geom.Point;
 
-@Entity 
+@Entity
 public class Sensor {
-	
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Long idSensor;
-	private String name;
-	private String displayName;
-	private double longitude;
-	private double latitude;
-	
-	@ManyToOne
-	private SensorMetadata sensorType;
-	
-	@OneToMany(cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY,
-            mappedBy="sensor")
-	private Set<SensoredBulkData> bulkData = new HashSet<>();
-	
 
-	public Sensor()
-	{
-		name = "";
-	}
-	public Sensor(String sensorName, String displayName, Point location, SensorMetadata sensorType) {
-		this(sensorName, displayName, location.getX(),location.getY(),sensorType);
-	}
-	
-	public Sensor(String sensorName, String displayName, double locationX, double locationY, SensorMetadata sensorType) {
-		this();
-		this.longitude = locationX;
-		this.latitude = locationY;
-		this.name = sensorName;
-		this.displayName = displayName;
-		this.sensorType = sensorType;
-	}
-	
-	public Long getIdSensor() {
-		return idSensor;
-	}
-	public void setIdSensor(Long idSensor) {
-		this.idSensor = idSensor;
-	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String sensorName) {
-		this.name = sensorName;
-	}
-	public String getDisplayName() {
-		return displayName;
-	}
-	public void setDisplayName(String displayName) {
-		this.displayName = displayName;
-	}
-	public SensorMetadata getMetadata() {
-		return sensorType;
-	}
-	public void setMetadata(SensorMetadata sensorType) {
-		this.sensorType = sensorType;
-	}
-	public double getLongitude() {
-		return longitude;
-	}
-	public void setLongitude(double longitude) {
-		this.longitude = longitude;
-	}
-	public double getLatitude() {
-		return latitude;
-	}
-	public void setLatitude(double latitude) {
-		this.latitude = latitude;
-	}
-	
-	public Optional<Set<ParameterMetadata>> getParameters()
-	{
-		if(this.sensorType == null)
-			return Optional.empty();
-		return  Optional.of(this.sensorType.getParameterMetaData());
-	}
-	
-	public Optional<ParameterMetadata> getParameterMetadata(long id)
-	{
-		if(this.sensorType == null)
-			return Optional.empty();
-		return this.sensorType.getParameterMetadata(id);
-	}
-	
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private Long idSensor;
+  private String name;
+  private String displayName;
+  private String place;
+  private double longitude;
+  private double latitude;
+
+  @ManyToOne
+  private SensorMetadata sensorType;
+
+  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "sensor")
+  private Set<SensoredBulkData> bulkData = new HashSet<>();
+
+  private String description;
+
+  public Sensor() {
+    name = "";
+  }
+
+  public Sensor(String sensorName, String displayName, Point location, SensorMetadata sensorType) {
+    this(sensorName, displayName, location.getX(), location.getY(), sensorType);
+  }
+
+  public Sensor(String sensorName, String displayName, String place, Point location, SensorMetadata sensorType,
+      String description) {
+    this(sensorName, displayName, place, location.getX(), location.getY(), sensorType, description);
+  }
+
+  public Sensor(String sensorName, String displayName, double locationX, double locationY, SensorMetadata sensorType) {
+    this();
+    this.longitude = locationX;
+    this.latitude = locationY;
+    this.name = sensorName;
+    this.displayName = displayName;
+    this.sensorType = sensorType;
+  }
+
+  public Sensor(String sensorName, String displayName, String place, double locationX, double locationY,
+      SensorMetadata sensorType) {
+    this();
+    this.name = sensorName;
+    this.displayName = displayName;
+    this.place = place;
+    this.longitude = locationX;
+    this.latitude = locationY;
+    this.sensorType = sensorType;
+  }
+
+  public Sensor(String sensorName, String displayName, String place, double locationX, double locationY,
+      SensorMetadata sensorType, String description) {
+    this();
+    this.name = sensorName;
+    this.displayName = displayName;
+    this.place = place;
+    this.longitude = locationX;
+    this.latitude = locationY;
+    this.sensorType = sensorType;
+    this.description = description;
+  }
+
+  public Long getIdSensor() {
+    return idSensor;
+  }
+
+  public void setIdSensor(Long idSensor) {
+    this.idSensor = idSensor;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String sensorName) {
+    this.name = sensorName;
+  }
+
+  public String getDisplayName() {
+    return displayName;
+  }
+
+  public void setDisplayName(String displayName) {
+    this.displayName = displayName;
+  }
+
+  public SensorMetadata getMetadata() {
+    return sensorType;
+  }
+
+  public void setMetadata(SensorMetadata sensorType) {
+    this.sensorType = sensorType;
+  }
+
+  public double getLongitude() {
+    return longitude;
+  }
+
+  public void setLongitude(double longitude) {
+    this.longitude = longitude;
+  }
+
+  public double getLatitude() {
+    return latitude;
+  }
+
+  public void setLatitude(double latitude) {
+    this.latitude = latitude;
+  }
+
+  public Optional<Set<ParameterMetadata>> getParameters() {
+    if (this.sensorType == null)
+      return Optional.empty();
+    return Optional.of(this.sensorType.getParameterMetaData());
+  }
+
+  public Optional<ParameterMetadata> getParameterMetadata(long id) {
+    if (this.sensorType == null)
+      return Optional.empty();
+    return this.sensorType.getParameterMetadata(id);
+  }
+
+  public String getPlace() {
+    return place;
+  }
+
+  public void setPlace(String place) {
+    this.place = place;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
 }

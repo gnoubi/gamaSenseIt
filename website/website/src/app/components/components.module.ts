@@ -13,7 +13,7 @@ import { MatIconModule,
   MatButtonModule,
   MatTabsModule,
   MatExpansionModule,
-MatTooltipModule } from '@angular/material';
+  MatTooltipModule } from '@angular/material';
 
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { NavbarComponent } from './navbar/navbar.component';
@@ -67,6 +67,10 @@ import { SensorVersionService } from '../pages/sensor-version/sensor-version-ser
     MatExpansionModule,
     MatTooltipModule
   ],
-  providers:[SensorVersionFormService, SensorVersionService, QrcodeReaderService]
+  providers:[
+    SensorVersionFormService,
+    SensorVersionService,
+    QrcodeReaderService
+  ]
 })
 export class ComponentsModule { }

@@ -22,9 +22,9 @@ export class QrQameleoComponent implements OnInit {
   PM2_5_THRESHOLD: number = 25;
   PM10_THRESHOLD: number = 50;
 
-  private PM1: number = 0;
-  private PM25: number = 0;
-  private PM10: number = 0;
+  private pm1: number = 0;
+  private pm25: number = 0;
+  private pm10: number = 0;
   private PMUnit: string = "μg/m³";
   private temperature: number = 0;
   private temperatureUnit: string = "°C";
@@ -50,12 +50,12 @@ export class QrQameleoComponent implements OnInit {
     this.http.get(url).subscribe(
       (data: PMSensor) => {
         if (data) {
-          this.PM1 = data.pm1/this.PM1_THRESHOLD;
-          this.PM1 = Math.round(this.PM1*100)/100;
-          this.PM25 = data.pm25/this.PM2_5_THRESHOLD;
-          this.PM25 = Math.round(this.PM25*100)/100;
-          this.PM10 = data.pm10/this.PM10_THRESHOLD;
-          this.PM10 = Math.round(this.PM10*100)/100;
+          this.pm1 = data.pm1/this.PM1_THRESHOLD*100;
+          this.pm1 = Math.round(this.pm1*100)/100;
+          this.pm25 = data.pm25/this.PM2_5_THRESHOLD*100;
+          this.pm25 = Math.round(this.pm25*100)/100;
+          this.pm10 = data.pm10/this.PM10_THRESHOLD*100;
+          this.pm10 = Math.round(this.pm10*100)/100;
           this.temperature = data.temperature;
           this.temperature = Math.round(this.temperature);
           this.humidity = data.humidity;
@@ -77,9 +77,9 @@ export class QrQameleoComponent implements OnInit {
   }
 
   // ngOnChanges(changes: SimpleChanges){
-  //   this.PM1 = changes[this.PM1].currentValue;
-  //   this.PM25 = changes[this.PM25].currentValue;
-  //   this.PM10 = changes[this.PM10].currentValue;
+  //   this.pm1 = changes[this.pm1].currentValue;
+  //   this.pm25 = changes[this.pm25].currentValue;
+  //   this.pm10 = changes[this.pm10].currentValue;
   //   this.temperature = changes[this.temperature].currentValue;
   //   this.humidity = changes[this.humidity].currentValue;
   // }

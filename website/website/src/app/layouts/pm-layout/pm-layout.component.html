@@ -6,10 +6,11 @@
         alt="www.ird.fr">
     </div>
     <div class="col-xs col-sm col-md-9 col-lg-9">
-      <h1 class="display-title ml-1 mr-1"
-        *ngFor="let sensor of sensors;">
-        {{sensor.displayName}}
-      </h1>
+      <div *ngFor="let sensor of sensors;">
+        <h1 class="display-title ml-1 mr-1">{{sensor.displayName}}</h1>
+        <h3 class="display-title ml-1 mr-1">
+          Niveau de particules à : {{sensor.place}}
+        </h3>
     </div>
   </div>
 </div>

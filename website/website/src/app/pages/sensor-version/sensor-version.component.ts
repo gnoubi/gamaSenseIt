@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 
 import { SensorVersion } from '../../SensorVersion';
 import { SensorVersionService } from './sensor-version-service';
-import { Sensor } from '../../sensor';
+import { Sensor } from '../../Sensor';
 import { MesuredParameter } from '../../MesuredParameter';
 
 @Component({

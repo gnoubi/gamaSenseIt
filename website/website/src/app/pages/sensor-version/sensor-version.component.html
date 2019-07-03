@@ -168,20 +168,20 @@
                     <td>
                       <button class="only-outline"
                         type="button"
-                        ngbTooltip="Details"
+                        matTooltip="Details"
                         (click)="displaySensor=sensor;operationSensor='details'">
                         <i class="fas fa-info-circle fa-lg text-success"></i>
                       </button>
                       <button class="only-outline"
                         type="button"
-                        ngbTooltip="Update"
+                        matTooltip="Update"
                         data-toggle="modal" data-target="#modal-form-sensor"
                         (click)="sensorUpdate=sensor;operationSensor='update'">
                         <i class="fas fa-edit fa-lg text-success"></i>
                       </button>
                       <button class="only-outline"
                         type="button"
-                        ngbTooltip="Delete"
+                        matTooltip="Delete"
                         (click)="sensorDelete=sensor;operationSensor='delete'">
                         <i class="fas fa-trash-alt fa-lg text-danger"></i>
                       </button>
@@ -208,8 +208,10 @@
                 <div class="text-white mt-1" *ngIf="displaySensor.idSensor!=0">
                   Name: {{displaySensor.name}}<br>
                   Type: {{displaySensor.sensorMetadataName}}<br>
+                  Place: {{displaySensor.place}}<br>
                   Longitude: {{displaySensor.longitude}}<br>
                   Latitude: {{displaySensor.latitude}}<br>
+                  Description: {{displaySensor.description}}<br>
                 </div>
               </div>
               <!-- <div *ngIf="operationSensor =='update'">
