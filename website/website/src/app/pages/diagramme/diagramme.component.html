@@ -31,17 +31,16 @@
     </div>
     <div class="col-xl-4">
       <div class="card shadow">
-        <div class="card-header bg-dark">
-          <div class="row align-items-center">
-            <!--<div class="input-group input-group-alternative">  class="form-control"-->
+        <div class="card-header">
+          <!--<div class="row align-items-center">
             <form class="">
               <mat-form-field floatLabel="never">
                 <input placeholder="Sensor's Name" type="text" matInput [formControl]="myControl"
                   [matAutocomplete]="auto">
                 <mat-autocomplete #auto="matAutocomplete">
-                  <!--<mat-option *ngFor="let option of fruits" value="{{option.name}}">
+                  <mat-option *ngFor="let option of fruits" value="{{option.name}}">
                     {{ option.name }}
-                  </mat-option>-->
+                  </mat-option>->
                   <div>
                     <ul>
                       <li *ngFor="let fruit of fruits">
@@ -56,50 +55,39 @@
                 </mat-autocomplete>
               </mat-form-field>
             </form>
-            <!--</div>-->
-          </div>
+            <-</div>
+          </div>-->
         </div>
         <div class="card-body">
-          <!--<p> Choix des differents Capteurs</p>
-          <table>
-            <tbody>
-              <tr *ngFor="let sensor of sensors">
-                <td>
-                  {{sensor.name}}
-                </td>
-                <td>
-                  <button class="btn btn-outline-success" (click)="addSensoTest()"> Visualiser</button>
-                  <--<button class="btn btn-outline-success"> Visualiser</button>->
-
-                  <--<button class="btn btn-outline-danger"  > Enlever</button>->
-                </td>
-              </tr>
-            </tbody>
-          </table>-->
+          <!--
           <table>
             <tbody>
               <tr *ngFor="let fruit of checkValue">
                 <td>
                   <label>
-                    <!--class="form-check-label"-->
-                    <!--
-                            - Use `value="{{fruit.name}}"` to give the input a real value, in case the form gets submitted
-                              traditionally
-                        
-                            - Use `ng-checked="fruit.selected"` to have the checkbox checked based on some angular expression
-                              (no two-way-data-binding)
-                        
-                            - Use `ng-model="fruit.selected"` to utilize two-way-data-binding. Note that `.selected`
-                              is arbitrary. The property name could be anything and will be created on the object if not present.
-                          -->
-                    <!--class="form-check-input"-->
-                    <input type="checkbox" name="selectedFruits[]" value="{{fruit.sensor}}" ng-model="fruit.selected" (change)="selectedFruits(fruit)">
+                    <input type="checkbox" name="selectedFruits[]" value="{{fruit.sensor}}" ng-model="fruit.selected"
+                      (change)="selectedFruits(fruit)">
                     {{fruit.sensor.name}}
                   </label>
                 </td>
               </tr>
             </tbody>
-          </table>
+          </table>-->
+          <div>
+            <input type="search" placeholder="Search by sensor name" class="form-control" [(ngModel)]="searchText"
+              [ngModelOptions]="{standalone:true}">
+          </div>
+          <br>
+          <div class="slist">
+            <div *ngFor="let item of sensors | searchSensor:searchText" class=" border border-1 border-info rounded m-2">
+              <label>
+                <input type="checkbox" value="{{item}}" (change)="selectedFruits(item,$event.target.checked)">
+                <h5>{{item.name+" "+item.version}}</h5>
+                {{item.documentation}}
+              </label>
+            </div>
+          </div>
+
           <br>
           <div class="text-center">
             <button class="btn btn-outline-success"> Visualiser</button>

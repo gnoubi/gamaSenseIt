@@ -1,208 +1,223 @@
-
 <div class="container-fluid ">
-    <div class="header-body">
-        <!-- Card stats -->
-        <div class="row">
-            <div class="col-xl-9 col-lg-9">
-                <div class="card card-stats mb-4 mb-xl-0 bg-gradient-light">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col">
-                                <button type="button" class="btn btn-white" data-toggle="modal"
-                                    data-target="#modal-form1">Sensor</button>
-                                <div class="modal fade" id="modal-form1" tabindex="-1" role="dialog"
-                                    aria-labelledby="modal-form1" aria-hidden="false">
-                                    <div class="modal-dialog modal- modal-dialog-centered modal-sm" role="document">
-                                        <div class="modal-content">
-                                            <div class="modal-body p-0">
-                                                <div class="card bg-secondary shadow border-0">
-                                                    <!--Add Sensor Header-->
-                                                    <div class="card-body px-lg-5 py-lg-5">
-                                                        <div class="text-center text-muted mb-4">
-                                                            <small>Add a New Sensor</small>
-                                                        </div>
-                                                        <form class="was-validated" role="form" [formGroup]="newSensor">
-                                                            <div class="form-row mb-3">
-                                                                <div class="col">
-                                                                    <input type="text" class="form-control"
-                                                                        placeholder="Name" name="name"
-                                                                        formControlName="name" required>
-                                                                    <div class="invalid-feedback">This field must be filled.</div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="form-row mb-3">
-                                                                <div class="col">
-                                                                  <select class="custom-select" formControlName="type" required>
-                                                                    <option value="">Select a Type of Sensor</option>
-                                                                    <option *ngFor="let type of typeList; index as i"
-                                                                      value="i">
-                                                                      {{type}}</option>
-                                                                  </select>
-                                                                  <div class="invalid-feedback">This field must be filled.</div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="form-row mb-3">
-                                                                <div class="col">
-                                                                    <input type="number" class="form-control"
-                                                                        placeholder="Latitude" name="latitude"
-                                                                        id="latitude" formControlName="latitude" required>
-                                                                    <div class="invalid-feedback">This field must be filled.</div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="form-row mb-3">
-                                                                <div class="col">
-                                                                    <input type="number" class="form-control"
-                                                                        placeholder="Longitude" name="longitude"
-                                                                        id="longitude" formControlName="longitude" required>
-                                                                    <div class="invalid-feedback">This field must be filled.</div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col" align="center">
-                                                                <button type="button" class="btn btn-primary"
-                                                                    (click)="onAddNewSensor()">Add</button>
-                                                            </div>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                 <!--
-                                <button type="button" class="btn btn-blue" data-toggle="modal"
-                                    data-target="#modal-form2"> Sensor MetaData
-                                </button>
-                                <div class="modal fade" id="modal-form2" tabindex="-1" role="dialog"
-                                    aria-labelledby="modal-form2" aria-hidden="false">
-                                    <div class="modal-dialog modal- modal-dialog-centered modal-sm" role="document">
-                                        <div class="modal-content">
-                                            <div class="modal-body p-0">
-                                                <div class="card bg-secondary shadow border-0">
-                                                    <div class="card-body px-lg-5 py-lg-5">
-                                                        <div class="text-center text-muted mb-4">
-                                                            <small>Add MetaData of Sensor</small>
-
-                                                        </div>
-                                                        <form role="form" [formGroup]="metaData">
-                                                            <div class="form-row mb-3">
-                                                                <div class="col">
-                                                                    <input type="text" class="form-control"
-                                                                        placeholder="Name" name="name"
-                                                                        formControlName="name" />
-                                                                </div>
-                                                                <div class="col">
-                                                                    <input type="text" class="form-control"
-                                                                        placeholder="Version" name="version"
-                                                                        formControlName="version" />
-                                                                </div>
-                                                            </div>
-                                                            <div class="form-row mb-3">
-                                                                <div class="col">
-                                                                    <input type="text" class="form-control"
-                                                                        placeholder="separator" name="separator"
-                                                                        formControlName="separator" />
-                                                                </div>
-                                                            </div>
-                                                            <div class="col">
-                                                                <button type="button" class="btn btn-primary"
-                                                                    (click)="onAddMetaData()">Add </button>
-                                                            </div>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                -->
-                                <button type="button" class="btn btn-white" data-toggle="modal"
-                                    data-target="#modal-form3">
-                                    Type of Sensor
-                                </button>
-                                <div class="modal fade" id="modal-form3" tabindex="-1" role="dialog"
-                                    aria-labelledby="modal-form2" aria-hidden="false">
-                                    <div class="modal-dialog modal- modal-dialog-centered modal-sm" role="document">
-                                        <div class="modal-content">
-                                            <div class="modal-body p-0">
-                                                <div class="card bg-secondary shadow border-0">
-                                                    <div class="card-body px-lg-5 py-lg-5">
-                                                        <div class="text-center text-muted mb-4">
-                                                            <small>Add a New Type of Sensor</small>
-                                                        </div>
-                                                        <form class="was-validated" role="form" [formGroup]="metaData">
-                                                            <div class="form-row mb-3">
-                                                                <div class="col">
-                                                                    <input type="text" class="form-control is-valid"
-                                                                        placeholder="Name" name="name"
-                                                                        formControlName="name" required>
-                                                                    <div class="invalid-feedback">This field must be filled.</div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="form-row mb-3">
-                                                                <div class="col">
-                                                                    <input type="text" class="form-control"
-                                                                        placeholder="Version" name="version"
-                                                                        formControlName="version" required>
-                                                                    <div class="invalid-feedback">This field must be filled.</div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="form-row mb-3">
-                                                                <div class="col">
-                                                                    <input type="text" class="form-control"
-                                                                        placeholder="Separator (default is ':')" name="separator"
-                                                                        formControlName="separator" />
-                                                                </div>
-                                                                <button type="button"
-                                                                  class="btn btn-primary"
-                                                                  (click)="refreshSeparator()">
-                                                                  <i class="fas fa-check"></i>
-                                                                </button>
-                                                            </div>
-                                                            Select Measured Parameters
-                                                            <br>
-                                                            <div class="row">
-                                                              <div *ngFor="let parameter of stringDataParameter;">
-                                                                <div class="col-auto">
-                                                                  <button type="button"
-                                                                    class="{{changeIcon(parameter)}}"
-                                                                    title="{{parameter.name}}"
-                                                                    (click)="addMetaData(parameter)">
-                                                                    <i class="{{parameter.icon}}"></i>
-                                                                  </button>
-                                                                </div>
-                                                              </div>
-                                                            </div>
-                                                            <br>
-                                                            <div class="form-row mb-3">
-                                                                <div class="col">
-                                                                    <input type="text"
-                                                                        class="form-control"
-                                                                        placeholder="Id of measured parameters"
-                                                                        name="measuredDataOrder"
-                                                                        formControlName="measuredDataOrder" readonly>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col" align="center">
-                                                                <button type="button" class="btn btn-primary"
-                                                                    (click)="onAddMetaData()">Add</button>
-                                                            </div>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+  <div class="header-body">
+    <!-- Card stats -->
+    <div class="row">
+      <div class="col-xl-9 col-lg-9">
+        <div class="card card-stats mb-4 mb-xl-0 bg-gradient-default">
+          <div class="card-body">
+            <div class="row">
+              <div class="col">
+                <button type="button" class="btn btn-white" data-toggle="modal"
+                data-target="#modal-form-sensor">Sensor</button>
+                <div class="modal fade" id="modal-form-sensor" tabindex="-1" role="dialog"
+                  aria-labelledby="modal-form1" aria-hidden="false">
+                  <div class="modal-dialog modal- modal-dialog-centered modal-sm" role="document">
+                    <div class="modal-content">
+                      <div class="modal-body">
+                        <div class="card bg-secondary shadow border-0">
+                          <!--Add Sensor Header-->
+                          <div class="card-body px-lg-5 py-lg-5">
+                            <div class="text-center text-muted mb-4">
+                              <h3>Add a New Sensor</h3>
                             </div>
-                            <div class="col-auto">
-                                <div class="icon icon-shape bg-warning text-white rounded-circle shadow">
-                                    <i class="fa fa-plug"></i>
+                            <form class="was-validated" role="form" [formGroup]="newSensor">
+                              <div class="form-row mb-1">
+                                <div class="col">
+                                  <label>Name</label>
+                                  <input type="text" class="form-control form-control-sm"
+                                  placeholder="Name" name="name"
+                                  formControlName="name" required>
+                                  <div class="invalid-feedback">This field must be filled.</div>
                                 </div>
-                            </div>
+                              </div>
+                              <label>Select a Type of Sensor
+                                <input type="text" name="type" list="type" formControlName="type"
+                                class="custom-select custom-select-sm mt-2" required>
+                                <div class="invalid-feedback">This field must be filled.</div>
+                              </label>
+                              <datalist id="type" placeholder="Select a Type of Sensor">
+                                <option *ngFor="let sensor of typeList"
+                                  value="{{sensor.idType}}">{{sensor.name}} -- {{sensor.version}} ({{sensor.idType}})
+                                </option>
+                              </datalist>
+                              <label>Localisation</label>
+                              <div class="text-center">
+                                <button type="button" class="btn btn-light mb-3"
+                                [attr.aria-expanded]="!openMap"
+                                aria-controls="collapseMap"
+                                (click)="openMap = !openMap">
+                                  Enter GPS Coordinates
+                                </button>
+                                <button type="button" class="btn btn-light mb-3"
+                                (click)="openMap = true">
+                                  Enter address
+                                </button>
+                                <button type="button" class="btn btn-light mb-3"
+                                  data-toggle="modal" data-target="#modal-form-maps"
+                                  (click)="open(content)">
+                                  Open Map
+                                </button>
+                              </div>
+                              <div id="collapseMap" [ngbCollapse]="openMap">
+                                <div class="form-row mb-1">
+                                  <div class="col">
+                                    <label>Latitude</label>
+                                    <input type="number" class="form-control form-control-sm"
+                                    placeholder="Latitude" name="latitude"
+                                    id="latitude" formControlName="latitude" required>
+                                    <div class="invalid-feedback">This field must be filled.</div>
+                                  </div>
+                                </div>
+                                <div class="form-row mb-1">
+                                  <div class="col">
+                                    <label>Longitude</label>
+                                    <input type="number" class="form-control form-control-sm"
+                                    placeholder="Longitude" name="longitude"
+                                    id="longitude" formControlName="longitude" required>
+                                    <div class="invalid-feedback">This field must be filled.</div>
+                                  </div>
+                                </div>
+                              </div>
+                              <ng-template #content let-modal>
+                                <div class="modal-header">
+                                  <h4 class="modal-title" id="modal-basic-title">Select position on map</h4>
+                                  <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+                                    <span aria-hidden="true">&times;</span>
+                                  </button>
+                                </div>
+                                <div class="modal-body">
+                                  <div id="mapid" style=" height:200px"></div>
+                                </div>
+                                <div class="modal-footer">
+                                  <button type="button" class="btn btn-outline-dark" (click)="modal.close()">Save</button>
+                                </div>
+                              </ng-template>
+                              <div class="col" align="center">
+                                <button type="button" class="btn btn-warning"
+                                  (click)="resetSensorForm()">
+                                  Reset
+                                </button>
+                                <button type="button" class="btn btn-primary"
+                                (click)="onAddNewSensor()">Add</button>
+                              </div>
+                            </form>
+                          </div>
                         </div>
+                      </div>
                     </div>
+                  </div>
                 </div>
+                <button type="button" class="btn btn-white" data-toggle="modal"
+                data-target="#modal-form-sensor-type">
+                Type of Sensor
+                </button>
+                <div class="modal fade" id="modal-form-sensor-type" tabindex="-1" role="dialog"
+                aria-hidden="false">
+                  <div class="modal-dialog modal- modal-dialog-centered modal-sm" role="document">
+                    <div class="modal-content">
+                      <div class="modal-body p-0">
+                        <div class="card bg-secondary shadow border-0">
+                          <div class="card-body px-lg-5 py-lg-5">
+                            <div class="text-center text-muted mb-4">
+                              <h3>Add a New Type of Sensor</h3>
+                            </div>
+                            <form class="was-validated" role="form" [formGroup]="newSensorMetaData">
+                              <div class="form-row mb-1">
+                                <div class="col">
+                                  <label>Name</label>
+                                  <input type="text" class="form-control form-control-sm is-valid"
+                                  placeholder="Name" name="name"
+                                  formControlName="name" required>
+                                  <div class="invalid-feedback">This field must be filled.</div>
+                                </div>
+                              </div>
+                              <div class="form-row mb-1">
+                                <div class="col">
+                                  <label>Version</label>
+                                  <input type="text" class="form-control form-control-sm"
+                                  placeholder="Version" name="version"
+                                  formControlName="version" required>
+                                  <div class="invalid-feedback">This field must be filled.</div>
+                                </div>
+                              </div>
+                              <div class="form-row mb-1">
+                                <div class="col">
+                                  <label>Separator</label>
+                                  <div class="input-group mb-3">
+                                    <input type="text" class="form-control form-control-sm"
+                                    placeholder="Separator" name="separator"
+                                    formControlName="separator" required>
+                                    <div class="input-group-append">
+                                      <button type="button"
+                                      class="btn btn-primary"
+                                      style="padding:2px 8px;height: 31.5px;"
+                                      (click)="refreshMetaDataOrder()">
+                                        <i class="fas fa-check"></i>
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <label>Select measured parameters</label>
+                              <div class="row">
+                                <div *ngFor="let parameter of metaData;">
+                                  <div class="col-auto">
+                                    <div class="icon-wrapper pb-3" style="position:relative;float:left;">
+                                      <button type="button"
+                                      class="{{changeIcon(parameter.id)}}"
+                                      placement="bottom"
+                                      ngbTooltip="{{parameter.parameter}} ({{parameter.unit}})"
+                                      (click)="onMetaData(parameter.id)">
+                                        <i class="{{parameter.icon}}"></i>
+                                      </button>
+                                      <div *ngIf="idList.includes(parameter.id)">
+                                        <div *ngIf="idIndex(parameter.id) !== 0">
+                                          <span class="badge rounded btn-white"
+                                          style="position:absolute; top:12px; left:-7px;"
+                                          title="Move to the left">
+                                            <i class="fas fa-angle-left"
+                                            (click)="onMoveLeft(parameter.id)"></i>
+                                          </span>
+                                        </div>
+                                        <span class="badge rounded btn-white"
+                                        style="position:absolute; top:-10px;right:14px"
+                                        title="Index of the parameter">
+                                        {{idIndex(parameter.id)}}
+                                        </span>
+                                        <div *ngIf="idIndex(parameter.id) + 1 !== idList.length">
+                                          <span class="badge rounded btn-white"
+                                          style="position:absolute; top:12px; right:-7px;"
+                                          title="Move to the rigth">
+                                            <i class="fas fa-angle-right"
+                                            (click)="onMoveRight(parameter.id)"></i>
+                                          </span>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="col" align="center">
+                                <button type="button" class="btn btn-primary"
+                                (click)="onAddNewSensorMetaData()">Add</button>
+                              </div>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-auto">
+                <div class="icon icon-shape bg-warning text-white rounded-circle shadow">
+                  <i class="fa fa-plug"></i>
+                </div>
+              </div>
             </div>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
 </div>

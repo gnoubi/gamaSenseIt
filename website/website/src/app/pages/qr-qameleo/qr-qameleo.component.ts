@@ -9,12 +9,12 @@ import { Router } from '@angular/router';
 })
 export class QrQameleoComponent implements OnInit {
 
-  private PM1: number = 28;
-  private PM25: number = 55;
-  private PM10: number = 85;
-  private temperature: number = 12;
+  private PM1: number = 0;
+  private PM25: number = 0;
+  private PM10: number = 0;
+  private temperature: number = 0;
   private temperatureUnit: string = "°C";
-  private humidity: number = 70;
+  private humidity: number = 0;
   private humidityUnit: string = "%";
   private url = 'http://vmpams.ird.fr:8080';
   public browseQRcode = true;
@@ -24,12 +24,9 @@ export class QrQameleoComponent implements OnInit {
     private http: HttpClient ) { }
 
   ngOnInit() {
-    if( this.router.url.includes('/',1)) {
+    if( this.router.url !== '/qameleo/airQualityIndicator') { //this.router.url.includes('/',1)
       this.browseQRcode = false;
-      console.log('Source prevue ?',this.url + this.router.url);
-      // this.url = this.url + this.router.url;
-      this.url = 'http://vmpams.ird.fr:8080/qameleo/airQualityIndicator?id=48';
-      console.log('Source actuelle',this.url);
+      this.url = this.url + this.router.url;
       this.initValues(this.url);
     }
   }

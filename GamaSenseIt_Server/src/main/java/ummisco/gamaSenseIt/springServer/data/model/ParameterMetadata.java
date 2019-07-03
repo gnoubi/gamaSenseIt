@@ -57,19 +57,47 @@ public class ParameterMetadata {
 	
 	private DataFormat dataFormat;
 	private DataParameter parameter;
+	private String icon = "";
 	
-	public ParameterMetadata(String varName, String unit, DataFormat typeOfData, DataParameter typeOfSensor) {
+	public ParameterMetadata(
+			String varName,
+			String unit,
+			DataFormat typeOfData,
+			DataParameter typeOfSensor) {
 		super();
 		this.varName = varName;
 		this.unit = unit;
 		this.dataFormat = typeOfData;
 		this.parameter = typeOfSensor;
+		this.setIconFromParameter();
 	}
 
 	public ParameterMetadata() {
 		super();
 	}
 
+	private void setIconFromParameter() {
+		switch(this.parameter) {
+			case TEMPERATURE:
+				icon = "fas fa-thermometer-three-quarters";
+				break;
+			case PM10:
+				icon = "fab fa-cloudversify";
+				break;
+			case PM2_5:
+				icon = "fab fa-cloudversify";
+				break;
+			case PM1:
+				icon = "fab fa-cloudversify";
+				break;
+			case HUMIDITY:
+				icon = "fas fa-tint";
+				break;
+			default:
+				icon = "";
+			}
+	}
+		
 	public long getId() {
 		return id;
 	}
@@ -117,7 +145,10 @@ public class ParameterMetadata {
 	public void setSensorMetadata(SensorMetadata sensorMetadata) {
 		this.sensorMetadata = sensorMetadata;
 	}
-
-
-	
+	public String getIcon() {
+		return icon;
+	}
+	public void setIcon(String icon) {
+		this.icon = icon;
+	}	
 }

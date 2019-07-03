@@ -3,6 +3,7 @@ import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms'
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 
+import { Sensor } from '../../sensor';
 import { sensorVersionService } from '../sensor-version/sensor-version-service';
 
 declare let L;
@@ -22,7 +23,7 @@ export class MapsComponent implements OnInit {
   map;
   myControl:FormControl = new FormControl();
   filteredOptions: Observable<any>;
-
+  sensors: Array<Sensor>;
 
   // test autocompletion
   fruits = [
@@ -35,16 +36,16 @@ export class MapsComponent implements OnInit {
     { name: 'pear1',     selected: true },
     { name: 'naartjie1', selected: false }
   ];
-
-
-
   //Fin test
 
-
-  constructor(private fb: FormBuilder, private sensorService: sensorVersionService) {
+  constructor(
+    private fb: FormBuilder,
+    private sensorService: sensorVersionService
+  ) {
     this.SearchCapteurForm = this.fb.group({
       name: ['', Validators.required],
     });
+    this.sensors = this.sensorService.loadSensors();
   }
 
   onSearchSensor() {
@@ -143,10 +144,11 @@ export class MapsComponent implements OnInit {
 
     return this.fruits.filter(option => option.name.toLowerCase().indexOf(filterValue) === 0);
   }
-  loadSensor() {
-    this.sensorService.getData()
-      .subscribe(
-        data => { this.sensorMap = data }
-      );
-  }
+
+  // loadSensor() {
+  //   this.sensorService.getData()
+  //     .subscribe(
+  //       data => { this.sensorMap = data }
+  //     );
+  // }
 }

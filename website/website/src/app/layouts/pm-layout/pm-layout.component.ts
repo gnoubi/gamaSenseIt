@@ -7,7 +7,8 @@ import { Component, OnInit } from '@angular/core';
 })
 export class PMLayoutComponent implements OnInit {
   id: number;
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit() {
   }

@@ -19,6 +19,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ComponentsModule } from '../../components/components.module';
 import { DiagrammeComponent } from '../../pages/diagramme/diagramme.component';
 import { sensorVersionService } from '../../pages/sensor-version/sensor-version-service';
+import { SearchPipe } from './search.pipe';
 
 
 
@@ -50,7 +51,8 @@ import { sensorVersionService } from '../../pages/sensor-version/sensor-version-
     MapsComponent,
     QrcodeComponent,
     SensorVersionPage,
-    DiagrammeComponent
+    DiagrammeComponent,
+    SearchPipe
   ],
   exports: [
 
