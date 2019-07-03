@@ -81,7 +81,7 @@
                   Measured Parameters (in order):<br>
                 </div>
                 <div class="row">
-                  <div class="col-3 pt-1 text-center"
+                  <div class="col-auto pt-1"
                     *ngFor="let parameter of metaDataParameters(displaySensorType)">
                     <button class="icon icon-shape bg-gray text-white no-outline"
                       mat-fab
@@ -124,12 +124,18 @@
                 <form role="form">
                   <div class="form-row mb-3 ">
                     <div class="col">
-                      <input type="text" class="form-control" placeholder="Name"
-                      name="Name" formControlName="Name" />
+                      <input class="form-control"
+                        type="text"
+                        placeholder="Name"
+                        name="Name"
+                        formControlName="Name" />
                     </div>
                   </div>
                   <div class="col">
-                    <button type="button" class="btn btn-primary">Remove</button>
+                    <button class="btn btn-primary"
+                      type="button">
+                      Remove
+                    </button>
                   </div>
                 </form>
               </div>
@@ -175,7 +181,8 @@
                       <button class="only-outline"
                         type="button"
                         matTooltip="Update"
-                        data-toggle="modal" data-target="#modal-form-sensor"
+                        data-toggle="modal"
+                        data-target="#modal-form-sensor"
                         (click)="sensorUpdate=sensor;operationSensor='update'">
                         <i class="fas fa-edit fa-lg text-success"></i>
                       </button>
@@ -205,13 +212,19 @@
             </div>
             <div class="card-body">
               <div *ngIf="operationSensor == 'details'">
-                <div class="text-white mt-1" *ngIf="displaySensor.idSensor!=0">
+                <div class="text-white mt-1"
+                  *ngIf="displaySensor.idSensor!=0">
                   Name: {{displaySensor.name}}<br>
                   Type: {{displaySensor.sensorMetadataName}}<br>
                   Place: {{displaySensor.place}}<br>
                   Longitude: {{displaySensor.longitude}}<br>
                   Latitude: {{displaySensor.latitude}}<br>
-                  Description: {{displaySensor.description}}<br>
+                  <button type="button"
+                    mat-stroked-button
+                    data-toggle="modal"
+                    data-target="#modal-description">
+                    Show Description
+                  </button>
                 </div>
               </div>
               <!-- <div *ngIf="operationSensor =='update'">
@@ -247,12 +260,18 @@
                 <form role="form">
                   <div class="form-row mb-3 ">
                     <div class="col">
-                      <input type="text" class="form-control" placeholder="Name"
-                        name="Name" formControlName="Name" />
+                      <input class="form-control"
+                        type="text"
+                        placeholder="Name"
+                        name="Name"
+                        formControlName="Name" />
                     </div>
                   </div>
                   <div class="col">
-                    <button type="button" class="btn btn-primary">Remove</button>
+                    <button class="btn btn-primary"
+                      type="button">
+                      Remove
+                    </button>
                   </div>
                 </form>
               </div>
@@ -262,4 +281,38 @@
       </div>
     </mat-tab>
   </mat-tab-group>
+</div>
+<div class="modal fade"
+  id="modal-description"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="modal-descriptionLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal- modal-dialog-centered modal-sm"
+    role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title"
+          id="exampleModalLabel">
+          {{displaySensor.name}} -- {{displaySensor.sensorMetadataName}}
+        </div>
+        <button class="close"
+          type="button"
+          data-dismiss="modal"
+          aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        {{displaySensor.description}}
+      </div>
+      <div class="modal-footer">
+        <button mat-button
+          type="button"
+          data-dismiss="modal">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
 </div>

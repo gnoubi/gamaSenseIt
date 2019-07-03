@@ -10,3 +10,12 @@
 .multi-line {
   white-space: pre-line;
 }
+
+.no-outline {
+  outline: none;
+}
+
+.only-outline {
+  background: transparent;
+  border:none;
+}

@@ -85,12 +85,6 @@ export class SensorVersionComponent implements OnInit {
     });
   }
 
-  open(content): void {
-    this.modalService.open(
-      content, {ariaLabelledBy: 'modal-basic-title'});
-    this.openMap = true;
-  }
-
   onAddNewSensor(): void {
     let sensorName: string;
     let sensorDisplayName: string;
