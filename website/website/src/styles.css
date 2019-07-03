@@ -7,11 +7,6 @@
 
 /* @import '~@angular/material/prebuilt-themes/purple-green.css'; */
 
-.higher {
-  background-color: green;
-  z-index: 9999;
-}
-
 .multi-line {
-    white-space: pre-line;
+  white-space: pre-line;
 }

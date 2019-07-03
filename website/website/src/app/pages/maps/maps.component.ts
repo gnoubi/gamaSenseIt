@@ -6,7 +6,7 @@ import { map, startWith } from 'rxjs/operators';
 import { Sensor } from '../../sensor';
 import { SensorVersionService } from '../sensor-version/sensor-version-service';
 
-declare let L;
+declare let L; // import * as L from 'leaflet' : ERROR 77,78
 
 @Component({
   selector: 'app-maps',
@@ -62,17 +62,19 @@ export class MapsComponent implements OnInit {
   }
 
   ngOnInit() {
-
+    const myIcon = L.icon({
+      iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/images/marker-icon.png'
+    });
     this.autoCompletInit();
 
     let mapboxUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       mapboxAttribution = " UMMISCO Dashboard Sensor's Maps";
 
 
-    let SoilSensor = L.marker([14.731812, -17.433000]).bindPopup('This is Soil Sensor '),
-      Humidity = L.marker([14.741995, -17.433543]).bindPopup('This is humidity sensor '),
-      Temperature = L.marker([14.731095, -17.435143]).bindPopup('This is Temperature sensor'),
-      Rain = L.marker([14.721995, -17.437343]).bindPopup('This is Rain Detection Sensor');
+    let SoilSensor = L.marker([14.731812, -17.433000], {icon: myIcon}).bindPopup('This is Soil Sensor '),
+      Humidity = L.marker([14.741995, -17.433543], {icon: myIcon}).bindPopup('This is humidity sensor '),
+      Temperature = L.marker([14.731095, -17.435143], {icon: myIcon}).bindPopup('This is Temperature sensor'),
+      Rain = L.marker([14.721995, -17.437343], {icon: myIcon}).bindPopup('This is Rain Detection Sensor');
     var sensors = L.layerGroup([SoilSensor, Humidity, Temperature, Rain]);
     var field = L.tileLayer(mapboxUrl, { id: 'mapbox.satellite', attribution: mapboxAttribution }),
       streets = L.tileLayer(mapboxUrl, { id: 'mapbox.streets', attribution: mapboxAttribution });
