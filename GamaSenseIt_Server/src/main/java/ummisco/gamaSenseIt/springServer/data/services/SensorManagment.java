@@ -49,7 +49,7 @@ public class SensorManagment implements ISensorManagment {
     GeometryFactory gf = new GeometryFactory();
 
     SensorMetadata mtype = new SensorMetadata(DEFAULT_SENSOR_TYPE_NAME, DEFAULT_SENSOR_VERSION);
-    SensorMetadata qamelio = new SensorMetadata("Qamelio", "1");
+    SensorMetadata qamelio = new SensorMetadata("Qamelio", "1", ":",DEFAULT_DESCRIPTION);
     sensorMetadataRepo.save(mtype);
 
     qamelio = addSensorMetadata(qamelio);
@@ -66,23 +66,22 @@ public class SensorManagment implements ISensorManagment {
     addParameterToSensorMetadata(qamelio, t1);
 
     Point p = gf.createPoint(new Coordinate(0, 0));
-    Sensor s1 = new Sensor(DEFAULT_SENSOR_NAME, DEFAULT_SENSOR_DISPLAY_NAME, DEFAULT_SENSOR_PLACE, p, mtype,
-        DEFAULT_DESCRIPTION);
+    Sensor s1 = new Sensor(DEFAULT_SENSOR_NAME, DEFAULT_SENSOR_DISPLAY_NAME, DEFAULT_SENSOR_PLACE, p, mtype);
     String slogan = "La recherche scientifique au service de la qualité de l'air que vous respirez.";
     String place = "IRD";
-    String description = "comment utiliser le capteur";
-    Sensor s2 = new Sensor("SENSOR_2", slogan, place, p, qamelio, description);
+    Sensor s2 = new Sensor("SENSOR_2", slogan, place, p, qamelio);
     sensorRepo.save(s1);
     sensorRepo.save(s2);
 
-    SensorMetadata smd = new SensorMetadata("capMetadata", "v0", ":");
+    String description = "comment utiliser le capteur";
+    SensorMetadata smd = new SensorMetadata("capMetadata", "v0", ":",description);
     smd = addSensorMetadata(smd);
     ParameterMetadata p1 = new ParameterMetadata("temperature", "c", DataFormat.DOUBLE, DataParameter.TEMPERATURE);
     ParameterMetadata p2 = new ParameterMetadata("humidity", "%", DataFormat.DOUBLE, DataParameter.HUMIDITY);
     addParameterToSensorMetadata(smd, p2);
     addParameterToSensorMetadata(smd, p1);
 
-    Sensor sx = new Sensor("node_1", DEFAULT_SENSOR_DISPLAY_NAME, DEFAULT_SENSOR_PLACE, p, smd, DEFAULT_DESCRIPTION);
+    Sensor sx = new Sensor("node_1", DEFAULT_SENSOR_DISPLAY_NAME, DEFAULT_SENSOR_PLACE, p, smd);
     sensorRepo.save(sx);
 
   }

@@ -11,144 +11,9 @@
   <mat-tab-group dynamicHeight="true">
     <mat-tab>
       <ng-template mat-tab-label>
-        <div class="text-white">Available Types of Sensor
+        <div class="text-white">Available Sensors
         </div>
       </ng-template>
-      <div class="row mt-2">
-        <div class="col-xl-8 mb-0 mb-xl-0">
-          <div class="card shadow">
-            <div class="card-header bg-transparent">
-              <h3 class="mb-0">Available Types of Sensor</h3>
-            </div>
-            <div class="table-responsive">
-              <!-- Projects table -->
-              <table class="table align-items-center table-flush">
-                <thead class="thead-light">
-                  <tr>
-                    <th scope="col">Name</th>
-                    <th scope="col">Version</th>
-                    <th scope="col">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <!--sensors1 o lieu de sensors-->
-                  <tr *ngFor="let sensor of sensorTypes;">
-                    <td>{{sensor.name}}</td>
-                    <td>{{sensor.version}}</td>
-                    <td>
-                      <button class="only-outline"
-                        type="button"
-                        matTooltip="Details"
-                        (click)="displaySensorType=sensor;operationType='details'">
-                        <i class="fas fa-info-circle fa-lg text-success"></i>
-                      </button>
-                      <button class="only-outline"
-                        matTooltip="Update"
-                        data-toggle="modal"
-                        data-target="#modal-form-sensor-type"
-                        (click)="sensorTypeUpdate=sensor;operationType='update'">
-                        <i class="fas fa-edit fa-lg text-success"></i>
-                      </button>
-                      <button class="only-outline"
-                        matTooltip="Delete"
-                        (click)="sensorTypeDelete=sensor;operationType='delete'">
-                        <i class="fas fa-trash-alt fa-lg text-danger"></i>
-                      </button>
-                    </td>
-                  </tr>
-                  <tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-        <div class="col-xl-4">
-          <div class="card bg-gradient-default shadow mt-3">
-            <div class="card-header bg-transparent">
-              <div class="row align-items-center">
-                <div class="col">
-                  <h2 class="text-white mb-0">Sensor Type's Details</h2>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div *ngIf="operationType == 'details'">
-                <div class="text-white mt-1"
-                  *ngIf="displaySensorType.idType!=0">
-                  Name: {{displaySensorType.name}}<br>
-                  Version: {{displaySensorType.version}}<br>
-                  Data Separator: {{displaySensorType.dataSeparator}}<br>
-                  Measured Parameters (in order):<br>
-                </div>
-                <div class="row">
-                  <div class="col-auto pt-1"
-                    *ngFor="let parameter of metaDataParameters(displaySensorType)">
-                    <button class="icon icon-shape bg-gray text-white no-outline"
-                      mat-fab
-                      type="button"
-                      matTooltip="Measured parameter: {{parameter.parameter}}
-                      Unit: {{parameter.unit}}
-                      Data format: {{parameter.dataFormat}}"
-                      matTooltipClass="multi-line">
-                      <i class="{{parameter.icon}}"></i>
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <!-- <div *ngIf="operationType=='update'">
-                <h3 class="text-white">Update Sensor Type</h3>
-                <br>
-                <form role="form">
-                  <div class="form-row mb-3 ">
-                    <div class="col">
-                      <input type="text" class="form-control" placeholder="Name"
-                      name="Name" [(ngModel)]="sensorUpdate.name"/>
-                    </div>
-                  </div>
-                  <br />
-                  <div class="form-row mb-3 ">
-                    <div class="col">
-                      <input type="text" class="form-control" placeholder="Version"
-                      name="Version" [(ngModel)]="sensorUpdate.version"/>
-                    </div>
-                  </div>
-                  <br />
-                  <div class="col">
-                    <button type="button" class="btn btn-primary">Update</button>
-                  </div>
-                </form>
-              </div> -->
-              <div *ngIf="operationType == 'delete' ">
-                <h3 class="text-white">Remove Sensor Type</h3>
-                <br>
-                <form role="form">
-                  <div class="form-row mb-3 ">
-                    <div class="col">
-                      <input class="form-control"
-                        type="text"
-                        placeholder="Name"
-                        name="Name"
-                        formControlName="Name" />
-                    </div>
-                  </div>
-                  <div class="col">
-                    <button class="btn btn-primary"
-                      type="button">
-                      Remove
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      </mat-tab>
-      <mat-tab>
-        <ng-template mat-tab-label>
-          <div class="text-white">Available Sensors
-          </div>
-        </ng-template>
       <!-- Table -->
       <div class="row mt-2">
         <div class="col-xl-8 mb-0 mb-xl-0">
@@ -219,12 +84,6 @@
                   Place: {{displaySensor.place}}<br>
                   Longitude: {{displaySensor.longitude}}<br>
                   Latitude: {{displaySensor.latitude}}<br>
-                  <button type="button"
-                    mat-stroked-button
-                    data-toggle="modal"
-                    data-target="#modal-description">
-                    Show Description
-                  </button>
                 </div>
               </div>
               <!-- <div *ngIf="operationSensor =='update'">
@@ -280,6 +139,148 @@
         </div>
       </div>
     </mat-tab>
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <div class="text-white">Available Types of Sensor
+        </div>
+      </ng-template>
+      <div class="row mt-2">
+        <div class="col-xl-8 mb-0 mb-xl-0">
+          <div class="card shadow">
+            <div class="card-header bg-transparent">
+              <h3 class="mb-0">Available Types of Sensor</h3>
+            </div>
+            <div class="table-responsive">
+              <!-- Projects table -->
+              <table class="table align-items-center table-flush">
+                <thead class="thead-light">
+                  <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Version</th>
+                    <th scope="col">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!--sensors1 o lieu de sensors-->
+                  <tr *ngFor="let sensor of sensorTypes;">
+                    <td>{{sensor.name}}</td>
+                    <td>{{sensor.version}}</td>
+                    <td>
+                      <button class="only-outline"
+                        type="button"
+                        matTooltip="Details"
+                        (click)="displaySensorType=sensor;operationType='details'">
+                        <i class="fas fa-info-circle fa-lg text-success"></i>
+                      </button>
+                      <button class="only-outline"
+                        matTooltip="Update"
+                        data-toggle="modal"
+                        data-target="#modal-form-sensor-type"
+                        (click)="sensorTypeUpdate=sensor;operationType='update'">
+                        <i class="fas fa-edit fa-lg text-success"></i>
+                      </button>
+                      <button class="only-outline"
+                        matTooltip="Delete"
+                        (click)="sensorTypeDelete=sensor;operationType='delete'">
+                        <i class="fas fa-trash-alt fa-lg text-danger"></i>
+                      </button>
+                    </td>
+                  </tr>
+                  <tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-4">
+          <div class="card bg-gradient-default shadow mt-3">
+            <div class="card-header bg-transparent">
+              <div class="row align-items-center">
+                <div class="col">
+                  <h2 class="text-white mb-0">Sensor Type's Details</h2>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div *ngIf="operationType == 'details'">
+                <div class="text-white mt-1"
+                  *ngIf="displaySensorType.idType!=0">
+                  Name: {{displaySensorType.name}}<br>
+                  Version: {{displaySensorType.version}}<br>
+                  Data Separator: {{displaySensorType.dataSeparator}}<br>
+                  Measured Parameters (in order):<br>
+                  <button
+                    type="button"
+                    mat-button
+                    data-toggle="modal"
+                    data-target="#modal-description">
+                    Show Description
+                  </button>
+                </div>
+                <div class="row">
+                  <div class="col-auto pt-1"
+                    *ngFor="let parameter of metaDataParameters(displaySensorType)">
+                    <button class="icon icon-shape bg-gray text-white no-outline"
+                      mat-fab
+                      type="button"
+                      matTooltip="Measured parameter: {{parameter.parameter}}
+                      Unit: {{parameter.unit}}
+                      Data format: {{parameter.dataFormat}}"
+                      matTooltipClass="multi-line">
+                      <i class="{{parameter.icon}}"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <!-- <div *ngIf="operationType=='update'">
+                <h3 class="text-white">Update Sensor Type</h3>
+                <br>
+                <form role="form">
+                  <div class="form-row mb-3 ">
+                    <div class="col">
+                      <input type="text" class="form-control" placeholder="Name"
+                      name="Name" [(ngModel)]="sensorUpdate.name"/>
+                    </div>
+                  </div>
+                  <br />
+                  <div class="form-row mb-3 ">
+                    <div class="col">
+                      <input type="text" class="form-control" placeholder="Version"
+                      name="Version" [(ngModel)]="sensorUpdate.version"/>
+                    </div>
+                  </div>
+                  <br />
+                  <div class="col">
+                    <button type="button" class="btn btn-primary">Update</button>
+                  </div>
+                </form>
+              </div> -->
+              <div *ngIf="operationType == 'delete' ">
+                <h3 class="text-white">Remove Sensor Type</h3>
+                <br>
+                <form role="form">
+                  <div class="form-row mb-3 ">
+                    <div class="col">
+                      <input class="form-control"
+                        type="text"
+                        placeholder="Name"
+                        name="Name"
+                        formControlName="Name" />
+                    </div>
+                  </div>
+                  <div class="col">
+                    <button class="btn btn-primary"
+                      type="button">
+                      Remove
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-tab>
   </mat-tab-group>
 </div>
 <div class="modal fade"
@@ -294,7 +295,7 @@
       <div class="modal-header">
         <div class="modal-title"
           id="exampleModalLabel">
-          {{displaySensor.name}} -- {{displaySensor.sensorMetadataName}}
+          {{displaySensorType.name}} -- {{displaySensorType.version}}
         </div>
         <button class="close"
           type="button"
@@ -304,7 +305,7 @@
         </button>
       </div>
       <div class="modal-body">
-        {{displaySensor.description}}
+        {{displaySensorType.description}}
       </div>
       <div class="modal-footer">
         <button mat-button

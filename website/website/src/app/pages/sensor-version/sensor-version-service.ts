@@ -157,12 +157,12 @@ export class SensorVersionService {
   }
 
   initSensor(): Sensor {
-    let displaySensor: Sensor = new Sensor(0,'', '','',0,0,0,'','');
+    let displaySensor: Sensor = new Sensor(0,'', '','',0,0,0,'');
     return displaySensor;
   }
 
   initSensorType(): SensorVersion {
-    let displaySensorType: SensorVersion = new SensorVersion(0, '', '', '', '');
+    let displaySensorType: SensorVersion = new SensorVersion(0, '', '', '', '','');
     return displaySensorType;
   }
 

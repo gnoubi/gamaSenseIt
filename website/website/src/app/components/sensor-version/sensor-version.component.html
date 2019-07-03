@@ -162,19 +162,6 @@
                               </mat-expansion-panel>
                             </mat-accordion>
                           </div>
-                          <mat-form-field class="form-max-lg">
-                            <input matInput
-                              type="text"
-                              #inputDescription
-                              placeholder="Description"
-                              formControlName="description"
-                              required>
-                            <mat-hint>
-                              <div *ngIf="!inputDescription.value?.length">
-                                This field must be filled.
-                              </div>
-                            </mat-hint>
-                          </mat-form-field>
                         </form>
                         <!-- </div> -->
                         <!-- </div> -->
@@ -321,7 +308,29 @@
                               </div>
                             </div>
                           </div>
+                          <mat-form-field class="form-max-lg">
+                            <input matInput
+                              type="text"
+                              #inputDescription
+                              placeholder="Description"
+                              formControlName="description"
+                              required>
+                            <mat-hint>
+                              <div *ngIf="!inputDescription.value?.length">
+                                This field must be filled.
+                              </div>
+                            </mat-hint>
+                          </mat-form-field>
                         </form>
+                        <!-- <div>
+                      		<form method="POST" enctype="multipart/form-data" action="/">
+                      			<table>
+                      				<tr><td>File to upload:</td><td><input type="file" name="file" /></td></tr>
+                      				<tr><td></td><td><input type="submit" value="Upload" /></td></tr>
+                      			</table>
+                      		</form>
+                      	</div> -->
+
                         <!-- </div>
                         </div> -->
                       </div>

@@ -7,20 +7,23 @@ export class SensorVersion {
   version: string;
   dataSeparator: string;
   measuredDataOrder: string;
+  description: string;
   // parameterMetaData : MesuredParameter[];
 
   constructor(
-    pid: number,
-    n: string,
-    v: string,
-    sep: string,
-    ord: string)
+    idType: number,
+    name: string,
+    version: string,
+    dataSeparator: string,
+    measuredDataOrder: string,
+    description: string)
   {
-    this.idType = pid;
-    this.version = v;
-    this.name= n;
-    this.dataSeparator = sep;
-    this.measuredDataOrder = ord;
+    this.idType = idType;
+    this.version = version;
+    this.name = name;
+    this.dataSeparator = dataSeparator;
+    this.measuredDataOrder = measuredDataOrder;
+    this.description = description;
     // this.parameterMetaData = mp;
     // this.parameterMetaData.forEach(function (value) {
     //   this.parameterMetaData = this.measuredDataOrder + value.id+this.dataSeparator;

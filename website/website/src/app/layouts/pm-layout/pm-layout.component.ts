@@ -10,12 +10,12 @@ import { SensorVersionService } from '../../pages/sensor-version/sensor-version-
 })
 export class PMLayoutComponent implements OnInit {
   id: number;
-  private sensors: Sensor[];
+  // private sensors: Sensor[];
 
   constructor(private sensorService: SensorVersionService) {
   }
 
   ngOnInit() {
-    this.sensors = this.sensorService.loadSensorId(9); // this.id
+    // this.sensors = this.sensorService.loadSensorId(9); // this.id
   }
 }

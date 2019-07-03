@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 
 import {API_URLS} from '../../config/api.url.config';
 import { Sensor } from '../../Sensor';
+import { SensorVersion } from '../../SensorVersion';
 
 const httpOptions = {
   headers: new HttpHeaders({
@@ -26,8 +27,7 @@ export class SensorVersionFormService {
       sensorPlace: string,
       sensorLongitude: number,
       sensorLatitude: number,
-      sensorDescription: string,
-      s:Sensor): Observable<any>
+      s: Sensor): Observable<any>
     {
       let link = API_URLS.ADD_SENSOR;
       link += '?&name=' + sensorName +
@@ -35,24 +35,25 @@ export class SensorVersionFormService {
               '&place=' + sensorPlace +
               '&longitude=' + sensorLongitude +
               '&latitude=' + sensorLatitude +
-              '&sensormetadata=' + sensorType
-              '&description=' + sensorDescription;
+              '&sensormetadata=' + sensorType;
       return this.http.post(link,s,httpOptions);
     }
 
-    addMetaData(
-      metaDataName,
-      metaDataVersion,
-      metaDataSeparator,
-      metaMeasuredDataOrder,
-      m): Observable<any>
+    addSensorMetaData(
+      metaDataName: string,
+      metaDataVersion: string,
+      metaDataSeparator: string,
+      metaMeasuredDataOrder: string,
+      sensorDescription: string,
+      sm: SensorVersion): Observable<any>
     {
       let link = API_URLS.ADD_SENSOR_METADATA;
       link += '?&name=' + metaDataName +
               '&version=' + metaDataVersion +
               '&dataSeparator=' + metaDataSeparator +
-              '&measuredDataOrder=' + metaMeasuredDataOrder;
-      return this.http.post(link,m,httpOptions);
+              '&measuredDataOrder=' + metaMeasuredDataOrder
+              '&description=' + sensorDescription;
+      return this.http.post(link,sm,httpOptions);
     }
 
     // Creer d'abord le formulaire

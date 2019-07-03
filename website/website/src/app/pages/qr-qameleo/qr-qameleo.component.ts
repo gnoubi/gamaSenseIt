@@ -2,13 +2,15 @@ import { Component, OnInit, SimpleChanges } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 
-interface PMSensor {
+export interface PMSensor {
   sensorName: string;
+  displayName: string;
   pm1: number;
   pm25: number;
   pm10: number;
   temperature: number;
   humidity: number;
+  place: string;
 }
 
 @Component({
@@ -22,17 +24,20 @@ export class QrQameleoComponent implements OnInit {
   PM2_5_THRESHOLD: number = 25;
   PM10_THRESHOLD: number = 50;
 
-  private pm1: number = 0;
-  private pm25: number = 0;
-  private pm10: number = 0;
-  private PMUnit: string = "μg/m³";
-  private temperature: number = 0;
-  private temperatureUnit: string = "°C";
-  private humidity: number = 0;
-  private humidityUnit: string = "%";
-  private url = 'http://vmpams.ird.fr:8080';
-  public browseQRcode = true;
-  private httpGetSucceed = true;
+  sensorName: string = "";
+  displayName: string = "";
+  pm1: number = 0;
+  pm25: number = 0;
+  pm10: number = 0;
+  PMUnit: string = "μg/m³";
+  temperature: number = 0;
+  temperatureUnit: string = "°C";
+  humidity: number = 0;
+  humidityUnit: string = "%";
+  place: string= "";
+  url = 'http://vmpams.ird.fr:8080';
+  browseQRcode = true;
+  httpGetSucceed = true;
 
   constructor(private router: Router, private http: HttpClient,) { }
 
@@ -50,16 +55,19 @@ export class QrQameleoComponent implements OnInit {
     this.http.get(url).subscribe(
       (data: PMSensor) => {
         if (data) {
-          this.pm1 = data.pm1/this.PM1_THRESHOLD*100;
+          this.sensorName = data.sensorName;
+          this.displayName = data.displayName;
+          this.pm1 = data.pm1/this.PM1_THRESHOLD*50;
           this.pm1 = Math.round(this.pm1*100)/100;
-          this.pm25 = data.pm25/this.PM2_5_THRESHOLD*100;
+          this.pm25 = data.pm25/this.PM2_5_THRESHOLD*50;
           this.pm25 = Math.round(this.pm25*100)/100;
-          this.pm10 = data.pm10/this.PM10_THRESHOLD*100;
+          this.pm10 = data.pm10/this.PM10_THRESHOLD*50;
           this.pm10 = Math.round(this.pm10*100)/100;
           this.temperature = data.temperature;
           this.temperature = Math.round(this.temperature);
           this.humidity = data.humidity;
           this.humidity = Math.round(this.humidity);
+          this.place = data.place;
         } else {
           this.httpGetSucceed = false;
         }

@@ -86,8 +86,7 @@ public class PrivateDataController {
       @RequestParam(value = IDataController.PLACE, required = true, defaultValue = NIL_VALUE) String place,
       @RequestParam(value = IDataController.LONGITUDE, required = true, defaultValue = "0") double longitude,
       @RequestParam(value = IDataController.LATITUDE, required = true, defaultValue = "0") double latitude,
-      @RequestParam(value = IDataController.SENSOR_METADATA, required = true) long idSensorType,
-      @RequestParam(value = IDataController.DESCRIPTION, required = true, defaultValue = NIL_VALUE) String description) {
+      @RequestParam(value = IDataController.SENSOR_METADATA, required = true) long idSensorType) {
 
     Optional<SensorMetadata> type = sensorTypeRepo.findById(idSensorType);
 
@@ -103,7 +102,7 @@ public class PrivateDataController {
     if (!st.isPresent())
       return null;
 
-    Sensor s = new Sensor(name, displayName, place, longitude, latitude, st.get(), description);
+    Sensor s = new Sensor(name, displayName, place, longitude, latitude, st.get());
     sensors.save(s);
     return new DisplayableSensor(s);
   }
@@ -114,8 +113,7 @@ public class PrivateDataController {
       @RequestParam(value = IDataController.DISPLAY_NAME, required = false, defaultValue = NIL_VALUE) String displayName,
       @RequestParam(value = IDataController.PLACE, required = false, defaultValue = NIL_VALUE) String place,
       @RequestParam(value = IDataController.LONGITUDE, required = false, defaultValue = NIL_VALUE) String longitude,
-      @RequestParam(value = IDataController.LATITUDE, required = false, defaultValue = NIL_VALUE) String latitude,
-      @RequestParam(value = IDataController.DESCRIPTION, required = false, defaultValue = NIL_VALUE) String description) {
+      @RequestParam(value = IDataController.LATITUDE, required = false, defaultValue = NIL_VALUE) String latitude) {
 
     Sensor s = findSensor(id);
     if (s == null)
@@ -138,23 +136,22 @@ public class PrivateDataController {
       double data = Double.valueOf(latitude).doubleValue();
       s.setLatitude(data);
     }
-    if (!description.equals(NIL_VALUE)) {
-      s.setDescription(description);
-    }
     sensors.save(s);
     return new DisplayableSensor(s);
   }
 
   @CrossOrigin
   @RequestMapping(IDataController.ADD_SENSOR_METADATA)
-  public SensorMetadata addSensorMetaData(@RequestParam(value = IDataController.NAME, required = true) String varName,
+  public SensorMetadata addSensorMetaData(
+      @RequestParam(value = IDataController.NAME, required = true) String varName,
       @RequestParam(value = IDataController.VERSION, required = true) String version,
       @RequestParam(value = IDataController.DATA_SEPARATOR, required = false, defaultValue = SensorMetadata.DEFAULT_DATA_SEPARATOR) String sep,
-      @RequestParam(value = IDataController.MEASURED_DATA_ORDER, required = true) String measuredDataOrder) {
+      @RequestParam(value = IDataController.MEASURED_DATA_ORDER, required = true) String measuredDataOrder,
+      @RequestParam(value = IDataController.DESCRIPTION, required = false) String description) {
     List<SensorMetadata> lsm = sensorMetadata.findByNameAndVersion(varName, version);
     SensorMetadata st = null;
     if (lsm.size() == 0) {
-      st = new SensorMetadata(varName, version, sep);
+      st = new SensorMetadata(varName, version, sep, description);
       st.setMeasuredDataOrder(measuredDataOrder);
       st = this.sensorMetadata.save(st);
     }

@@ -28,6 +28,8 @@ public class SensorMetadata {
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "sensorMetadata")
   private Set<ParameterMetadata> parameterMetaData = new HashSet<>();
 
+  private String description;
+
   public SensorMetadata() {
     super();
     measuredDataOrder = "";
@@ -40,12 +42,20 @@ public class SensorMetadata {
     this.version = version;
     this.name = name;
   }
-
+  
   public SensorMetadata(String name, String version, String sep) {
     this();
     this.version = version;
     this.name = name;
     this.dataSeparator = sep;
+  }
+  
+  public SensorMetadata(String name, String version, String sep, String description) {
+    this();
+    this.version = version;
+    this.name = name;
+    this.dataSeparator = sep;
+    this.description = description;
   }
 
   public String getVersion() {
@@ -111,5 +121,13 @@ public class SensorMetadata {
       }
     }
     return Optional.ofNullable(res);
+  }
+  
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
   }
 }

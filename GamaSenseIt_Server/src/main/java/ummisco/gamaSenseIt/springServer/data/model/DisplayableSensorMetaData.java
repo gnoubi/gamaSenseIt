@@ -11,9 +11,10 @@ public class DisplayableSensorMetaData {
   private String dataSeparator;
   private String measuredDataOrder;
   private List<String> parameterMetaData;
+  private String description;
 
   public DisplayableSensorMetaData(Long idType, String name, String version, String dataSeparator,
-      String measuredDataOrder, Set<ParameterMetadata> parameterMetaData) {
+      String measuredDataOrder, Set<ParameterMetadata> parameterMetaData, String description) {
     super();
     this.idType = idType;
     this.name = name;
@@ -24,11 +25,12 @@ public class DisplayableSensorMetaData {
     for (ParameterMetadata pm : parameterMetaData) {
       this.parameterMetaData.add(pm.getVarName());
     }
+    this.description = description;
   }
 
   public DisplayableSensorMetaData(SensorMetadata s) {
     this(s.getIdType(), s.getName(), s.getVersion(), s.getDataSeparator(), s.getMeasuredDataOrder(),
-        s.getParameterMetaData());
+        s.getParameterMetaData(), s.getDescription());
   }
 
   public Long getIdType() {
@@ -69,6 +71,14 @@ public class DisplayableSensorMetaData {
 
   public void setDataSeparator(String dataSeparator) {
     this.dataSeparator = dataSeparator;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
   }
 
 }

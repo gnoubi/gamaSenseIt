@@ -33,8 +33,6 @@ public class Sensor {
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "sensor")
   private Set<SensoredBulkData> bulkData = new HashSet<>();
 
-  private String description;
-
   public Sensor() {
     name = "";
   }
@@ -43,9 +41,8 @@ public class Sensor {
     this(sensorName, displayName, location.getX(), location.getY(), sensorType);
   }
 
-  public Sensor(String sensorName, String displayName, String place, Point location, SensorMetadata sensorType,
-      String description) {
-    this(sensorName, displayName, place, location.getX(), location.getY(), sensorType, description);
+  public Sensor(String sensorName, String displayName, String place, Point location, SensorMetadata sensorType) {
+    this(sensorName, displayName, place, location.getX(), location.getY(), sensorType);
   }
 
   public Sensor(String sensorName, String displayName, double locationX, double locationY, SensorMetadata sensorType) {
@@ -77,7 +74,6 @@ public class Sensor {
     this.longitude = locationX;
     this.latitude = locationY;
     this.sensorType = sensorType;
-    this.description = description;
   }
 
   public Long getIdSensor() {
@@ -146,14 +142,6 @@ public class Sensor {
 
   public void setPlace(String place) {
     this.place = place;
-  }
-
-  public String getDescription() {
-    return description;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
   }
 
 }

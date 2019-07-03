@@ -44,13 +44,13 @@ export class SensorVersionComponent implements OnInit {
       place: [''],
       longitude: [''],
       latitude: [''],
-      description: ['']
     });
     this.newSensorMetaData = this.fb.group({
       name: [''],
       version: [''],
       separator: [''],
-      measuredDataOrder: ['']
+      measuredDataOrder: [''],
+      description: ['']
     });
     this.metaData = [];
     this.metaData = this.sensorService.loadMetaData();
@@ -92,7 +92,6 @@ export class SensorVersionComponent implements OnInit {
     let sensorPlace: string;
     let sensorLongitude: number;
     let sensorLatitude: number;
-    let sensorDescription: string;
     let s = this.newSensor.value;
 
     if (this.newSensor.get('name').value != "") {
@@ -127,11 +126,6 @@ export class SensorVersionComponent implements OnInit {
       sensorLongitude = 0;
       sensorLatitude = 0;
     }
-    if (this.newSensor.get('description').value != "") {
-      sensorDescription = this.newSensor.get('description').value;
-    } else {
-      sensorDescription = "UNKNOWN_DESCRIPTION";
-    }
 
     this.sensorFormService.addSensor(
       sensorName,
@@ -140,7 +134,6 @@ export class SensorVersionComponent implements OnInit {
       sensorPlace,
       sensorLongitude,
       sensorLatitude,
-      sensorDescription,
       s).subscribe(
         res => {
           console.log('Ajout effectue');
@@ -157,7 +150,6 @@ export class SensorVersionComponent implements OnInit {
       place: [''],
       longitude: [''],
       latitude: [''],
-      description: ['']
     });
     this.coord = undefined;
   }
@@ -167,6 +159,7 @@ export class SensorVersionComponent implements OnInit {
     let sensorMetaDataVersion: string;
     let sensorMetaDataSeparator: string;
     let measuredDataOrder = this.newSensorMetaData.get('measuredDataOrder').value;
+    let sensorDescription: string;
     let m = this.newSensorMetaData.value;
 
     if (this.newSensorMetaData.get('name').value) {
@@ -184,11 +177,18 @@ export class SensorVersionComponent implements OnInit {
     } else {
       sensorMetaDataSeparator = ':';
     }
-    this.sensorFormService.addMetaData(
+    if (this.newSensorMetaData.get('description').value != "") {
+      sensorDescription = this.newSensorMetaData.get('description').value;
+    } else {
+      sensorDescription = "UNKNOWN_DESCRIPTION";
+    }
+
+    this.sensorFormService.addSensorMetaData(
       sensorMetaDataName,
       sensorMetaDataVersion,
       sensorMetaDataSeparator,
       measuredDataOrder,
+      sensorDescription,
       m).
       subscribe(res => {
         console.log('Ajout effectue');
@@ -201,7 +201,8 @@ export class SensorVersionComponent implements OnInit {
       name:[''],
       version: [''],
       separator: [''],
-      measuredDataOrder: ['']
+      measuredDataOrder: [''],
+      description: ['']
     });
   }
 

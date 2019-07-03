@@ -7,7 +7,6 @@ export class Sensor{
   latitude: number;
   sensorMetadata: number;
   sensorMetadataName: string;
-  description: string;
 
   constructor(
     idSensor: number,
@@ -17,8 +16,7 @@ export class Sensor{
     longitude: number,
     latitude: number,
     sensorMetadata: number,
-    sensorMetadataName: string,
-    description: string)
+    sensorMetadataName: string)
   {
     this.idSensor = idSensor;
     this.name= name;
@@ -28,6 +26,5 @@ export class Sensor{
     this.latitude = latitude;
     this.sensorMetadata = sensorMetadata;
     this.sensorMetadataName = sensorMetadataName;
-    this.description = description;
   }
 }

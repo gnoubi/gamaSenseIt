@@ -1,8 +1,10 @@
-<div *ngIf="browseQRcode; else elseBlock" align="center">
+<div class="text-center"
+  *ngIf="browseQRcode; else elseBlock">
   <app-upload-qrcode></app-upload-qrcode>
 </div>
 <ng-template #elseBlock>
-  <div *ngIf="httpGetSucceed; else elseBlock2" align="center">
+  <div class="text-center"
+    *ngIf="httpGetSucceed; else elseBlock2" >
     <div class="container">
       <div class="row">
         <div class="col-xs col-md col-lg-6">
@@ -23,7 +25,7 @@
                     <ng-template #popContentTemp>
                       Température en {{ temperatureUnit }}.
                     </ng-template> -->
-                    <button class="icon icon-shape bg-danger text-white"
+                    <button class="icon icon-shape color-green text-white"
                       mat-fab
                       matTooltip="Température en {{ temperatureUnit }}."
                       matTooltipClass="multi-line">
@@ -60,7 +62,7 @@
                     <ng-template #popContentHum>
                       Humidité en {{ humidityUnit }}.
                     </ng-template> -->
-                    <button class="icon icon-shape bg-danger text-white"
+                    <button class="icon icon-shape color-green text-white"
                       mat-fab
                       matTooltip="Humidité en {{ humidityUnit }}."
                       matTooltipClass="multi-line">
@@ -88,25 +90,25 @@
                 <div class="row">
                   <div class="col-7">
                     <h5 class="card-title text-uppercase text-muted mb-0">
-                      PM<sub>1</sub>
+                      PM<sub>10</sub>
                     </h5>
                     <pm-progress-bar
-                      [title]="'PM 1'"
-                      [value]="pm1">
+                      [title]="'PM 10'"
+                      [value]="pm10">
                     </pm-progress-bar>
                   </div>
                   <div class="col-3">
-                    <!-- <ng-template #popTitlePM1>
-                      PM<sub>1</sub>
+                    <!-- <ng-template #popTitlePM10>
+                      PM<sub>10</sub>
                     </ng-template>
-                    <ng-template #popContentPM1>
+                    <ng-template #popContentPM10>
                       Concentration en particules de<br>
-                      diamètres inférieurs à 1 micron.<br>
+                      diamètres inférieurs à 10 microns.<br>
                       Mesuré en {{ PMUnit }}.
                     </ng-template> -->
-                    <button class="icon icon-shape bg-danger text-white"
+                    <button class="icon icon-shape color-green text-white tip"
                       mat-fab
-                      matTooltip="Concentration en particules de diamètres inférieurs à 1 micron.
+                      matTooltip="Concentration en particules de diamètres inférieurs à 10 microns.
                       Mesuré en {{ PMUnit }}."
                       matTooltipClass="multi-line">
                       <i class="fab fa-cloudversify"></i>
@@ -140,7 +142,7 @@
                       diamètres inférieurs à 2,5 microns.<br>
                       Mesuré en {{ PMUnit }}.
                     </ng-template> -->
-                    <button class="icon icon-shape bg-danger text-white"
+                    <button class="icon icon-shape color-green text-white"
                       mat-fab
                       matTooltip="Concentration en particules de diamètres inférieurs à 2,5 microns.
                       Mesuré en {{ PMUnit }}."
@@ -160,25 +162,25 @@
                 <div class="row">
                   <div class="col-7">
                     <h5 class="card-title text-uppercase text-muted mb-0">
-                      PM<sub>10</sub>
+                      PM<sub>1</sub>
                     </h5>
                     <pm-progress-bar
-                      [title]="'PM 10'"
-                      [value]="pm10">
+                      [title]="'PM 1'"
+                      [value]="pm1">
                     </pm-progress-bar>
                   </div>
                   <div class="col-3">
-                    <!-- <ng-template #popTitlePM10>
-                      PM<sub>10</sub>
+                    <!-- <ng-template #popTitlePM1>
+                      PM<sub>1</sub>
                     </ng-template>
-                    <ng-template #popContentPM10>
+                    <ng-template #popContentPM1>
                       Concentration en particules de<br>
-                      diamètres inférieurs à 10 microns.<br>
+                      diamètres inférieurs à 1 micron.<br>
                       Mesuré en {{ PMUnit }}.
                     </ng-template> -->
-                    <button class="icon icon-shape bg-danger text-white tip"
+                    <button class="icon icon-shape color-green text-white"
                       mat-fab
-                      matTooltip="Concentration en particules de diamètres inférieurs à 10 microns.
+                      matTooltip="Concentration en particules de diamètres inférieurs à 1 micron.
                       Mesuré en {{ PMUnit }}."
                       matTooltipClass="multi-line">
                       <i class="fab fa-cloudversify"></i>

@@ -8,9 +8,9 @@
               <h2 class="text-white mb-0">Diagramme</h2>
               <h6 class="text-white mb-0 text-uppercase"> {{typeGraph}} Graph</h6>
             </div>
-            <button class="btn btn-light " (click)="line()">Line Graph</button>
-            <button class="btn btn-light " (click)="pie()">Camembert</button>
-            <button class="btn btn-light " (click)="bar()">Bar Graph</button>
+            <button class="btn btn-light" (click)="line()">Line Graph</button>
+            <button class="btn btn-light" (click)="pie()">Camembert</button>
+            <button class="btn btn-light" (click)="bar()">Bar Graph</button>
             <div class="col-auto">
               <div class="icon icon-shape bg-info text-white rounded-circle shadow">
                 <i class="fas fa-chart-bar"></i>&nbsp;
@@ -74,30 +74,40 @@
             </tbody>
           </table>-->
           <div>
-            <input type="search" placeholder="Search by sensor name" class="form-control" [(ngModel)]="searchText"
+            <input class="form-control"
+              type="search"
+              placeholder="Search by sensor name"
+              [(ngModel)]="searchText"
               [ngModelOptions]="{standalone:true}">
           </div>
           <br>
           <div class="slist">
-            <div *ngFor="let item of sensors | searchSensor:searchText" class=" border border-1 border-info rounded m-2">
+            <div class=" border border-1 border-info rounded m-2"
+              *ngFor="let item of sensors | searchSensor:searchText">
               <label>
-                <input type="checkbox" value="{{item}}" (change)="selectedFruits(item,$event.target.checked)">
+                <input type="checkbox"
+                  value="{{item}}"
+                  (change)="selectedFruits(item,$event.target.checked)">
                 <h5>{{item.name+" "+item.version}}</h5>
                 {{item.documentation}}
               </label>
             </div>
           </div>
-
           <br>
           <div class="text-center">
-            <button class="btn btn-outline-success"> Visualiser</button>
-            <button class="btn btn-primary " (click)="resetGraph()">Reset Graph</button>
+            <button class="btn btn-outline-success">
+              Visualiser
+            </button>
+            <button class="btn btn-primary"
+              type="button"
+              (click)="resetGraph()">
+              Reset Graph
+            </button>
           </div>
         </div>
       </div>
     </div>
   </div>
-
 </div>
 <br>
 <div class="container">
@@ -113,34 +123,23 @@
             <tr>
               <th scope="col">Name</th>
               <th scope="col">Version</th>
-              <th scope="col" class="text-center">Latitude</th>
-              <th scope="col" class="text-center">Longitude</th>
-              <th scope="col" class="text-center">SensorType</th>
+              <th scope="col">Latitude</th>
+              <th scope="col">Longitude</th>
+              <th scope="col">SensorType</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let fruit of checkValue">
-              <td *ngIf="fruit.selected== true">
-                {{fruit.sensor.name}}
-              </td>
-              <td *ngIf="fruit.selected== true">
-                {{fruit.sensor.name}}
-              </td>
-              <td *ngIf="fruit.selected== true">
-                Latitude
-              </td>
-              <td *ngIf="fruit.selected== true">
-                Longitude
-              </td>
-              <td *ngIf="fruit.selected== true">
-                SensorType
-              </td>
+              <td *ngIf="fruit.selected==true">{{fruit.sensor.name}}</td>
+              <td *ngIf="fruit.selected==true">{{fruit.sensor.name}}</td>
+              <td *ngIf="fruit.selected==true">Latitude</td>
+              <td *ngIf="fruit.selected==true">Longitude</td>
+              <td *ngIf="fruit.selected==true">SensorType</td>
             </tr>
             <tr>
           </tbody>
         </table>
       </div>
-
     </div>
   </div>
 </div>
