@@ -238,9 +238,9 @@
                                     <div class="icon-metadata">
                                       <button class="{{changeIcon(parameter.id)}}"
                                         type="button"
-                                        placement="bottom"
-                                        ngbTooltip="{{parameter.parameter}}
+                                        matTooltip="{{parameter.parameter}}
                                         ({{parameter.unit}})"
+                                        matTooltipClass="higher"
                                         (click)="onMetaData(parameter.id)">
                                         <i class="{{parameter.icon}}"></i>
                                       </button>
@@ -248,22 +248,22 @@
                                         <div *ngIf="idIndex(parameter.id) !== 0">
                                           <button class="hover-left"
                                             type="button"
-                                            placement="bottom"
-                                            ngbTooltip="Move to the left"
+                                            matTooltip="Move to the left"
+                                            matTooltipClass="higher"
                                             (click)="onMoveLeft(parameter.id)">
                                             <span><i class="fas fa-chevron-left"></i></span>
                                           </button>
                                         </div>
                                         <div class="badge rounded badge-index"
-                                          placement="bottom"
-                                          ngbTooltip="Index of the parameter">
+                                          matTooltip="Index of the parameter"
+                                          matTooltipClass="higher">
                                           {{idIndex(parameter.id)}}
                                         </div>
                                         <div *ngIf="idIndex(parameter.id) + 1 !== idList.length">
                                           <button class="hover-right"
                                             type="button"
-                                            placement="bottom"
-                                            ngbTooltip="Move to the right"
+                                            matTooltip="Move to the right"
+                                            matTooltipClass="higher"
                                             (click)="onMoveRight(parameter.id)">
                                             <span><i class="fas fa-chevron-right"></i></span>
                                           </button>

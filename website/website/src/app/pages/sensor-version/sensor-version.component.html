@@ -78,24 +78,18 @@
                   Name: {{displaySensorType.name}}<br>
                   Version: {{displaySensorType.version}}<br>
                   Data Separator: {{displaySensorType.dataSeparator}}<br>
-                  Measured Parameters (in order): <br>
+                  Measured Parameters (in order):<br>
                 </div>
                 <div class="row">
                   <div class="col-3 pt-1 text-center"
                     *ngFor="let parameter of metaDataParameters(displaySensorType)">
-                    <ng-template #popContent>
-                      Measured parameter: {{parameter.parameter}}<br>
-                      Unit: {{parameter.unit}}<br>
-                      Data format: {{parameter.dataFormat}}<br>
-                    </ng-template>
                     <button class="icon icon-shape bg-gray text-white no-outline"
                       mat-fab
                       type="button"
-                      placement="auto"
-                      matTooltip="Click for details"
-                      data-html="true"
-                      container="body"
-                      [ngbPopover]="popContent">
+                      matTooltip="Measured parameter: {{parameter.parameter}}
+                      Unit: {{parameter.unit}}
+                      Data format: {{parameter.dataFormat}}"
+                      matTooltipClass="multi-line">
                       <i class="{{parameter.icon}}"></i>
                     </button>
                   </div>
