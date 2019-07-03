@@ -70,8 +70,9 @@ public class SensorManagment implements ISensorManagment{
 		
 		
 		Point p = gf.createPoint(new Coordinate(0, 0));
-		Sensor s1 = new Sensor(DEFAULT_SENSOR_NAME,p,mtype);
-		Sensor s2 = new Sensor("SENSOR_2",p,qamelio);
+		Sensor s1 = new Sensor(DEFAULT_SENSOR_NAME,DEFAULT_SENSOR_DISPLAY_NAME,p,mtype);
+		String slogan = "La recherche scientifique au service de la qualité de l'air que vous respirez.";
+		Sensor s2 = new Sensor("SENSOR_2",slogan,p,qamelio);
 		sensorRepo.save(s1);
 		sensorRepo.save(s2);
 		
@@ -83,7 +84,7 @@ public class SensorManagment implements ISensorManagment{
 		addParameterToSensorMetadata(smd, p2);
 		addParameterToSensorMetadata(smd, p1);
 		
-		Sensor sx = new Sensor("node_1",p,smd);
+		Sensor sx = new Sensor("node_1",DEFAULT_SENSOR_DISPLAY_NAME,p,smd);
 		sensorRepo.save(sx);
 
 	}

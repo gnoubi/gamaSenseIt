@@ -4,18 +4,14 @@ import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
-
-import { ClipboardModule } from 'ngx-clipboard';
-
-import { PMLayoutRoutes } from './pm-layout.routing';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import {ComponentsModule} from '../../components/components.module';
-import { sensorVersionService } from '../../pages/sensor-version/sensor-version-service';
-
-
+import { ClipboardModule } from 'ngx-clipboard';
 import { NgCircleProgressModule,CircleProgressOptions } from 'ng-circle-progress';
 
+import { PMLayoutRoutes } from './pm-layout.routing';
+import { ComponentsModule } from '../../components/components.module';
+import { SensorVersionService } from '../../pages/sensor-version/sensor-version-service';
 
 // import { ToastrModule } from 'ngx-toastr';
 
@@ -27,18 +23,15 @@ import { NgCircleProgressModule,CircleProgressOptions } from 'ng-circle-progress
     HttpClientModule,
     NgbModule,
     ClipboardModule,
-    FormsModule,
     ReactiveFormsModule,
     FlexLayoutModule,
     ComponentsModule
-    
   ],
   declarations: [
   ],
   exports: [
-    
   ],
-  providers:[sensorVersionService]
+  providers:[SensorVersionService]
 })
 
 export class PMLayoutComponent {}

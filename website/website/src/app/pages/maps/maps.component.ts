@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 
 import { Sensor } from '../../sensor';
-import { sensorVersionService } from '../sensor-version/sensor-version-service';
+import { SensorVersionService } from '../sensor-version/sensor-version-service';
 
 declare let L;
 
@@ -23,7 +23,7 @@ export class MapsComponent implements OnInit {
   map;
   myControl:FormControl = new FormControl();
   filteredOptions: Observable<any>;
-  sensors: Array<Sensor>;
+  sensors: Sensor[];
 
   // test autocompletion
   fruits = [
@@ -40,7 +40,7 @@ export class MapsComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private sensorService: sensorVersionService
+    private sensorService: SensorVersionService
   ) {
     this.SearchCapteurForm = this.fb.group({
       name: ['', Validators.required],

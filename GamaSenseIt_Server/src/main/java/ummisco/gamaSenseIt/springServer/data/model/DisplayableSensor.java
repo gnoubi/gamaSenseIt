@@ -3,14 +3,17 @@ package ummisco.gamaSenseIt.springServer.data.model;
 public class DisplayableSensor {
 	private long idSensor;
 	private String name;
+	private String displayName;
 	private double longitude;
 	private double latitude;
 	private long sensorMetadata;
 	private String sensorMetadataName;
-	public DisplayableSensor(long idSensor, String name, double longitude, double latitude, long sensorMetadata, String sensorMetadataName) {
+	
+	public DisplayableSensor(long idSensor, String name, String displayName, double longitude, double latitude, long sensorMetadata, String sensorMetadataName) {
 		super();
 		this.idSensor = idSensor;
 		this.name = name;
+		this.displayName = displayName;
 		this.longitude = longitude;
 		this.latitude = latitude;
 		this.sensorMetadata = sensorMetadata;
@@ -18,7 +21,7 @@ public class DisplayableSensor {
 	}
 	public DisplayableSensor(Sensor s)
 	{
-		this(s.getIdSensor(), s.getName(), s.getLongitude(), s.getLatitude(), s.getMetadata().getIdType(), s.getMetadata().getName()+" -- "+s.getMetadata().getVersion());
+		this(s.getIdSensor(), s.getName(), s.getDisplayName(), s.getLongitude(), s.getLatitude(), s.getMetadata().getIdType(), s.getMetadata().getName()+" -- "+s.getMetadata().getVersion());
 	}
 	public long getIdSensor() {
 		return idSensor;
@@ -31,6 +34,12 @@ public class DisplayableSensor {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	public String getDisplayName() {
+		return displayName;
+	}
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
 	}
 	public double getLongitude() {
 		return longitude;

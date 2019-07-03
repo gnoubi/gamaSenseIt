@@ -35,6 +35,7 @@ public class ParameterMetadata {
 		}
 
 	}
+	
 	public enum DataParameter{
 		TEMPERATURE,
 		CO2,

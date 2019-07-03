@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 import { SensorVersion } from '../../SensorVersion';
-import { sensorVersionService } from './sensor-version-service';
+import { SensorVersionService } from './sensor-version-service';
 import { Sensor } from '../../sensor';
 import { MesuredParameter } from '../../MesuredParameter';
 
@@ -12,8 +12,8 @@ import { MesuredParameter } from '../../MesuredParameter';
 })
 export class SensorVersionPage implements OnInit {
 
-  sensorTypes: Array<SensorVersion>;
-  sensors: Array<Sensor>;
+  sensorTypes: SensorVersion[];
+  sensors: Sensor[];
   displaySensorType: SensorVersion;
   sensorTypeUpdate: SensorVersion;
   sensorTypeDelete: SensorVersion;
@@ -23,9 +23,9 @@ export class SensorVersionPage implements OnInit {
   sensorDelete: Sensor;
   operationSensor: String = 'details';
   sensors1: any;
-  metaData: Array<MesuredParameter>;
+  metaData: MesuredParameter[];
 
-  constructor(private sensorService: sensorVersionService) { }
+  constructor(private sensorService: SensorVersionService) { }
 
   ngOnInit() {
     this.sensors = this.sensorService.loadSensors();
@@ -35,13 +35,13 @@ export class SensorVersionPage implements OnInit {
     this.metaData = this.sensorService.loadMetaData();
   }
 
-  metaDataParameters(sensorType: SensorVersion): Array<MesuredParameter> {
+  metaDataParameters(sensorType: SensorVersion): MesuredParameter[] {
     if (sensorType.measuredDataOrder) {
-      let splitedDataOrder: Array<string> = sensorType.measuredDataOrder.
+      let splitedDataOrder: string[] = sensorType.measuredDataOrder.
         split(sensorType.dataSeparator);
       splitedDataOrder.pop();
-      let dataOrderId: Array<number> = [];
-      let parameter: Array<MesuredParameter> = [];
+      let dataOrderId: number[] = [];
+      let parameter: MesuredParameter[] = [];
       splitedDataOrder.forEach(
         (element: string) => { dataOrderId.push( Number(element) ) });
       for (let id of dataOrderId) {
@@ -53,7 +53,7 @@ export class SensorVersionPage implements OnInit {
       }
       return parameter;
     } else {
-      return null;
+      return undefined;
     }
   }
 

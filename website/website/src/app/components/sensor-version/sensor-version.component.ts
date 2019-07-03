@@ -1,74 +1,80 @@
 import { Component, Input } from '@angular/core';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
-import {NgbModal, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { remove } from 'lodash';
 
 import { SensorVersion } from '../../SensorVersion';
-import { sensorVersionService } from '../../pages/sensor-version/sensor-version-service';
-import { sensorVersionFormService } from './sensor-version-form-service';
+import { SensorVersionService } from '../../pages/sensor-version/sensor-version-service';
+import { SensorVersionFormService } from './sensor-version-form-service';
 import { MesuredParameter } from '../../MesuredParameter';
 
 @Component({
   selector: 'app-sensor-version',
   templateUrl: './sensor-version.component.html',
-  styleUrls: ['./sensor-version.component.css']
+  styleUrls: ['./sensor-version.component.scss']
 })
 export class SensorVersionComponent {
   @Input() sensorVersion: SensorVersion;
   SensorView: FormGroup;
   newSensor: FormGroup;
   newSensorMetaData: FormGroup;
-  typeList;
-  metaData: Array<MesuredParameter>;
-  idList: Array<number>;
+  typeList: SensorVersion[];
+  metaData: MesuredParameter[];
+  idList: number[];
   openMap: boolean = true;
   closeResult: string;
 
-  constructor(private fb: FormBuilder,
-              private sensorFormService: sensorVersionFormService,
-              private sensorService: sensorVersionService,
-            private modalService: NgbModal)
+  constructor(
+    private fb: FormBuilder,
+    private sensorFormService: SensorVersionFormService,
+    private sensorService: SensorVersionService,
+    private modalService: NgbModal)
   {
     this.newSensor = this.fb.group({
       name: [''],
+      displayName: [''],
       type: [''],
       longitude: [''],
       latitude: [''],
     });
     this.newSensorMetaData = this.fb.group({
-      name:[''],
+      name: [''],
       version: [''],
       separator: [''],
       measuredDataOrder: ['']
     });
-    this.metaData = new Array();
+    this.metaData = [];
     this.metaData = this.sensorService.loadMetaData();
     this.typeList = this.sensorService.loadSensorTypes();
-    // this.sensorService.getSensorTypeNames().
-    //   subscribe( (res) => { this.typeList = res } );
-    this.idList = new Array();
+    this.idList = [];
   }
 
+  open(content): void {
+    this.modalService.open(
+      content, {ariaLabelledBy: 'modal-basic-title'});
+    this.openMap = true;
+  }
 
-    open(content) {
-      this.modalService.open(
-        content, {ariaLabelledBy: 'modal-basic-title'});
-      this.openMap = true;
-    }
-
-  onAddNewSensor() {
+  onAddNewSensor(): void {
     let sensorName: string;
+    let sensorDisplayName: string;
     let sensorType: number;
     let sensorLongitude: number;
     let sensorLatitude: number;
     let s = this.newSensor.value;
+
     if (this.newSensor.get('name').value != "") {
       sensorName = this.newSensor.get('name').value;
     } else {
       sensorName = "UNKNOWN_SENSOR_NAME";
     }
+    if (this.newSensor.get('displayName').value != "") {
+      sensorDisplayName = this.newSensor.get('displayName').value;
+    } else {
+      sensorDisplayName = "UNKNOWN_DISPLAY_NAME";
+    }
     if (this.newSensor.get('type').value != 1) {
-      sensorType  = this.newSensor.get('type').value;
+      sensorType = this.newSensor.get('type').value;
     } else {
       sensorType = 1;
     }
@@ -82,28 +88,38 @@ export class SensorVersionComponent {
     } else {
       sensorLatitude = 0;
     }
-    this.sensorFormService.addSensor(sensorName, sensorType, sensorLongitude, sensorLatitude, s).
-      subscribe( res => {
-        console.log('Ajout effectue');
-      });
+
+    this.sensorFormService.addSensor(
+      sensorName,
+      sensorDisplayName,
+      sensorType,
+      sensorLongitude,
+      sensorLatitude,
+      s).subscribe(
+        res => {
+          console.log('Ajout effectue');
+        }
+    );
     this.resetSensorForm();
   }
 
-  resetSensorForm() {
+  resetSensorForm(): void {
     this.newSensor.reset({
       name: [''],
+      displayName: [''],
       type: [''],
       longitude: [''],
       latitude: [''],
     });
   }
 
-  onAddNewSensorMetaData() {
+  onAddNewSensorMetaData(): void {
     let sensorMetaDataName: string;
     let sensorMetaDataVersion: string;
     let sensorMetaDataSeparator: string;
     let measuredDataOrder = this.newSensorMetaData.get('measuredDataOrder').value;
     let m = this.newSensorMetaData.value;
+
     if (this.newSensorMetaData.get('name').value) {
       sensorMetaDataName = this.newSensorMetaData.get('name').value;
     } else {
@@ -131,7 +147,7 @@ export class SensorVersionComponent {
     this.resetSensorMetaDataForm();
   }
 
-  resetSensorMetaDataForm() {
+  resetSensorMetaDataForm(): void {
     this.newSensorMetaData.reset({
       name:[''],
       version: [''],
@@ -140,14 +156,14 @@ export class SensorVersionComponent {
     });
   }
 
-  addMetaDataParam() {
+  // TODO
+  addMetaDataParam(): void {
     console.log('MetaData Param function  ');
     let name = '';
     let measuredParam = '';
   }
 
-  onMetaData(id) {
-    // test si l'élément est déjà présent
+  onMetaData(id): void {
     if ( this.idList.includes(id) ) {
       this.idList = remove(this.idList, (value) => {return value !== id});
     } else {
@@ -159,14 +175,14 @@ export class SensorVersionComponent {
     this.refreshMetaDataOrder();
   }
 
-  changeIcon(id){
+  changeIcon(id): string {
     if (this.idList.includes(id)) {
-      return "icon icon-shape bg-success text-white";
+      return "bg-success icon icon-shape no-outline text-white";
     }
-    return "icon icon-shape bg-gray text-white";
+    return "bg-gray icon icon-shape no-outline text-white";
   }
 
-  refreshMetaDataOrder(){
+  refreshMetaDataOrder(): void {
     let regex = new RegExp(',',"gi");
     this.newSensorMetaData.patchValue({
       measuredDataOrder: this.idList.toString().
@@ -175,7 +191,7 @@ export class SensorVersionComponent {
     });
   }
 
-  onMoveLeft(id) {
+  onMoveLeft(id: number): void {
     let index: number = this.idIndex(id);
     let previousId: number = this.idList[index-1];
     this.idList.splice(index-1, 1, id);
@@ -183,7 +199,7 @@ export class SensorVersionComponent {
     this.refreshMetaDataOrder();
   }
 
-  onMoveRight(id) {
+  onMoveRight(id: number): void {
     let index: number = this.idIndex(id);
     let nextId: number = this.idList[index+1];
     this.idList.splice(index+1, 1, id);
@@ -191,7 +207,7 @@ export class SensorVersionComponent {
     this.refreshMetaDataOrder();
   }
 
-  idIndex(id): number {
+  idIndex(id: number): number {
     let index: number = this.idList.indexOf(id);
     if (index === -1) {
       console.log("[ERROR] id not in idList");

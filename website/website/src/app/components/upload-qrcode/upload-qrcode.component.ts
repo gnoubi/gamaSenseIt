@@ -5,7 +5,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-upload-qrcode',
   templateUrl: './upload-qrcode.component.html',
-  styleUrls: ['./upload-qrcode.component.css']
+  styleUrls: ['./upload-qrcode.component.scss']
 })
 export class UploadQrcodeComponent implements OnDestroy {
 

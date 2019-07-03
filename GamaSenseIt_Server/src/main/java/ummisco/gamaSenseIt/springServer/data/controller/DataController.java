@@ -37,225 +37,209 @@ import ummisco.gamaSenseIt.springServer.data.services.ISensorManagment;
 @RequestMapping("/public/")
 public class DataController {
 	final static String NIL_VALUE = "nil";
-	
-	
+
 	@Autowired
 	ISensorRepository sensors;
-	
+
 	@Autowired
 	ISensorMetadataRepository sensorMetadata;
-	
+
 	@Autowired
 	ISensorManagment sensorManagmentService;
-	
+
 	@Autowired
 	ISensorMetadataRepository sensorTypeRepo;
-	
+
 	@Autowired
 	ISensorDataRepository sensorData;
-	
+
 	@Autowired
 	IParameterMetadataRepository metaDataRepo;
-	
-	
-	public DataController()
-	{
+
+	public DataController() {
 	}
-	
-	private Sensor findSensor(String id, String name)
-	{
+
+	private Sensor findSensor(String id, String name) {
 		Sensor s = null;
-    	if(!id.equals("nil"))
-    	{
-    		Optional<Sensor>  o=sensors.findById(Long.valueOf(id).longValue());
-    		if(o.isPresent())
-    			s = o.get();
-    	}
-    	else
-    	{
-    		List<Sensor> ls =  sensors.findByName(name);
-        	if(ls.size()>0)
-        		s = ls.get(0);
-    	}
-    	return s;
+		if (!id.equals("nil")) {
+			Optional<Sensor> o = sensors.findById(Long.valueOf(id).longValue());
+			if (o.isPresent())
+				s = o.get();
+		} else {
+			List<Sensor> ls = sensors.findByName(name);
+			if (ls.size() > 0)
+				s = ls.get(0);
+		}
+		return s;
 	}
-	
-	private Sensor findSensor(long id)
-	{
-    	Long lid = null;
-    	Sensor s = null;
-    	try {
-    		lid = Long.valueOf(id);
-    		 s = sensors.findById(lid).get();
-    	} catch(NumberFormatException e)
-    	{
-    		return null;
-    	}
-    	return s;
+
+	private Sensor findSensor(long id) {
+		Long lid = null;
+		Sensor s = null;
+		try {
+			lid = Long.valueOf(id);
+			s = sensors.findById(lid).get();
+		} catch (NumberFormatException e) {
+			return null;
+		}
+		return s;
 	}
-	
+
 	@CrossOrigin
-    @RequestMapping(IDataController.SENSORS)
-    public List<DisplayableSensor> getSensors() {
-    		Iterable<Sensor> mt = sensors.findAll();
-    		List<DisplayableSensor> dpl = new ArrayList<DisplayableSensor>();
-        	for(Sensor sensor: mt)
-        	{
-        		DisplayableSensor s = new DisplayableSensor(sensor);
-        		dpl.add(s);
-        	}
-        	return dpl;
-    }
-	
+	@RequestMapping(IDataController.SENSORS)
+	public List<DisplayableSensor> getSensors() {
+		Iterable<Sensor> mt = sensors.findAll();
+		List<DisplayableSensor> dpl = new ArrayList<DisplayableSensor>();
+		for (Sensor sensor : mt) {
+			DisplayableSensor s = new DisplayableSensor(sensor);
+			dpl.add(s);
+		}
+		return dpl;
+	}
+
 	@CrossOrigin
-    @RequestMapping(IDataController.SENSORS_NAMES)
-    public List<String> getSensorsNames() {
-    		ArrayList<String> res = new ArrayList<>();
-    		Iterable<Sensor> mt = sensors.findAll();
-    		for(Sensor s:mt)
-    		{
-    			res.add(s.getName());
-			}
-    		return res;
-    }
-    
-    @CrossOrigin
-    @RequestMapping(IDataController.SENSOR_META_DATA_FULLNAMES)
-    public List<String> getSensorMetaDataName() {
-    		ArrayList<String> res = new ArrayList<>();
-    		Iterable<SensorMetadata> mt = sensorMetadata.findAll();
-    		for(SensorMetadata s:mt)
-    		{
-    			res.add(s.getName()+" -- "+s.getVersion());
-    		}
-    		return res;
-    }
-    
+	@RequestMapping(IDataController.SENSOR)
+	public DisplayableSensor getSensorById(
+			@RequestParam(value = IDataController.SENSOR_ID, required = true) long id) {
+		Optional<Sensor> mt = sensors.findById(id);
+		if (mt.isPresent()) {
+			Sensor s = mt.get();
+			DisplayableSensor dpl = new DisplayableSensor(s);
+			return dpl;
+		}
+		return null;
+	}
+
 	@CrossOrigin
-    @RequestMapping(IDataController.META_DATA)
-    public List<DisplayableParameterMetaData> getMetaData() {
-    		Iterable<ParameterMetadata> mt = metaDataRepo.findAll();
-    		List<DisplayableParameterMetaData> dpl = new ArrayList<DisplayableParameterMetaData>();
-        	for(ParameterMetadata parameterMetadata: mt)
-        	{
-        		DisplayableParameterMetaData pm = new DisplayableParameterMetaData(parameterMetadata);
-        		dpl.add(pm);
-        	}
-        	return dpl;
-    }
-	
+	@RequestMapping(IDataController.SENSORS_NAMES)
+	public List<String> getSensorsNames() {
+		ArrayList<String> res = new ArrayList<>();
+		Iterable<Sensor> mt = sensors.findAll();
+		for (Sensor s : mt) {
+			res.add(s.getName());
+		}
+		return res;
+	}
+
 	@CrossOrigin
-    @RequestMapping(IDataController.META_DATA_ID)
-    public DisplayableParameterMetaData getMetaData(
-		@RequestParam(value=IDataController.PARAMETER_ID, required=true) long id) {
-    		Optional<ParameterMetadata> mt = metaDataRepo.findById(id);
-    		if(mt.isPresent()) {
-    			ParameterMetadata parameterMetadata = mt.get();
-        		DisplayableParameterMetaData pm = new DisplayableParameterMetaData(parameterMetadata);
-        		return pm;
-        	} 
-        	return null;
-    }
-	
+	@RequestMapping(IDataController.SENSOR_META_DATA_FULLNAMES)
+	public List<String> getSensorMetaDataName() {
+		ArrayList<String> res = new ArrayList<>();
+		Iterable<SensorMetadata> mt = sensorMetadata.findAll();
+		for (SensorMetadata s : mt) {
+			res.add(s.getName() + " -- " + s.getVersion());
+		}
+		return res;
+	}
+
 	@CrossOrigin
-    @RequestMapping(IDataController.SENSOR_META_DATA)
-    public List<DisplayableSensorMetaData> getSensorMetaData() {
-    		Iterable<SensorMetadata> mt = sensorMetadata.findAll();
-    		List<DisplayableSensorMetaData> dpl = new ArrayList<DisplayableSensorMetaData>();
-        	for(SensorMetadata sensorMetadata: mt)
-        	{
-        		DisplayableSensorMetaData s = new DisplayableSensorMetaData(sensorMetadata);
-        		dpl.add(s);
-        	}
-        	return dpl;
-    }
-	
+	@RequestMapping(IDataController.META_DATA)
+	public List<DisplayableParameterMetaData> getMetaData() {
+		Iterable<ParameterMetadata> mt = metaDataRepo.findAll();
+		List<DisplayableParameterMetaData> dpl = new ArrayList<DisplayableParameterMetaData>();
+		for (ParameterMetadata parameterMetadata : mt) {
+			DisplayableParameterMetaData pm = new DisplayableParameterMetaData(parameterMetadata);
+			dpl.add(pm);
+		}
+		return dpl;
+	}
+
+	@CrossOrigin
+	@RequestMapping(IDataController.META_DATA_ID)
+	public DisplayableParameterMetaData getMetaData(
+			@RequestParam(value = IDataController.PARAMETER_ID, required = true) long id) {
+		Optional<ParameterMetadata> mt = metaDataRepo.findById(id);
+		if (mt.isPresent()) {
+			ParameterMetadata parameterMetadata = mt.get();
+			DisplayableParameterMetaData pm = new DisplayableParameterMetaData(parameterMetadata);
+			return pm;
+		}
+		return null;
+	}
+
+	@CrossOrigin
+	@RequestMapping(IDataController.SENSOR_META_DATA)
+	public List<DisplayableSensorMetaData> getSensorMetaData() {
+		Iterable<SensorMetadata> mt = sensorMetadata.findAll();
+		List<DisplayableSensorMetaData> dpl = new ArrayList<DisplayableSensorMetaData>();
+		for (SensorMetadata sensorMetadata : mt) {
+			DisplayableSensorMetaData s = new DisplayableSensorMetaData(sensorMetadata);
+			dpl.add(s);
+		}
+		return dpl;
+	}
+
 	@CrossOrigin
 	@RequestMapping(IDataController.META_DATA_SENSOR_META_DATA_ID)
 	public List<DisplayableParameterMetaData> getSensorMetaData(
-    		@RequestParam(value=IDataController.METADATA_ID, required=true) long id) {
-			Optional<SensorMetadata> mt = sensorMetadata.findById(id);
-			if(mt.isPresent()) {
-				SensorMetadata sensor = mt.get();
-				List<DisplayableParameterMetaData> dpl = new ArrayList<DisplayableParameterMetaData>();
-				Set<ParameterMetadata> parameterMetaData = sensor.getParameterMetaData();
-				for(ParameterMetadata pm: parameterMetaData) {
-					DisplayableParameterMetaData p = new DisplayableParameterMetaData(pm);
-					dpl.add(p);
-				}
-				return dpl;
+			@RequestParam(value = IDataController.METADATA_ID, required = true) long id) {
+		Optional<SensorMetadata> mt = sensorMetadata.findById(id);
+		if (mt.isPresent()) {
+			SensorMetadata sensor = mt.get();
+			List<DisplayableParameterMetaData> dpl = new ArrayList<DisplayableParameterMetaData>();
+			Set<ParameterMetadata> parameterMetaData = sensor.getParameterMetaData();
+			for (ParameterMetadata pm : parameterMetaData) {
+				DisplayableParameterMetaData p = new DisplayableParameterMetaData(pm);
+				dpl.add(p);
 			}
-			return null;
+			return dpl;
+		}
+		return null;
 	}
- 	
-    @CrossOrigin
-    @RequestMapping(value=IDataController.SENSOR_DATA_SINCE_DATE,  method= {RequestMethod.POST,RequestMethod.GET, RequestMethod.OPTIONS},produces = MediaType.APPLICATION_JSON_VALUE )
-    public List<DisplayableData> getDataAfter(    		
-    		@RequestParam(value=IDataController.SENSOR_ID, required=true) long id,
-    		@RequestParam(value=IDataController.PARAMETER_ID, required=true) long idParam,
-    		@RequestParam(value=IDataController.BEGIN_DATE) @DateTimeFormat(pattern=IDataController.DATE_PATTERN) Date start)
 
-    {
-    	Calendar dte = Calendar.getInstance();
-    	dte.add(Calendar.DAY_OF_MONTH, 1);
-    	return getDataBetween(id, idParam,start,dte.getTime() );
-    }
-    
-    @CrossOrigin
-    @RequestMapping(value=IDataController.SENSOR_DATA_BETWEEN_DATES)
-    public List<DisplayableData> getDataBetween(
-    		
-    		@RequestParam(value=IDataController.SENSOR_ID, required=true) long id,
-    		@RequestParam(value=IDataController.PARAMETER_ID, required=true) long idParam,
-    		@RequestParam(value=IDataController.BEGIN_DATE) @DateTimeFormat(pattern=IDataController.DATE_PATTERN) Date start,
-    		@RequestParam(value=IDataController.END_DATE) @DateTimeFormat(pattern=IDataController.DATE_PATTERN) Date enddate)
-    {
-    	
-    	List<DisplayableData> dpl = new ArrayList<DisplayableData>();
-    	List<SensorData> dts = this.sensorData.findAllByDate(id,idParam,start, enddate);
-    	return buildList(dts);
-    }
-    
-    @CrossOrigin
-    @RequestMapping(value=IDataController.SENSOR_DATA)
-    public List<DisplayableData> getDataBetween()
-    {
-    	Iterable<SensorData> dts = this.sensorData.findAll();
-    	return buildList(dts);
-    	
-    }
-    
-    @CrossOrigin
-    @RequestMapping(value=IDataController.SERVER_DATE)
-    public long getServerDate()
-    {
-    	return (long)(Calendar.getInstance().getTimeInMillis()/1000);  	
-    }
-    
-    
-    private List<DisplayableData> buildList(Iterable<SensorData> dts)
-    {
-    	List<DisplayableData> dpl = new ArrayList<DisplayableData>();
-    	for(SensorData dt: dts)
-    	{
-    		DisplayableData data = new DisplayableData(dt.getDataObject(), 
-    									dt.getCaptureDate(),
-    									dt.getParameter().getUnit(),
-    									dt.getSensor().getName(),
-    									dt.getSensor().getLatitude(),
-    									dt.getSensor().getLongitude(),
-    									dt.getParameter().getParameter().toString());
+	@CrossOrigin
+	@RequestMapping(value = IDataController.SENSOR_DATA_SINCE_DATE, method = { RequestMethod.POST, RequestMethod.GET,
+			RequestMethod.OPTIONS }, produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<DisplayableData> getDataAfter(@RequestParam(value = IDataController.SENSOR_ID, required = true) long id,
+			@RequestParam(value = IDataController.PARAMETER_ID, required = true) long idParam,
+			@RequestParam(value = IDataController.BEGIN_DATE) @DateTimeFormat(pattern = IDataController.DATE_PATTERN) Date start)
 
-    		dpl.add(data);
-    		
-    	}
-    	return dpl;
-    }
-    
-    @CrossOrigin
-    @RequestMapping(value=IDataController.DEFAULT_DATA_SEPARATOR)
-    public String getDefaultDataSeparator() {
-    	return SensorMetadata.DEFAULT_DATA_SEPARATOR;
-    }
+	{
+		Calendar dte = Calendar.getInstance();
+		dte.add(Calendar.DAY_OF_MONTH, 1);
+		return getDataBetween(id, idParam, start, dte.getTime());
+	}
 
+	@CrossOrigin
+	@RequestMapping(value = IDataController.SENSOR_DATA_BETWEEN_DATES)
+	public List<DisplayableData> getDataBetween(
+			@RequestParam(value = IDataController.SENSOR_ID, required = true) long id,
+			@RequestParam(value = IDataController.PARAMETER_ID, required = true) long idParam,
+			@RequestParam(value = IDataController.BEGIN_DATE) @DateTimeFormat(pattern = IDataController.DATE_PATTERN) Date start,
+			@RequestParam(value = IDataController.END_DATE) @DateTimeFormat(pattern = IDataController.DATE_PATTERN) Date enddate) {
+		List<DisplayableData> dpl = new ArrayList<DisplayableData>();
+		List<SensorData> dts = this.sensorData.findAllByDate(id, idParam, start, enddate);
+		return buildList(dts);
+	}
+
+	@CrossOrigin
+	@RequestMapping(value = IDataController.SENSOR_DATA)
+	public List<DisplayableData> getDataBetween() {
+		Iterable<SensorData> dts = this.sensorData.findAll();
+		return buildList(dts);
+
+	}
+
+	@CrossOrigin
+	@RequestMapping(value = IDataController.SERVER_DATE)
+	public long getServerDate() {
+		return (long) (Calendar.getInstance().getTimeInMillis() / 1000);
+	}
+
+	private List<DisplayableData> buildList(Iterable<SensorData> dts) {
+		List<DisplayableData> dpl = new ArrayList<DisplayableData>();
+		for (SensorData dt : dts) {
+			DisplayableData data = new DisplayableData(dt.getDataObject(), dt.getCaptureDate(),
+					dt.getParameter().getUnit(), dt.getSensor().getName(), dt.getSensor().getLatitude(),
+					dt.getSensor().getLongitude(), dt.getParameter().getParameter().toString());
+			dpl.add(data);
+		}
+		return dpl;
+	}
+
+	@CrossOrigin
+	@RequestMapping(value = IDataController.DEFAULT_DATA_SEPARATOR)
+	public String getDefaultDataSeparator() {
+		return SensorMetadata.DEFAULT_DATA_SEPARATOR;
+	}
 }

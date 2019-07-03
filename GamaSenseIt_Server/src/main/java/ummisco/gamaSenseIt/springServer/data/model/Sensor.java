@@ -22,6 +22,7 @@ public class Sensor {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long idSensor;
 	private String name;
+	private String displayName;
 	private double longitude;
 	private double latitude;
 	
@@ -38,15 +39,16 @@ public class Sensor {
 	{
 		name = "";
 	}
-	public Sensor( String sensorName, Point location, SensorMetadata sensorType) {
-		this(sensorName,location.getX(),location.getY(),sensorType);
+	public Sensor(String sensorName, String displayName, Point location, SensorMetadata sensorType) {
+		this(sensorName, displayName, location.getX(),location.getY(),sensorType);
 	}
 	
-	public Sensor( String sensorName, double locationX,double locationY, SensorMetadata sensorType) {
+	public Sensor(String sensorName, String displayName, double locationX, double locationY, SensorMetadata sensorType) {
 		this();
 		this.longitude = locationX;
 		this.latitude = locationY;
 		this.name = sensorName;
+		this.displayName = displayName;
 		this.sensorType = sensorType;
 	}
 	
@@ -56,16 +58,18 @@ public class Sensor {
 	public void setIdSensor(Long idSensor) {
 		this.idSensor = idSensor;
 	}
-	
-	
-	
 	public String getName() {
 		return name;
 	}
 	public void setName(String sensorName) {
 		this.name = sensorName;
 	}
-
+	public String getDisplayName() {
+		return displayName;
+	}
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
 	public SensorMetadata getMetadata() {
 		return sensorType;
 	}

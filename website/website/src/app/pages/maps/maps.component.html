@@ -19,7 +19,7 @@
                       <input placeholder="Sensor's Name" type="text" matInput [formControl]="myControl"
                         [matAutocomplete]="auto">
                       <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
-                        <mat-option *ngFor="let option of filteredOptions | async" value="{{option.name}}">
+                        <mat-option *ngFor="let option of filteredOptions | async;" value="{{option.name}}">
                           {{ option.name }}
                         </mat-option>
                       </mat-autocomplete>
@@ -54,7 +54,7 @@
       </div>
       <br>
       <div class="card shadow border-0">
-        <div id="mapid" style=" height:600px"></div>
+        <div class="map-lg" id="mapid"></div>
       </div>
     </div>
   </div>
