@@ -48,7 +48,7 @@ public class SensorManagment implements ISensorManagment{
 		
 		GeometryFactory gf=new GeometryFactory();
 		
-		SensorMetadata mtype = new SensorMetadata( DEFAULT_SENSOR_TYPE_NAME,DEFAULT_SENSOR_VERSION);
+	/*	SensorMetadata mtype = new SensorMetadata( DEFAULT_SENSOR_TYPE_NAME,DEFAULT_SENSOR_VERSION);
 		SensorMetadata qamelio = new SensorMetadata( "Qamelio","1");
 		sensorMetadataRepo.save(mtype);
 		
@@ -84,7 +84,7 @@ public class SensorManagment implements ISensorManagment{
 		addParameterToSensorMetadata(smd, p1);
 		
 		Sensor sx = new Sensor("node_1",p,smd);
-		sensorRepo.save(sx);
+		sensorRepo.save(sx);*/
 
 	}
 	
