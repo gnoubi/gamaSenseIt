@@ -41,7 +41,7 @@ export class SensorVersionComponent implements OnInit {
       name: [''],
       displayName: [''],
       type: [''],
-      place: [''],
+      subDisplayName: [''],
       longitude: [''],
       latitude: [''],
     });
@@ -89,7 +89,7 @@ export class SensorVersionComponent implements OnInit {
     let sensorName: string;
     let sensorDisplayName: string;
     let sensorType: number;
-    let sensorPlace: string;
+    let sensorSubDisplayName: string;
     let sensorLongitude: number;
     let sensorLatitude: number;
     let s = this.newSensor.value;
@@ -109,10 +109,10 @@ export class SensorVersionComponent implements OnInit {
     } else {
       sensorType = 1;
     }
-    if (this.newSensor.get('place').value != "") {
-      sensorPlace = this.newSensor.get('place').value;
+    if (this.newSensor.get('subDisplayName').value != "") {
+      sensorSubDisplayName = this.newSensor.get('subDisplayName').value;
     } else {
-      sensorPlace = "UNKNOWN_PLACE";
+      sensorSubDisplayName = "UNKNOWN_PLACE";
     }
     // inputs has priority on map
     if (typeof(this.newSensor.get('longitude').value) === 'number' &&
@@ -131,7 +131,7 @@ export class SensorVersionComponent implements OnInit {
       sensorName,
       sensorDisplayName,
       sensorType,
-      sensorPlace,
+      sensorSubDisplayName,
       sensorLongitude,
       sensorLatitude,
       s).subscribe(
@@ -147,7 +147,7 @@ export class SensorVersionComponent implements OnInit {
       name: [''],
       displayName: [''],
       type: [''],
-      place: [''],
+      subDisplayName: [''],
       longitude: [''],
       latitude: [''],
     });

@@ -6,12 +6,13 @@
         alt="www.ird.fr">
     </div>
     <div class="col-xs col-sm col-md-9 col-lg-9">
-      <div *ngIf="!qameleo.browseQRcode;">
+      <div *ngIf="!qameleo.browseQRcode; else elseBlock">
         <h1 class="display-title ml-1 mr-1">{{qameleo.displayName}}</h1>
-        <h3 class="display-title ml-1 mr-1">
-          Niveau de particules à : {{qameleo.place}}
-        </h3>
+        <h3 class="display-title ml-1 mr-1">{{qameleo.subDisplayName}}</h3>
       </div>
+      <ng-template #elseBlock>
+        <h1 class="display-title ml-1 mr-1">Charger un QR code</h1>
+      </ng-template>
     </div>
   </div>
 

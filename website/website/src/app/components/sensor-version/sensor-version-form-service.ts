@@ -24,7 +24,7 @@ export class SensorVersionFormService {
       sensorName: string,
       sensorDisplayName: string,
       sensorType: number,
-      sensorPlace: string,
+      sensorSubDisplayName: string,
       sensorLongitude: number,
       sensorLatitude: number,
       s: Sensor): Observable<any>
@@ -32,7 +32,7 @@ export class SensorVersionFormService {
       let link = API_URLS.ADD_SENSOR;
       link += '?&name=' + sensorName +
               '&displayName=' + sensorDisplayName +
-              '&place=' + sensorPlace +
+              '&place=' + sensorSubDisplayName+
               '&longitude=' + sensorLongitude +
               '&latitude=' + sensorLatitude +
               '&sensormetadata=' + sensorType;

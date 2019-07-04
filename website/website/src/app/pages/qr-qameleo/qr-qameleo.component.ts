@@ -10,7 +10,7 @@ export interface PMSensor {
   pm10: number;
   temperature: number;
   humidity: number;
-  place: string;
+  subDisplayName: string;
 }
 
 @Component({
@@ -34,7 +34,7 @@ export class QrQameleoComponent implements OnInit {
   temperatureUnit: string = "°C";
   humidity: number = 0;
   humidityUnit: string = "%";
-  place: string= "";
+  subDisplayName: string= "";
   url = 'http://vmpams.ird.fr:8080';
   browseQRcode = true;
   httpGetSucceed = true;
@@ -58,16 +58,16 @@ export class QrQameleoComponent implements OnInit {
           this.sensorName = data.sensorName;
           this.displayName = data.displayName;
           this.pm1 = data.pm1/this.PM1_THRESHOLD*50;
-          this.pm1 = Math.round(this.pm1*100)/100;
+          // this.pm1 = Math.round(this.pm1*100)/100;
           this.pm25 = data.pm25/this.PM2_5_THRESHOLD*50;
-          this.pm25 = Math.round(this.pm25*100)/100;
+          // this.pm25 = Math.round(this.pm25*100)/100;
           this.pm10 = data.pm10/this.PM10_THRESHOLD*50;
-          this.pm10 = Math.round(this.pm10*100)/100;
+          // this.pm10 = Math.round(this.pm10*100)/100;
           this.temperature = data.temperature;
           this.temperature = Math.round(this.temperature);
           this.humidity = data.humidity;
           this.humidity = Math.round(this.humidity);
-          this.place = data.place;
+          this.subDisplayName = data.subDisplayName;
         } else {
           this.httpGetSucceed = false;
         }

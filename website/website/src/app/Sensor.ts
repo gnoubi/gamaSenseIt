@@ -2,7 +2,7 @@ export class Sensor{
   idSensor: number;
   name: string;
   displayName: string;
-  place: string;
+  subDisplayName: string;
   longitude: number;
   latitude: number;
   sensorMetadata: number;
@@ -21,7 +21,7 @@ export class Sensor{
     this.idSensor = idSensor;
     this.name= name;
     this.displayName = displayName;
-    this.place = place;
+    this.subDisplayName = place;
     this.longitude = longitude;
     this.latitude = latitude;
     this.sensorMetadata = sensorMetadata;

@@ -3,7 +3,7 @@
   <app-upload-qrcode></app-upload-qrcode>
 </div>
 <ng-template #elseBlock>
-  <div class="text-center"
+  <div align="center"
     *ngIf="httpGetSucceed; else elseBlock2" >
     <div class="container">
       <div class="row">
@@ -27,7 +27,8 @@
                     </ng-template> -->
                     <button class="icon icon-shape color-green text-white"
                       mat-fab
-                      matTooltip="Température en {{ temperatureUnit }}."
+                      matTooltip="Température en {{ temperatureUnit }}.
+                      Moyenne sur 1 heure en fenêtre glissante."
                       matTooltipClass="multi-line">
                       <i class="fas fa-thermometer-three-quarters"></i>
                     </button>
@@ -64,7 +65,8 @@
                     </ng-template> -->
                     <button class="icon icon-shape color-green text-white"
                       mat-fab
-                      matTooltip="Humidité en {{ humidityUnit }}."
+                      matTooltip="Humidité en {{ humidityUnit }}.
+                      Moyenne sur 1 heure en fenêtre glissante."
                       matTooltipClass="multi-line">
                       <i class="fas fa-tint"></i>
                     </button>
@@ -109,7 +111,8 @@
                     <button class="icon icon-shape color-green text-white tip"
                       mat-fab
                       matTooltip="Concentration en particules de diamètres inférieurs à 10 microns.
-                      Mesuré en {{ PMUnit }}."
+                      Mesuré en {{ PMUnit }}.
+                      Moyenne sur 24 heures en fenêtre glissante."
                       matTooltipClass="multi-line">
                       <i class="fab fa-cloudversify"></i>
                     </button>
@@ -145,7 +148,8 @@
                     <button class="icon icon-shape color-green text-white"
                       mat-fab
                       matTooltip="Concentration en particules de diamètres inférieurs à 2,5 microns.
-                      Mesuré en {{ PMUnit }}."
+                      Mesuré en {{ PMUnit }}.
+                      Moyenne sur 24 heures en fenêtre glissante."
                       matTooltipClass="multi-line">
                       <i class="fab fa-cloudversify"></i>
                     </button>
@@ -181,7 +185,8 @@
                     <button class="icon icon-shape color-green text-white"
                       mat-fab
                       matTooltip="Concentration en particules de diamètres inférieurs à 1 micron.
-                      Mesuré en {{ PMUnit }}."
+                      Mesuré en {{ PMUnit }}.
+                      Moyenne sur 24 heures en fenêtre glissante."
                       matTooltipClass="multi-line">
                       <i class="fab fa-cloudversify"></i>
                     </button>
