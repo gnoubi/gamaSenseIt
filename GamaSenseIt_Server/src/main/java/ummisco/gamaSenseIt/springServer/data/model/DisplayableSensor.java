@@ -4,19 +4,19 @@ public class DisplayableSensor {
   private long idSensor;
   private String name;
   private String displayName;
-  private String place;
+  private String subDisplayName;
   private double longitude;
   private double latitude;
   private long sensorMetadata;
   private String sensorMetadataName;
 
-  public DisplayableSensor(long idSensor, String name, String displayName, String place, double longitude,
+  public DisplayableSensor(long idSensor, String name, String displayName, String subDisplayName, double longitude,
       double latitude, long sensorMetadata, String sensorMetadataName) {
     super();
     this.idSensor = idSensor;
     this.name = name;
     this.displayName = displayName;
-    this.place = place;
+    this.subDisplayName = subDisplayName;
     this.longitude = longitude;
     this.latitude = latitude;
     this.sensorMetadata = sensorMetadata;
@@ -24,7 +24,7 @@ public class DisplayableSensor {
   }
 
   public DisplayableSensor(Sensor s) {
-    this(s.getIdSensor(), s.getName(), s.getDisplayName(), s.getPlace(), s.getLongitude(), s.getLatitude(),
+    this(s.getIdSensor(), s.getName(), s.getDisplayName(), s.getSubDisplayName(), s.getLongitude(), s.getLatitude(),
         s.getMetadata().getIdType(), s.getMetadata().getName() + " -- " + s.getMetadata().getVersion());
   }
 
@@ -84,12 +84,12 @@ public class DisplayableSensor {
     this.sensorMetadataName = sensorMetadataName;
   }
 
-  public String getPlace() {
-    return place;
+  public String getSubDisplayName() {
+    return subDisplayName;
   }
 
-  public void setPlace(String place) {
-    this.place = place;
+  public void setSubDisplayName(String subDisplayName) {
+    this.subDisplayName = subDisplayName;
   }
 
 }

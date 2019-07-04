@@ -1,15 +1,24 @@
 package ummisco.gamaSenseIt.springServer.data.services;
+
+// import java.text.NumberFormat;
+// import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+// import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Point;
 
 import ummisco.gamaSenseIt.springServer.data.model.Sensor;
 import ummisco.gamaSenseIt.springServer.data.model.SensorData;
+// import ummisco.gamaSenseIt.springServer.data.model.DisplayableData;
 import ummisco.gamaSenseIt.springServer.data.model.ParameterMetadata;
+import ummisco.gamaSenseIt.springServer.data.model.ParameterMetadata.DataFormat;
+import ummisco.gamaSenseIt.springServer.data.model.ParameterMetadata.DataParameter;
 import ummisco.gamaSenseIt.springServer.data.model.SensorMetadata;
 import ummisco.gamaSenseIt.springServer.data.model.SensoredBulkData;
 import ummisco.gamaSenseIt.springServer.data.repositories.ISensorDataRepository;
@@ -39,7 +48,7 @@ public class SensorManagment implements ISensorManagment {
 
     GeometryFactory gf = new GeometryFactory();
 
-   /* SensorMetadata mtype = new SensorMetadata(DEFAULT_SENSOR_TYPE_NAME, DEFAULT_SENSOR_VERSION);
+    SensorMetadata mtype = new SensorMetadata(DEFAULT_SENSOR_TYPE_NAME, DEFAULT_SENSOR_VERSION);
     SensorMetadata qamelio = new SensorMetadata("Qamelio", "1", ":",DEFAULT_DESCRIPTION);
     sensorMetadataRepo.save(mtype);
 
@@ -59,8 +68,8 @@ public class SensorManagment implements ISensorManagment {
     Point p = gf.createPoint(new Coordinate(0, 0));
     Sensor s1 = new Sensor(DEFAULT_SENSOR_NAME, DEFAULT_SENSOR_DISPLAY_NAME, DEFAULT_SENSOR_PLACE, p, mtype);
     String slogan = "La recherche scientifique au service de la qualité de l'air que vous respirez.";
-    String place = "IRD";
-    Sensor s2 = new Sensor("SENSOR_2", slogan, place, p, qamelio);
+    String subDisplayName = "IRD";
+    Sensor s2 = new Sensor("SENSOR_2", slogan, subDisplayName, p, qamelio);
     sensorRepo.save(s1);
     sensorRepo.save(s2);
 
@@ -73,7 +82,7 @@ public class SensorManagment implements ISensorManagment {
     addParameterToSensorMetadata(smd, p1);
 
     Sensor sx = new Sensor("node_1", DEFAULT_SENSOR_DISPLAY_NAME, DEFAULT_SENSOR_PLACE, p, smd);
-    sensorRepo.save(sx);*/
+    sensorRepo.save(sx);
 
   }
 

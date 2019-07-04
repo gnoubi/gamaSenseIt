@@ -23,7 +23,7 @@ public class Sensor {
   private Long idSensor;
   private String name;
   private String displayName;
-  private String place;
+  private String subDisplayName;
   private double longitude;
   private double latitude;
 
@@ -41,8 +41,8 @@ public class Sensor {
     this(sensorName, displayName, location.getX(), location.getY(), sensorType);
   }
 
-  public Sensor(String sensorName, String displayName, String place, Point location, SensorMetadata sensorType) {
-    this(sensorName, displayName, place, location.getX(), location.getY(), sensorType);
+  public Sensor(String sensorName, String displayName, String subDisplayName, Point location, SensorMetadata sensorType) {
+    this(sensorName, displayName, subDisplayName, location.getX(), location.getY(), sensorType);
   }
 
   public Sensor(String sensorName, String displayName, double locationX, double locationY, SensorMetadata sensorType) {
@@ -54,23 +54,23 @@ public class Sensor {
     this.sensorType = sensorType;
   }
 
-  public Sensor(String sensorName, String displayName, String place, double locationX, double locationY,
+  public Sensor(String sensorName, String displayName, String subDisplayName, double locationX, double locationY,
       SensorMetadata sensorType) {
     this();
     this.name = sensorName;
     this.displayName = displayName;
-    this.place = place;
+    this.subDisplayName = subDisplayName;
     this.longitude = locationX;
     this.latitude = locationY;
     this.sensorType = sensorType;
   }
 
-  public Sensor(String sensorName, String displayName, String place, double locationX, double locationY,
+  public Sensor(String sensorName, String displayName, String subDisplayName, double locationX, double locationY,
       SensorMetadata sensorType, String description) {
     this();
     this.name = sensorName;
     this.displayName = displayName;
-    this.place = place;
+    this.subDisplayName = subDisplayName;
     this.longitude = locationX;
     this.latitude = locationY;
     this.sensorType = sensorType;
@@ -136,12 +136,12 @@ public class Sensor {
     return this.sensorType.getParameterMetadata(id);
   }
 
-  public String getPlace() {
-    return place;
+  public String getSubDisplayName() {
+    return subDisplayName;
   }
 
-  public void setPlace(String place) {
-    this.place = place;
+  public void setSubDisplayName(String subDisplayName) {
+    this.subDisplayName = subDisplayName;
   }
 
 }

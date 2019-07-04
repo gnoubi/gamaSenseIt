@@ -36,8 +36,8 @@ public interface IDataController {
   String MEASURED_PARAMETER = "measuredParameter";
   String MEASURED_DATA_ORDER = "measuredDataOrder";
   String NAME = "name";
-  String PLACE = "place";
   String SENSOR_METADATA = "sensorMetadata";
+  String SUB_DISPLAY_NAME = "subDisplayName";
   String UNIT = "unit";
   String VERSION = "version";
 

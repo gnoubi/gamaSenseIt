@@ -83,7 +83,7 @@ public class PrivateDataController {
   public DisplayableSensor addSensor(
       @RequestParam(value = IDataController.NAME, required = true, defaultValue = NIL_VALUE) String name,
       @RequestParam(value = IDataController.DISPLAY_NAME, required = true, defaultValue = NIL_VALUE) String displayName,
-      @RequestParam(value = IDataController.PLACE, required = true, defaultValue = NIL_VALUE) String place,
+      @RequestParam(value = IDataController.SUB_DISPLAY_NAME, required = true, defaultValue = NIL_VALUE) String subDisplayName,
       @RequestParam(value = IDataController.LONGITUDE, required = true, defaultValue = "0") double longitude,
       @RequestParam(value = IDataController.LATITUDE, required = true, defaultValue = "0") double latitude,
       @RequestParam(value = IDataController.SENSOR_METADATA, required = true) long idSensorType) {
@@ -102,7 +102,7 @@ public class PrivateDataController {
     if (!st.isPresent())
       return null;
 
-    Sensor s = new Sensor(name, displayName, place, longitude, latitude, st.get());
+    Sensor s = new Sensor(name, displayName, subDisplayName, longitude, latitude, st.get());
     sensors.save(s);
     return new DisplayableSensor(s);
   }
@@ -111,7 +111,7 @@ public class PrivateDataController {
   public DisplayableSensor updateSensor(@RequestParam(value = IDataController.SENSOR_ID, required = true) long id,
       @RequestParam(value = IDataController.NAME, required = false, defaultValue = NIL_VALUE) String name,
       @RequestParam(value = IDataController.DISPLAY_NAME, required = false, defaultValue = NIL_VALUE) String displayName,
-      @RequestParam(value = IDataController.PLACE, required = false, defaultValue = NIL_VALUE) String place,
+      @RequestParam(value = IDataController.SUB_DISPLAY_NAME, required = false, defaultValue = NIL_VALUE) String subDisplayName,
       @RequestParam(value = IDataController.LONGITUDE, required = false, defaultValue = NIL_VALUE) String longitude,
       @RequestParam(value = IDataController.LATITUDE, required = false, defaultValue = NIL_VALUE) String latitude) {
 
@@ -125,8 +125,8 @@ public class PrivateDataController {
     if (!displayName.equals(NIL_VALUE)) {
       s.setDisplayName(displayName);
     }
-    if (!place.equals(NIL_VALUE)) {
-      s.setPlace(place);
+    if (!subDisplayName.equals(NIL_VALUE)) {
+      s.setSubDisplayName(subDisplayName);
     }
     if (!longitude.equals(NIL_VALUE)) {
       double data = Double.valueOf(longitude).doubleValue();
