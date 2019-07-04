@@ -11,13 +11,15 @@ public class QameleoData {
   double pm10;
   double temperature;
   double humidity;
+  String displayName;
+  String subDisplayName;
 
-  public QameleoData(String sensorName, Map<DataParameter, Double> data) {
+  public QameleoData(String sensorName,String dname,String sdname, Map<DataParameter, Double> data) {
     this(sensorName, data.get(DataParameter.PM1), data.get(DataParameter.PM2_5), data.get(DataParameter.PM10),
-        data.get(DataParameter.TEMPERATURE), data.get(DataParameter.HUMIDITY));
+        data.get(DataParameter.TEMPERATURE), data.get(DataParameter.HUMIDITY),dname,sdname);
   }
 
-  public QameleoData(String sensorName, double pm1, double pm25, double pm10, double temperature, double humidity) {
+  public QameleoData(String sensorName, double pm1, double pm25, double pm10, double temperature, double humidity, String name, String sName) {
     super();
     this.sensorName = sensorName;
     this.pm1 = pm1;
@@ -25,6 +27,8 @@ public class QameleoData {
     this.pm10 = pm10;
     this.temperature = temperature;
     this.humidity = humidity;
+    this.displayName = name;
+    this.subDisplayName = sName;
   }
 
   public String getSensorName() {
@@ -74,5 +78,21 @@ public class QameleoData {
   public void setHumidity(double humidity) {
     this.humidity = humidity;
   }
+
+public String getDisplayName() {
+	return displayName;
+}
+
+public void setDisplayName(String displayName) {
+	this.displayName = displayName;
+}
+
+public String getSubDisplayName() {
+	return subDisplayName;
+}
+
+public void setSubDisplayName(String subDisplayName) {
+	this.subDisplayName = subDisplayName;
+}
 
 }

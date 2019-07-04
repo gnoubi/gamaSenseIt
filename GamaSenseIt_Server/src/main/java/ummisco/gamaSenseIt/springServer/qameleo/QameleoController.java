@@ -63,7 +63,7 @@ public class QameleoController {
       else
         res.put(p.getParameter(), Double.valueOf(0));
     }
-    return new QameleoData(s.getName(), res);
+    return new QameleoData(s.getName(),s.getDisplayName(),s.getSubDisplayName(), res);
   }
 
   private Double getMeanValue(long id, long idParam, Date start, Date enddate) {

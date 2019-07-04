@@ -46,7 +46,7 @@ public class SensorManagment implements ISensorManagment {
   @Override
   public void saveDefaultSensorInit() {
 
-    GeometryFactory gf = new GeometryFactory();
+ /*   GeometryFactory gf = new GeometryFactory();
 
     SensorMetadata mtype = new SensorMetadata(DEFAULT_SENSOR_TYPE_NAME, DEFAULT_SENSOR_VERSION);
     SensorMetadata qamelio = new SensorMetadata("Qamelio", "1", ":",DEFAULT_DESCRIPTION);
@@ -82,7 +82,7 @@ public class SensorManagment implements ISensorManagment {
     addParameterToSensorMetadata(smd, p1);
 
     Sensor sx = new Sensor("node_1", DEFAULT_SENSOR_DISPLAY_NAME, DEFAULT_SENSOR_PLACE, p, smd);
-    sensorRepo.save(sx);
+    sensorRepo.save(sx);*/
 
   }
 
