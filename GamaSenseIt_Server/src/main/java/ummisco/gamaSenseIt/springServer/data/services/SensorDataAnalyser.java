@@ -32,13 +32,13 @@ public class SensorDataAnalyser implements ISensorDataAnalyser {
     String[] datas = data.split(sep);
 
     System.out.println("order_" + smd.getMeasuredDataOrder() + "_");
-    String[] metaDatas = smd.getMeasuredDataOrder().split(SensorMetadata.MEASURE_ORDER_SEPARATOR);
+    String[] metadata = smd.getMeasuredDataOrder().split(SensorMetadata.MEASURE_ORDER_SEPARATOR);
 
-    for (String xx : metaDatas) {
+    for (String xx : metadata) {
       System.out.println("meta_" + xx + "_");
     }
 
-    for (String sid : metaDatas) {
+    for (String sid : metadata) {
       System.out.println("SID/" + sid + "/");
       long metaKey = Long.valueOf(sid).longValue();
       Optional<ParameterMetadata> md = s.getParameterMetadata(metaKey);

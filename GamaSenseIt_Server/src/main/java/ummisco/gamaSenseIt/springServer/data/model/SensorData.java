@@ -27,25 +27,25 @@ public class SensorData {
   public SensorData() {
   }
 
-  private SensorData(Date captureDate, ParameterMetadata metaData, Sensor s) {
+  private SensorData(Date captureDate, ParameterMetadata metadata, Sensor s) {
     super();
     this.sensor = s;
     this.captureDate = captureDate;
-    this.parameter = metaData;
+    this.parameter = metadata;
   }
 
-  public SensorData(double data, Date captureDate, ParameterMetadata metaData, Sensor s) {
-    this(captureDate, metaData, s);
+  public SensorData(double data, Date captureDate, ParameterMetadata metadata, Sensor s) {
+    this(captureDate, metadata, s);
     this.data = ByteBuffer.allocate(Double.BYTES).putDouble(data).array();
   }
 
-  public SensorData(long data, Date captureDate, ParameterMetadata metaData, Sensor s) {
-    this(captureDate, metaData, s);
+  public SensorData(long data, Date captureDate, ParameterMetadata metadata, Sensor s) {
+    this(captureDate, metadata, s);
     this.data = ByteBuffer.allocate(Integer.BYTES).putLong(data).array();
   }
 
-  public SensorData(String data, Date captureDate, ParameterMetadata metaData, Sensor s) {
-    this(captureDate, metaData, s);
+  public SensorData(String data, Date captureDate, ParameterMetadata metadata, Sensor s) {
+    this(captureDate, metadata, s);
     this.data = data.getBytes();
   }
 
@@ -77,8 +77,8 @@ public class SensorData {
     return parameter;
   }
 
-  public void setParameter(ParameterMetadata metaData) {
-    this.parameter = metaData;
+  public void setParameter(ParameterMetadata metadata) {
+    this.parameter = metadata;
   }
 
   public long getId() {

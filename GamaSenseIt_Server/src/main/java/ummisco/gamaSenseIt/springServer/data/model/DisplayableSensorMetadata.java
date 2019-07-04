@@ -4,33 +4,33 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class DisplayableSensorMetaData {
+public class DisplayableSensorMetadata {
   private Long idType;
   private String name;
   private String version;
   private String dataSeparator;
   private String measuredDataOrder;
-  private List<String> parameterMetaData;
+  private List<String> parameterMetadata;
   private String description;
 
-  public DisplayableSensorMetaData(Long idType, String name, String version, String dataSeparator,
-      String measuredDataOrder, Set<ParameterMetadata> parameterMetaData, String description) {
+  public DisplayableSensorMetadata(Long idType, String name, String version, String dataSeparator,
+      String measuredDataOrder, Set<ParameterMetadata> parameterMetadata, String description) {
     super();
     this.idType = idType;
     this.name = name;
     this.version = version;
     this.dataSeparator = dataSeparator;
     this.measuredDataOrder = measuredDataOrder;
-    this.parameterMetaData = new ArrayList<String>();
-    for (ParameterMetadata pm : parameterMetaData) {
-      this.parameterMetaData.add(pm.getVarName());
+    this.parameterMetadata = new ArrayList<String>();
+    for (ParameterMetadata pm : parameterMetadata) {
+      this.parameterMetadata.add(pm.getVarName());
     }
     this.description = description;
   }
 
-  public DisplayableSensorMetaData(SensorMetadata s) {
+  public DisplayableSensorMetadata(SensorMetadata s) {
     this(s.getIdType(), s.getName(), s.getVersion(), s.getDataSeparator(), s.getMeasuredDataOrder(),
-        s.getParameterMetaData(), s.getDescription());
+        s.getParameterMetadata(), s.getDescription());
   }
 
   public Long getIdType() {

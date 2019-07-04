@@ -23,19 +23,19 @@ export class SensorVersionPage implements OnInit {
   sensorDelete: Sensor;
   operationSensor: String = 'details';
   sensors1: any;
-  metaData: MesuredParameter[];
+  metadata: MesuredParameter[];
 
   constructor(private sensorService: SensorVersionService) { }
 
   ngOnInit() {
+    this.metadata = this.sensorService.loadMetadata();
     this.sensors = this.sensorService.loadSensors();
     this.sensorTypes = this.sensorService.loadSensorTypes();
     this.displaySensorType = this.sensorService.initSensorType();
     this.displaySensor = this.sensorService.initSensor();
-    this.metaData = this.sensorService.loadMetaData();
   }
 
-  metaDataParameters(sensorType: SensorVersion): MesuredParameter[] {
+  metadataParameters(sensorType: SensorVersion): MesuredParameter[] {
     if (sensorType.measuredDataOrder) {
       let splitedDataOrder: string[] = sensorType.measuredDataOrder.
         split(sensorType.dataSeparator);
@@ -45,7 +45,7 @@ export class SensorVersionPage implements OnInit {
       splitedDataOrder.forEach(
         (element: string) => { dataOrderId.push( Number(element) ) });
       for (let id of dataOrderId) {
-        for (let md of this.metaData) {
+        for (let md of this.metadata) {
           if (md.id === id) {
             parameter.push(md);
           }
@@ -57,4 +57,21 @@ export class SensorVersionPage implements OnInit {
     }
   }
 
+  refreshSensors(): void {
+    this.sensors = this.sensorService.loadSensors();
+  }
+
+  refreshSensorTypes(): void {
+    this.sensorTypes = this.sensorService.loadSensorTypes();
+  }
+
+  removeSensor(idSensor: number): void {
+    this.sensorService.deleteSensor(idSensor);
+    this.refreshSensors();
+  }
+
+  removeSensorMetadata(idType: number): void {
+    this.sensorService.deleteSensorMetadata(idType);
+    this.refreshSensorTypes();
+  }
 }

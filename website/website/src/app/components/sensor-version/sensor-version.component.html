@@ -217,7 +217,7 @@
                         </div>
                         <form class="was-validated"
                           role="form"
-                          [formGroup]="newSensorMetaData">
+                          [formGroup]="newSensorMetadata">
                           <mat-form-field class="form-max-lg">
                             <input matInput
                               type="text"
@@ -262,14 +262,14 @@
                             type="button"
                             placement="bottom"
                             ngbTooltip="Validate the change"
-                            (click)="refreshMetaDataOrder()">
+                            (click)="refreshMetadataOrder()">
                             <i class="fas fa-check"></i>
                           </button>
                           <label class="color-gray mt-3">
                             Measured Parameters
                           </label>
                           <div class="row ml-2">
-                            <div *ngFor="let parameter of metaData;">
+                            <div *ngFor="let parameter of metadata;">
                               <div class="col-auto">
                                 <div class="icon-metadata">
                                   <button class="{{changeIcon(parameter.id)}}"
@@ -277,7 +277,7 @@
                                     placement="bottom"
                                     ngbTooltip="{{parameter.parameter}}
                                     ({{parameter.unit}})"
-                                    (click)="onMetaData(parameter.id)">
+                                    (click)="onMetadata(parameter.id)">
                                     <i class="{{parameter.icon}}"></i>
                                   </button>
                                   <div *ngIf="idList.includes(parameter.id)">
@@ -342,13 +342,13 @@
                           <button class="btn btn-warning text-white"
                             mat-button
                             type="button"
-                            (click)="resetSensorMetaDataForm()">
+                            (click)="resetSensorMetadataForm()">
                             Reset
                           </button>
                           <button class="btn btn-primary text-white"
                             mat-button
                             type="button"
-                            (click)="onAddNewSensorMetaData()">
+                            (click)="onAddNewSensorMetadata()">
                             Add
                           </button>
                         </div>

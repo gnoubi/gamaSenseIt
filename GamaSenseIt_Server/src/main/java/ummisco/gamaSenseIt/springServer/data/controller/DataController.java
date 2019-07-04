@@ -18,9 +18,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import ummisco.gamaSenseIt.springServer.data.model.DisplayableData;
-import ummisco.gamaSenseIt.springServer.data.model.DisplayableParameterMetaData;
+import ummisco.gamaSenseIt.springServer.data.model.DisplayableParameterMetadata;
 import ummisco.gamaSenseIt.springServer.data.model.DisplayableSensor;
-import ummisco.gamaSenseIt.springServer.data.model.DisplayableSensorMetaData;
+import ummisco.gamaSenseIt.springServer.data.model.DisplayableSensorMetadata;
 import ummisco.gamaSenseIt.springServer.data.model.ParameterMetadata;
 import ummisco.gamaSenseIt.springServer.data.model.SensorMetadata;
 //import ummisco.gamaSenseIt.springServer.data.model.ParameterMetadata.DataFormat;
@@ -54,7 +54,7 @@ public class DataController {
   ISensorDataRepository sensorData;
 
   @Autowired
-  IParameterMetadataRepository metaDataRepo;
+  IParameterMetadataRepository metadataRepo;
 
   public DataController() {
   }
@@ -123,7 +123,7 @@ public class DataController {
 
   @CrossOrigin
   @RequestMapping(IDataController.SENSOR_META_DATA_FULLNAMES)
-  public List<String> getSensorMetaDataName() {
+  public List<String> getSensorMetadataName() {
     ArrayList<String> res = new ArrayList<>();
     Iterable<SensorMetadata> mt = sensorMetadata.findAll();
     for (SensorMetadata s : mt) {
@@ -134,11 +134,11 @@ public class DataController {
 
   @CrossOrigin
   @RequestMapping(IDataController.META_DATA)
-  public List<DisplayableParameterMetaData> getMetaData() {
-    Iterable<ParameterMetadata> mt = metaDataRepo.findAll();
-    List<DisplayableParameterMetaData> dpl = new ArrayList<DisplayableParameterMetaData>();
+  public List<DisplayableParameterMetadata> getMetadata() {
+    Iterable<ParameterMetadata> mt = metadataRepo.findAll();
+    List<DisplayableParameterMetadata> dpl = new ArrayList<DisplayableParameterMetadata>();
     for (ParameterMetadata parameterMetadata : mt) {
-      DisplayableParameterMetaData pm = new DisplayableParameterMetaData(parameterMetadata);
+      DisplayableParameterMetadata pm = new DisplayableParameterMetadata(parameterMetadata);
       dpl.add(pm);
     }
     return dpl;
@@ -146,12 +146,12 @@ public class DataController {
 
   @CrossOrigin
   @RequestMapping(IDataController.META_DATA_ID)
-  public DisplayableParameterMetaData getMetaData(
+  public DisplayableParameterMetadata getMetadataByParameterId(
       @RequestParam(value = IDataController.PARAMETER_ID, required = true) long id) {
-    Optional<ParameterMetadata> mt = metaDataRepo.findById(id);
+    Optional<ParameterMetadata> mt = metadataRepo.findById(id);
     if (mt.isPresent()) {
       ParameterMetadata parameterMetadata = mt.get();
-      DisplayableParameterMetaData pm = new DisplayableParameterMetaData(parameterMetadata);
+      DisplayableParameterMetadata pm = new DisplayableParameterMetadata(parameterMetadata);
       return pm;
     }
     return null;
@@ -159,11 +159,11 @@ public class DataController {
 
   @CrossOrigin
   @RequestMapping(IDataController.SENSOR_META_DATA)
-  public List<DisplayableSensorMetaData> getSensorMetaData() {
+  public List<DisplayableSensorMetadata> getSensorMetadata() {
     Iterable<SensorMetadata> mt = sensorMetadata.findAll();
-    List<DisplayableSensorMetaData> dpl = new ArrayList<DisplayableSensorMetaData>();
+    List<DisplayableSensorMetadata> dpl = new ArrayList<DisplayableSensorMetadata>();
     for (SensorMetadata sensorMetadata : mt) {
-      DisplayableSensorMetaData s = new DisplayableSensorMetaData(sensorMetadata);
+      DisplayableSensorMetadata s = new DisplayableSensorMetadata(sensorMetadata);
       dpl.add(s);
     }
     return dpl;
@@ -171,15 +171,15 @@ public class DataController {
 
   @CrossOrigin
   @RequestMapping(IDataController.META_DATA_SENSOR_META_DATA_ID)
-  public List<DisplayableParameterMetaData> getSensorMetaData(
+  public List<DisplayableParameterMetadata> getSensorMetadata(
       @RequestParam(value = IDataController.METADATA_ID, required = true) long id) {
     Optional<SensorMetadata> mt = sensorMetadata.findById(id);
     if (mt.isPresent()) {
       SensorMetadata sensor = mt.get();
-      List<DisplayableParameterMetaData> dpl = new ArrayList<DisplayableParameterMetaData>();
-      Set<ParameterMetadata> parameterMetaData = sensor.getParameterMetaData();
-      for (ParameterMetadata pm : parameterMetaData) {
-        DisplayableParameterMetaData p = new DisplayableParameterMetaData(pm);
+      List<DisplayableParameterMetadata> dpl = new ArrayList<DisplayableParameterMetadata>();
+      Set<ParameterMetadata> parameterMetadata = sensor.getParameterMetadata();
+      for (ParameterMetadata pm : parameterMetadata) {
+        DisplayableParameterMetadata p = new DisplayableParameterMetadata(pm);
         dpl.add(p);
       }
       return dpl;

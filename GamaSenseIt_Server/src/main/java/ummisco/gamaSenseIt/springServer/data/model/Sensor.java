@@ -127,7 +127,7 @@ public class Sensor {
   public Optional<Set<ParameterMetadata>> getParameters() {
     if (this.sensorType == null)
       return Optional.empty();
-    return Optional.of(this.sensorType.getParameterMetaData());
+    return Optional.of(this.sensorType.getParameterMetadata());
   }
 
   public Optional<ParameterMetadata> getParameterMetadata(long id) {

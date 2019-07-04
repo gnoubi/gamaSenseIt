@@ -39,25 +39,25 @@ export class SensorVersionFormService {
       return this.http.post(link,s,httpOptions);
     }
 
-    addSensorMetaData(
-      metaDataName: string,
-      metaDataVersion: string,
-      metaDataSeparator: string,
+    addSensorMetadata(
+      metadataName: string,
+      metadataVersion: string,
+      metadataSeparator: string,
       metaMeasuredDataOrder: string,
       sensorDescription: string,
       sm: SensorVersion): Observable<any>
     {
       let link = API_URLS.ADD_SENSOR_METADATA;
-      link += '?&name=' + metaDataName +
-              '&version=' + metaDataVersion +
-              '&dataSeparator=' + metaDataSeparator +
-              '&measuredDataOrder=' + metaMeasuredDataOrder
+      link += '?&name=' + metadataName +
+              '&version=' + metadataVersion +
+              '&dataSeparator=' + metadataSeparator +
+              '&measuredDataOrder=' + metaMeasuredDataOrder +
               '&description=' + sensorDescription;
       return this.http.post(link,sm,httpOptions);
     }
 
     // Creer d'abord le formulaire
-    addParameterMetaData(): Observable<any> {
+    addParameterMetadata(): Observable<any> {
       let link = API_URLS.ADD_PARAMETER_META_DATA;
       return this.http.post(link,null,httpOptions);
     }

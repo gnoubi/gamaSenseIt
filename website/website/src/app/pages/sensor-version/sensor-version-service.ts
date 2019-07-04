@@ -82,63 +82,63 @@ export class SensorVersionService {
     return sensorTypes;
   }
 
-  getSensorMetaDataParameters(metadataId: number): Observable<any> {
+  getSensorMetadataParameters(metadataId: number): Observable<any> {
     let link = API_URLS.META_DATA_SENSOR_META_DATA_ID;
     link += "?metadataId=" + metadataId;
     return this.http.get(link);
   }
 
-  loadSensorMetaDataParameters(metadataId: number): MesuredParameter[] {
-    let metaData: MesuredParameter[] = [];
-    this.getSensorMetaDataParameters(metadataId).subscribe(
+  loadSensorMetadataParameters(metadataId: number): MesuredParameter[] {
+    let metadata: MesuredParameter[] = [];
+    this.getSensorMetadataParameters(metadataId).subscribe(
       (data: MesuredParameter[]) => {
         for (let parameter of data) {
-          metaData.push(parameter);
+          metadata.push(parameter);
         }
       },
       error => {
-        console.log('error was occured in loadSensorMetaDataParameters');
+        console.log('error was occured in loadSensorMetadataParameters');
       }
     );
-    return metaData;
+    return metadata;
   }
 
-  getMetaData(): Observable<any> {
+  getMetadata(): Observable<any> {
     return this.http.get(API_URLS.META_DATA);
   }
 
-  loadMetaData(): MesuredParameter[] {
-    let metaData: MesuredParameter[] = [];
-    this.getMetaData().subscribe(
+  loadMetadata(): MesuredParameter[] {
+    let metadata: MesuredParameter[] = [];
+    this.getMetadata().subscribe(
       (data: MesuredParameter[]) => {
         for(let parameter of data) {
-          metaData.push(JSON.parse(JSON.stringify(parameter)));
+          metadata.push(JSON.parse(JSON.stringify(parameter)));
         }
       },
       error => {
-        console.log('error was occured in loadMetaData');
+        console.log('error was occured in loadMetadata');
       }
     );
-    return metaData;
+    return metadata;
   }
 
-  getMetaDataId(parameterId: number): Observable<any> {
+  getMetadataByParameterId(parameterId: number): Observable<any> {
     let link = API_URLS.META_DATA_ID;
     link += "?parameterId=" + parameterId;
     return this.http.get(link);
   }
 
-  loadMetaDataId(parameterId: number): MesuredParameter[] {
-    let metaData: MesuredParameter[] = [];
-    this.getMetaDataId(parameterId).subscribe(
+  loadMetadataByParameterId(parameterId: number): MesuredParameter[] {
+    let metadata: MesuredParameter[] = [];
+    this.getMetadataByParameterId(parameterId).subscribe(
       (data: MesuredParameter) => {
-        metaData.push(data)
+        metadata.push(data)
       },
       error => {
-        console.log('error was occured in loadMetaDataId');
+        console.log('error was occured in loadMetadataId');
       }
     );
-    return metaData;
+    return metadata;
   }
 
   // TODO
@@ -148,7 +148,7 @@ export class SensorVersionService {
 
   // TODO
   getSince(): Observable<any> {
-      return undefined;
+    return undefined;
   }
 
   getDefaultDataSeparator(): Observable<any> {
@@ -168,49 +168,28 @@ export class SensorVersionService {
 
   // TODO
 
-  // updateSensor(s): Observable<any> {
+  // updateSensor(s: Sensor): Observable<any> {
   //   var link = API_URLS.UPDATE_SENSOR;
-  //   link += '?sensorID=' + s +
-  //           '&name=' + s +
-  //           '&longitude=' + s +
-  //           '&latitude=' + s;
-  //   console.log(link);
+  //   link += '?sensorId=' s.idSensor;
+  //   console.log('TEST : updataSensor :',link);
   //   return this.http.put(link,null);
   // }
 
-  // deleteSensor(s): Observable<any> {
-  //   return this.http.delete(API_URLS.TEST);
+  deleteSensor(idSensor: number): void { // Observable<any>
+    console.log('TEST : deleteSensor');
+    // return this.http.delete(url).subscribe();
+  }
+
+  // updateSensorType(sm: SensorVersion): Observable<any> {
+  //   var link = API_URLS.UPDATE_SENSOR_METADATA;
+  //   link += '?metadataId=' s.idType;
+  //   console.log('TEST : updataSensorMetadata :',link);
+  //   return this.http.put(link,null);
   // }
 
-  // updateSensorType(s) {
-  //   this.sensorService.updateSensor(s).subscribe(
-  //     res => {
-  //       this.loadSensor();
-  //     }
-  //   );
-  // }
+  deleteSensorMetadata(idType: number): void { // Observable<any>
+    console.log('TEST : deleteSensorMetadata');
+    // return this.http.delete(url).subscribe();
+  }
 
-  // deleteSensorType(s) {
-  //   this.sensorService.deleteSensor(s).subscribe(
-  //     res => {
-  //       this.loadSensor();
-  //     }
-  //   );
-  // }
-
-  // updateSensor(s) {
-  //   this.sensorService.updateSensor(s).subscribe(
-  //     res => {
-  //       this.loadSensor();
-  //     }
-  //   );
-  // }
-
-  // deleteSensor(s) {
-  //   this.sensorService.deleteSensor(s).subscribe(
-  //     res => {
-  //       this.loadSensor();
-  //     }
-  //   );
-  // }
 }

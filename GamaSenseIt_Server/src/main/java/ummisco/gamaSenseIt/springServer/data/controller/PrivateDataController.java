@@ -15,8 +15,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 //import ummisco.gamaSenseIt.springServer.data.model.DisplayableData;
-import ummisco.gamaSenseIt.springServer.data.model.DisplayableParameterMetaData;
+import ummisco.gamaSenseIt.springServer.data.model.DisplayableParameterMetadata;
 import ummisco.gamaSenseIt.springServer.data.model.DisplayableSensor;
+import ummisco.gamaSenseIt.springServer.data.model.DisplayableSensorMetadata;
 import ummisco.gamaSenseIt.springServer.data.model.ParameterMetadata;
 import ummisco.gamaSenseIt.springServer.data.model.SensorMetadata;
 import ummisco.gamaSenseIt.springServer.data.model.ParameterMetadata.DataFormat;
@@ -142,26 +143,26 @@ public class PrivateDataController {
 
   @CrossOrigin
   @RequestMapping(IDataController.ADD_SENSOR_METADATA)
-  public SensorMetadata addSensorMetaData(
-      @RequestParam(value = IDataController.NAME, required = true) String varName,
-      @RequestParam(value = IDataController.VERSION, required = true) String version,
-      @RequestParam(value = IDataController.DATA_SEPARATOR, required = false, defaultValue = SensorMetadata.DEFAULT_DATA_SEPARATOR) String sep,
-      @RequestParam(value = IDataController.MEASURED_DATA_ORDER, required = true) String measuredDataOrder,
-      @RequestParam(value = IDataController.DESCRIPTION, required = false) String description) {
+  public DisplayableSensorMetadata addSensorMetadata(
+      @RequestParam(value = IDataController.NAME, required = true, defaultValue = NIL_VALUE) String varName,
+      @RequestParam(value = IDataController.VERSION, required = true, defaultValue = NIL_VALUE) String version,
+      @RequestParam(value = IDataController.DATA_SEPARATOR, required = true, defaultValue = SensorMetadata.DEFAULT_DATA_SEPARATOR) String sep,
+      @RequestParam(value = IDataController.MEASURED_DATA_ORDER, required = true, defaultValue = NIL_VALUE) String measuredDataOrder,
+      @RequestParam(value = IDataController.DESCRIPTION, required = true, defaultValue = NIL_VALUE) String description) {
     List<SensorMetadata> lsm = sensorMetadata.findByNameAndVersion(varName, version);
     SensorMetadata st = null;
     if (lsm.size() == 0) {
       st = new SensorMetadata(varName, version, sep, description);
       st.setMeasuredDataOrder(measuredDataOrder);
       st = this.sensorMetadata.save(st);
+      return new DisplayableSensorMetadata(st);
     }
-
-    return st;
+    return null;
   }
 
   @CrossOrigin
   @RequestMapping(IDataController.ADD_PARAMETER_META_DATA)
-  public DisplayableParameterMetaData addParameterMetadata(
+  public DisplayableParameterMetadata addParameterMetadata(
       @RequestParam(value = IDataController.METADATA_ID, required = true, defaultValue = "nil") long id,
       @RequestParam(value = IDataController.NAME, required = true, defaultValue = "nil") String varName,
       @RequestParam(value = IDataController.UNIT, required = true, defaultValue = "nil") String varUnit,
@@ -180,6 +181,6 @@ public class PrivateDataController {
     }
     ParameterMetadata smd = new ParameterMetadata(varName, varUnit, df, dp);
     smd = sensorManagmentService.addParameterToSensorMetadata(md.get(), smd);
-    return new DisplayableParameterMetaData(smd);
+    return new DisplayableParameterMetadata(smd);
   }
 }

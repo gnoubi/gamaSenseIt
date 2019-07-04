@@ -26,7 +26,7 @@ public class SensorMetadata {
   private String dataSeparator = ":";
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "sensorMetadata")
-  private Set<ParameterMetadata> parameterMetaData = new HashSet<>();
+  private Set<ParameterMetadata> parameterMetadata = new HashSet<>();
 
   private String description;
 
@@ -82,12 +82,12 @@ public class SensorMetadata {
     this.idType = idType;
   }
 
-  public Set<ParameterMetadata> getParameterMetaData() {
-    return parameterMetaData;
+  public Set<ParameterMetadata> getParameterMetadata() {
+    return parameterMetadata;
   }
 
-  public void setParameterMetaData(Set<ParameterMetadata> parameterMetaData) {
-    this.parameterMetaData = parameterMetaData;
+  public void setParameterMetadata(Set<ParameterMetadata> parameterMetadata) {
+    this.parameterMetadata = parameterMetadata;
   }
 
   public String getMeasuredDataOrder() {
@@ -109,12 +109,12 @@ public class SensorMetadata {
   public void addmeasuredData(ParameterMetadata md) {
     md.setSensorMetadata(this);
     this.measuredDataOrder = this.measuredDataOrder + md.getId() + MEASURE_ORDER_SEPARATOR;
-    this.parameterMetaData.add(md);
+    this.parameterMetadata.add(md);
   }
 
   public Optional<ParameterMetadata> getParameterMetadata(long id) {
     ParameterMetadata res = null;
-    for (ParameterMetadata md : this.parameterMetaData) {
+    for (ParameterMetadata md : this.parameterMetadata) {
       if (md.getId() == id) {
         res = md;
         break;

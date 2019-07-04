@@ -8,7 +8,7 @@ export class SensorVersion {
   dataSeparator: string;
   measuredDataOrder: string;
   description: string;
-  // parameterMetaData : MesuredParameter[];
+  // parameterMetadata : MesuredParameter[];
 
   constructor(
     idType: number,
@@ -24,9 +24,9 @@ export class SensorVersion {
     this.dataSeparator = dataSeparator;
     this.measuredDataOrder = measuredDataOrder;
     this.description = description;
-    // this.parameterMetaData = mp;
-    // this.parameterMetaData.forEach(function (value) {
-    //   this.parameterMetaData = this.measuredDataOrder + value.id+this.dataSeparator;
+    // this.parameterMetadata = mp;
+    // this.parameterMetadata.forEach(function (value) {
+    //   this.parameterMetadata = this.measuredDataOrder + value.id+this.dataSeparator;
     // })
   }
 }

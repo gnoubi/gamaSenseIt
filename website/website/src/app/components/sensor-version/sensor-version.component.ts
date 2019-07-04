@@ -23,9 +23,9 @@ export class SensorVersionComponent implements OnInit {
 
   SensorView: FormGroup;
   newSensor: FormGroup;
-  newSensorMetaData: FormGroup;
+  newSensorMetadata: FormGroup;
   typeList: SensorVersion[];
-  metaData: MesuredParameter[];
+  metadata: MesuredParameter[];
   idList: number[];
   openMap: boolean = true;
   map;
@@ -45,15 +45,14 @@ export class SensorVersionComponent implements OnInit {
       longitude: [''],
       latitude: [''],
     });
-    this.newSensorMetaData = this.fb.group({
+    this.newSensorMetadata = this.fb.group({
       name: [''],
       version: [''],
       separator: [''],
       measuredDataOrder: [''],
       description: ['']
     });
-    this.metaData = [];
-    this.metaData = this.sensorService.loadMetaData();
+    this.metadata = this.sensorService.loadMetadata();
     this.typeList = this.sensorService.loadSensorTypes();
     this.idList = [];
   }
@@ -154,50 +153,51 @@ export class SensorVersionComponent implements OnInit {
     this.coord = undefined;
   }
 
-  onAddNewSensorMetaData(): void {
-    let sensorMetaDataName: string;
-    let sensorMetaDataVersion: string;
-    let sensorMetaDataSeparator: string;
-    let measuredDataOrder = this.newSensorMetaData.get('measuredDataOrder').value;
+  onAddNewSensorMetadata(): void {
+    let sensorMetadataName: string;
+    let sensorMetadataVersion: string;
+    let sensorMetadataSeparator: string;
+    let measuredDataOrder = this.newSensorMetadata.get('measuredDataOrder').value;
     let sensorDescription: string;
-    let m = this.newSensorMetaData.value;
+    let m = this.newSensorMetadata.value;
 
-    if (this.newSensorMetaData.get('name').value) {
-      sensorMetaDataName = this.newSensorMetaData.get('name').value;
+    if (this.newSensorMetadata.get('name').value) {
+      sensorMetadataName = this.newSensorMetadata.get('name').value;
     } else {
-      sensorMetaDataName = "UNKNOWN_SENSOR_TYPE";
+      sensorMetadataName = "UNKNOWN_SENSOR_TYPE";
     }
-    if (this.newSensorMetaData.get('version').value) {
-      sensorMetaDataVersion = this.newSensorMetaData.get('version').value;
+    if (this.newSensorMetadata.get('version').value) {
+      sensorMetadataVersion = this.newSensorMetadata.get('version').value;
     } else {
-      sensorMetaDataVersion = "UNKNOWN_SENSOR_VERSION";
+      sensorMetadataVersion = "UNKNOWN_SENSOR_VERSION";
     }
-    if (this.newSensorMetaData.get('separator').value) {
-      sensorMetaDataSeparator = this.newSensorMetaData.get('separator').value;
+    if (this.newSensorMetadata.get('separator').value) {
+      sensorMetadataSeparator = this.newSensorMetadata.get('separator').value;
     } else {
-      sensorMetaDataSeparator = ':';
+      sensorMetadataSeparator = ':';
     }
-    if (this.newSensorMetaData.get('description').value != "") {
-      sensorDescription = this.newSensorMetaData.get('description').value;
+    if (this.newSensorMetadata.get('description').value != "") {
+      sensorDescription = this.newSensorMetadata.get('description').value;
     } else {
       sensorDescription = "UNKNOWN_DESCRIPTION";
     }
 
-    this.sensorFormService.addSensorMetaData(
-      sensorMetaDataName,
-      sensorMetaDataVersion,
-      sensorMetaDataSeparator,
+    this.sensorFormService.addSensorMetadata(
+      sensorMetadataName,
+      sensorMetadataVersion,
+      sensorMetadataSeparator,
       measuredDataOrder,
       sensorDescription,
-      m).
-      subscribe(res => {
-        console.log('Ajout effectue');
-      });
-    this.resetSensorMetaDataForm();
+      m).subscribe(
+        res => {
+          console.log('Ajout effectue');
+        }
+    );
+    this.resetSensorMetadataForm();
   }
 
-  resetSensorMetaDataForm(): void {
-    this.newSensorMetaData.reset({
+  resetSensorMetadataForm(): void {
+    this.newSensorMetadata.reset({
       name:[''],
       version: [''],
       separator: [''],
@@ -208,22 +208,22 @@ export class SensorVersionComponent implements OnInit {
   }
 
   // TODO
-  addMetaDataParam(): void {
-    console.log('MetaData Param function  ');
+  addMetadataParam(): void {
+    console.log('Metadata Param function  ');
     let name = '';
     let measuredParam = '';
   }
 
-  onMetaData(id): void {
+  onMetadata(id): void {
     if ( this.idList.includes(id) ) {
       this.idList = remove(this.idList, (value) => {return value !== id});
     } else {
       this.idList.push(id);
     }
-    this.newSensorMetaData.patchValue({
+    this.newSensorMetadata.patchValue({
       measuredDataOrder: this.idList.toString()
     });
-    this.refreshMetaDataOrder();
+    this.refreshMetadataOrder();
   }
 
   changeIcon(id): string {
@@ -233,12 +233,12 @@ export class SensorVersionComponent implements OnInit {
     return "bg-gray icon icon-shape no-outline text-white";
   }
 
-  refreshMetaDataOrder(): void {
+  refreshMetadataOrder(): void {
     let regex = new RegExp(',',"gi");
-    this.newSensorMetaData.patchValue({
+    this.newSensorMetadata.patchValue({
       measuredDataOrder: this.idList.toString().
-        replace(regex,this.newSensorMetaData.get('separator').value) +
-      this.newSensorMetaData.get('separator').value
+        replace(regex,this.newSensorMetadata.get('separator').value) +
+      this.newSensorMetadata.get('separator').value
     });
   }
 
@@ -247,7 +247,7 @@ export class SensorVersionComponent implements OnInit {
     let previousId: number = this.idList[index-1];
     this.idList.splice(index-1, 1, id);
     this.idList.splice(index, 1, previousId);
-    this.refreshMetaDataOrder();
+    this.refreshMetadataOrder();
   }
 
   onMoveRight(id: number): void {
@@ -255,7 +255,7 @@ export class SensorVersionComponent implements OnInit {
     let nextId: number = this.idList[index+1];
     this.idList.splice(index+1, 1, id);
     this.idList.splice(index, 1, nextId);
-    this.refreshMetaDataOrder();
+    this.refreshMetadataOrder();
   }
 
   idIndex(id: number): number {
