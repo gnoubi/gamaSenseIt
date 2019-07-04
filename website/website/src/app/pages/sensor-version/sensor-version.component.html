@@ -81,9 +81,15 @@
                   *ngIf="displaySensor.idSensor!=0">
                   Name: {{displaySensor.name}}<br>
                   Type: {{displaySensor.sensorMetadataName}}<br>
-                  Place: {{displaySensor.place}}<br>
+                  Place: à calculer d'après les coordonnées GPS ?<br>
                   Longitude: {{displaySensor.longitude}}<br>
                   Latitude: {{displaySensor.latitude}}<br>
+                  <a mat-button
+                    matTooltip="Non implémenté"
+                    routerLinkActive="active"
+                    [routerLink]="['/maps']">
+                    Show on Map
+                  </a>
                 </div>
               </div>
               <!-- <div *ngIf="operationSensor =='update'">
@@ -209,29 +215,30 @@
                   Version: {{displaySensorType.version}}<br>
                   Data Separator: {{displaySensorType.dataSeparator}}<br>
                   Measured Parameters (in order):<br>
-                  <button
+                  <div class="row">
+                    <div class="col-auto pt-1"
+                      *ngFor="let parameter of metaDataParameters(displaySensorType)">
+                      <button class="icon icon-shape bg-gray text-white no-outline"
+                        mat-fab
+                        type="button"
+                        matTooltip="Measured parameter: {{parameter.parameter}}
+                        Unit: {{parameter.unit}}
+                        Data format: {{parameter.dataFormat}}"
+                        matTooltipClass="multi-line">
+                        <i class="{{parameter.icon}}"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <button class="mt-1"
                     type="button"
-                    mat-button
+                    mat-raised-button
                     data-toggle="modal"
                     data-target="#modal-description">
-                    Show Description
+                    Show description
                   </button>
                 </div>
-                <div class="row">
-                  <div class="col-auto pt-1"
-                    *ngFor="let parameter of metaDataParameters(displaySensorType)">
-                    <button class="icon icon-shape bg-gray text-white no-outline"
-                      mat-fab
-                      type="button"
-                      matTooltip="Measured parameter: {{parameter.parameter}}
-                      Unit: {{parameter.unit}}
-                      Data format: {{parameter.dataFormat}}"
-                      matTooltipClass="multi-line">
-                      <i class="{{parameter.icon}}"></i>
-                    </button>
-                  </div>
-                </div>
               </div>
+
               <!-- <div *ngIf="operationType=='update'">
                 <h3 class="text-white">Update Sensor Type</h3>
                 <br>

@@ -1,8 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 
-import { Sensor } from '../../Sensor';
-import { SensorVersionService } from '../../pages/sensor-version/sensor-version-service';
-
 @Component({
   selector: 'app-pm-layout',
   templateUrl: './pm-layout.component.html',
@@ -10,12 +7,11 @@ import { SensorVersionService } from '../../pages/sensor-version/sensor-version-
 })
 export class PMLayoutComponent implements OnInit {
   id: number;
-  // private sensors: Sensor[];
+  browseQRcode;
 
-  constructor(private sensorService: SensorVersionService) {
+  constructor() {
   }
 
   ngOnInit() {
-    // this.sensors = this.sensorService.loadSensorId(9); // this.id
   }
 }

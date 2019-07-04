@@ -1,16 +1,16 @@
 import { Component, OnInit, SimpleChanges } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
-
+import { PMLayoutComponent } from '../../layouts/pm-layout/pm-layout.component';
 export interface PMSensor {
   sensorName: string;
   displayName: string;
+  subDisplayName: string;
   pm1: number;
   pm25: number;
   pm10: number;
   temperature: number;
   humidity: number;
-  subDisplayName: string;
 }
 
 @Component({
@@ -26,6 +26,7 @@ export class QrQameleoComponent implements OnInit {
 
   sensorName: string = "";
   displayName: string = "";
+  subDisplayName: string= "";
   pm1: number = 0;
   pm25: number = 0;
   pm10: number = 0;
@@ -34,12 +35,14 @@ export class QrQameleoComponent implements OnInit {
   temperatureUnit: string = "°C";
   humidity: number = 0;
   humidityUnit: string = "%";
-  subDisplayName: string= "";
   url = 'http://vmpams.ird.fr:8080';
   browseQRcode = true;
   httpGetSucceed = true;
 
-  constructor(private router: Router, private http: HttpClient,) { }
+  constructor(
+    private router: Router,
+    private http: HttpClient,
+    private parent: PMLayoutComponent) { }
 
   ngOnInit() {
     if( this.router.url !== '/qameleo') {
@@ -48,7 +51,12 @@ export class QrQameleoComponent implements OnInit {
       this.url = this.url + this.router.url.slice(0,i) +
         'airQualityIndicator?id=' + this.router.url.slice(i);
       this.initValues(this.url);
+    } else {
+      this.browseQRcode = true;
     }
+    setTimeout(() => {
+      this.parent.browseQRcode = this.browseQRcode ;
+    });
   }
 
   initValues(url: string){
@@ -57,6 +65,7 @@ export class QrQameleoComponent implements OnInit {
         if (data) {
           this.sensorName = data.sensorName;
           this.displayName = data.displayName;
+          this.subDisplayName = data.subDisplayName;
           this.pm1 = data.pm1/this.PM1_THRESHOLD*50;
           // this.pm1 = Math.round(this.pm1*100)/100;
           this.pm25 = data.pm25/this.PM2_5_THRESHOLD*50;
@@ -67,7 +76,6 @@ export class QrQameleoComponent implements OnInit {
           this.temperature = Math.round(this.temperature);
           this.humidity = data.humidity;
           this.humidity = Math.round(this.humidity);
-          this.subDisplayName = data.subDisplayName;
         } else {
           this.httpGetSucceed = false;
         }

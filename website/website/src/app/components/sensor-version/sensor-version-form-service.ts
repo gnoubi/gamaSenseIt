@@ -32,10 +32,10 @@ export class SensorVersionFormService {
       let link = API_URLS.ADD_SENSOR;
       link += '?&name=' + sensorName +
               '&displayName=' + sensorDisplayName +
-              '&place=' + sensorSubDisplayName+
+              '&subDisplayName=' + sensorSubDisplayName+
               '&longitude=' + sensorLongitude +
               '&latitude=' + sensorLatitude +
-              '&sensormetadata=' + sensorType;
+              '&sensorMetadata=' + sensorType;
       return this.http.post(link,s,httpOptions);
     }
 
