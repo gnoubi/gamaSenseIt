@@ -204,6 +204,7 @@ export class SensorVersionComponent implements OnInit {
       measuredDataOrder: [''],
       description: ['']
     });
+    this.idList = [];
   }
 
   // TODO
@@ -227,7 +228,7 @@ export class SensorVersionComponent implements OnInit {
 
   changeIcon(id): string {
     if (this.idList.includes(id)) {
-      return "bg-success icon icon-shape no-outline text-white";
+      return "green-qameleo icon icon-shape no-outline text-white";
     }
     return "bg-gray icon icon-shape no-outline text-white";
   }

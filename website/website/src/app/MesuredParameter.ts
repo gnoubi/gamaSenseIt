@@ -1,6 +1,6 @@
 import {DataFormat} from './Enums';
 
-export class MesuredParameter{
+export class MesuredParameter {
   id: number;
   varName: string;
   unit: string;
@@ -10,20 +10,20 @@ export class MesuredParameter{
   icon: string;
 
   constructor(
-    pid: number,
-    name: string,
-    u : string,
-    f:DataFormat,
-    mp:string,
-    smd: number,
-    ic: string)
+    id: number,
+    varName: string,
+    unit : string,
+    dataFormat: DataFormat,
+    parameter: string,
+    sensorMetadata: number,
+    icon: string)
   {
-    this.id=pid;
-    this.varName = name;
-    this.unit = u;
-    this.dataFormat =f;
-    this.parameter = mp;
-    this.sensorMetadata = smd;
-    this.icon = ic;
+    this.id = id;
+    this.varName = varName;
+    this.unit = unit;
+    this.dataFormat = dataFormat;
+    this.parameter = parameter;
+    this.sensorMetadata = sensorMetadata;
+    this.icon = icon;
   }
 }

@@ -1,7 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
 import {Observable} from 'rxjs';
-import {map, startWith} from 'rxjs/operators';
+import { map, startWith } from 'rxjs/operators';
 import Chart from 'chart.js';
+
 import { SensorVersion } from '../../SensorVersion';
 import { StockCapteurArr } from '../../stock-capteur';
 import { FormControl } from '@angular/forms';
@@ -33,8 +34,6 @@ export class DiagrammeComponent implements OnInit {
   monthsLabel : ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
   daysLabel :  ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
-
-
   datasetSensor = [{
     label: 'My First dataset',
     backgroundColor: 'rgba(255, 99, 132, 0.5)',
@@ -49,7 +48,6 @@ export class DiagrammeComponent implements OnInit {
       this.randomScalingFactor()
     ],
     fill: false,
-
   }, {
     label: 'My Second dataset',
     fill: false,
@@ -65,7 +63,6 @@ export class DiagrammeComponent implements OnInit {
       this.randomScalingFactor()
     ],
   }];
-
 
   datasetSensorB = [{
     label: 'My First dataset',
@@ -81,7 +78,6 @@ export class DiagrammeComponent implements OnInit {
       this.randomScalingFactor()
     ],
     fill: false,
-
   }, {
     label: 'My Second dataset',
     fill: false,
@@ -97,8 +93,6 @@ export class DiagrammeComponent implements OnInit {
       this.randomScalingFactor()
     ],
   }];
-
-
 
   /*typeGraphChange() {
     this.myLine.type = this.typeGraph;
@@ -169,10 +163,14 @@ export class DiagrammeComponent implements OnInit {
       label: 'another dataset' + this.l,
       backgroundColor: [
         "rgba(" + red + "," + green + "," + blue + ",0.5)",
-        "rgba(" + this.randomScalingFactor() + "," + this.randomScalingFactor() + "," + this.randomScalingFactor() + ",0.5)",
-        "rgba(" + this.randomScalingFactor() + "," + this.randomScalingFactor() + "," + this.randomScalingFactor() + ",0.5)",
-        "rgba(" + this.randomScalingFactor() + "," + this.randomScalingFactor() + "," + this.randomScalingFactor() + ",0.5)",
-        "rgba(" + this.randomScalingFactor() + "," + this.randomScalingFactor() + "," + this.randomScalingFactor() + ",0.5)",
+        "rgba(" + this.randomScalingFactor() + "," +
+          this.randomScalingFactor() + "," + this.randomScalingFactor() + ",0.5)",
+        "rgba(" + this.randomScalingFactor() + "," +
+          this.randomScalingFactor() + "," + this.randomScalingFactor() + ",0.5)",
+        "rgba(" + this.randomScalingFactor() + "," +
+          this.randomScalingFactor() + "," + this.randomScalingFactor() + ",0.5)",
+        "rgba(" + this.randomScalingFactor() + "," +
+          this.randomScalingFactor() + "," + this.randomScalingFactor() + ",0.5)",
       ],
       data: [
         this.randomScalingFactor(),
@@ -197,7 +195,6 @@ export class DiagrammeComponent implements OnInit {
       this.myPie.update();
       this.l++;
     }
-
   }
 
   resetGraph() {
@@ -220,7 +217,6 @@ export class DiagrammeComponent implements OnInit {
   }
 
   /*Chart JS */
-
 
   config = {
     type: 'line',
@@ -477,9 +473,9 @@ export class DiagrammeComponent implements OnInit {
 
   private _filter(name: string): any {
     const filterValue = name.toLowerCase();
-
-    return this.fruits.filter(option => option.name.toLowerCase().indexOf(filterValue) === 0);
+    return this.fruits.filter(
+      option => option.name.toLowerCase().indexOf(filterValue) === 0
+    );
   }
-
 
 }

@@ -1,7 +1,9 @@
 import { Component, OnInit, SimpleChanges } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
+
 import { PMLayoutComponent } from '../../layouts/pm-layout/pm-layout.component';
+
 export interface PMSensor {
   sensorName: string;
   displayName: string;

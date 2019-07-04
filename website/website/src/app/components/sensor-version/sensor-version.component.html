@@ -260,13 +260,15 @@
                           <button class="text-primary"
                             mat-icon-button
                             type="button"
+                            placement="bottom"
+                            ngbTooltip="Validate the change"
                             (click)="refreshMetaDataOrder()">
                             <i class="fas fa-check"></i>
                           </button>
                           <label class="color-gray mt-3">
                             Measured Parameters
                           </label>
-                          <div class="row">
+                          <div class="row ml-2">
                             <div *ngFor="let parameter of metaData;">
                               <div class="col-auto">
                                 <div class="icon-metadata">

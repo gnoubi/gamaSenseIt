@@ -1,14 +1,21 @@
 <div class="main-content">
   <nav class="navbar navbar-top navbar-horizontal navbar-expand-md navbar-dark">
     <div class="container px-4">
-      <a class="" routerLinkActive="active" [routerLink]="['/dashboard']">
-        <img src="assets/img/brand/U-logo.jpg" class="Ulogo" alt="www.ummisco.fr"/>
+      <a routerLinkActive="active"
+        [routerLink]="['/dashboard']">
+        <img class="Ulogo"
+          src="assets/img/brand/U-logo.jpg"
+          alt="www.ummisco.fr"/>
       </a>
-      <button class="navbar-toggler" type="button" (click)="isCollapsed=!isCollapsed"
-         aria-controls="sidenav-collapse-main">
+      <button class="navbar-toggler"
+        type="button"
+        (click)="isCollapsed=!isCollapsed"
+        aria-controls="sidenav-collapse-main">
         <span class="navbar-toggler-icon"></span>
       </button>
-      <div class="collapse navbar-collapse"  [ngbCollapse]="isCollapsed" id="sidenav-collapse-main">
+      <div class="collapse navbar-collapse"
+        id="sidenav-collapse-main"
+        [ngbCollapse]="isCollapsed">
         <!-- Collapse header -->
         <div class="navbar-collapse-header d-md-none">
           <div class="row">
@@ -18,7 +25,9 @@
               </a>
             </div>
             <div class="col-6 collapse-close">
-              <button type="button" class="navbar-toggler" (click)="isCollapsed=!isCollapsed" >
+              <button class="navbar-toggler"
+                type="button"
+                (click)="isCollapsed=!isCollapsed" >
                 <span></span>
                 <span></span>
               </button>
@@ -28,7 +37,9 @@
         <!-- Navbar items -->
         <ul class="navbar-nav ml-auto">
           <li class="nav-item">
-            <a class="nav-link nav-link-icon" routerLinkActive="active" [routerLink]="['/dashboard']">
+            <a class="nav-link nav-link-icon"
+              routerLinkActive="active"
+              [routerLink]="['/dashboard']">
               <i class="ni ni-planet"></i>
               <span class="nav-link-inner--text">Dashboard</span>
             </a>
@@ -41,7 +52,9 @@
             </a>
           </li>-->
           <li class="nav-item">
-            <a class="nav-link nav-link-icon" routerLinkActive="active" [routerLink]="['/login']">
+            <a class="nav-link nav-link-icon"
+              routerLinkActive="active"
+              [routerLink]="['/login']">
               <i class="ni ni-key-25"></i>
               <span class="nav-link-inner--text">Login</span>
             </a>
@@ -60,13 +73,13 @@
   <router-outlet></router-outlet>
 </div>
 
-
 <footer class="py-5">
   <div class="container">
     <div class="row align-items-center justify-content-xl-between">
       <div class="col-xl-6">
         <div class="copyright text-center text-xl-left text-muted">
-        &copy; {{ test | date: "yyyy" }} <a href="#" class="font-weight-bold ml-1" target="_blank">UMMISCO-IRD</a>
+          &copy; {{ test | date: "yyyy" }}
+        <a href="#" class="font-weight-bold ml-1" target="_blank">UMMISCO-IRD</a>
         </div>
       </div>
       <div class="col-xl-6">

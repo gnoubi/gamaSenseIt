@@ -6,8 +6,8 @@ import { MapsComponent } from '../../pages/maps/maps.component';
 import { DiagrammeComponent } from '../../pages/diagramme/diagramme.component';
 
 export const PMLayoutRoutes: Routes = [
-    { path: 'dashboard',      component: DashboardComponent },
-    { path: 'user-profile',   component: SensorVersionPage },
-    { path: 'maps',           component: MapsComponent },
-    { path: 'diagramme',       component:DiagrammeComponent }
+  { path: 'dashboard',    component: DashboardComponent },
+  { path: 'user-profile', component: SensorVersionPage },
+  { path: 'maps',         component: MapsComponent },
+  { path: 'diagramme',    component: DiagrammeComponent }
 ];

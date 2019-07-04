@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { from } from 'rxjs';
 import Chart from 'chart.js';
-
 
 import {
   chartOptions,
@@ -8,7 +8,6 @@ import {
   chartExample1,
   chartExample2
 } from "../../variables/charts";
-import { from } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard',
@@ -22,7 +21,6 @@ export class DashboardComponent implements OnInit {
   public salesChart;
   public clicked: boolean = true;
   public clicked1: boolean = false;
-
 
   constructor() { }
 
@@ -55,10 +53,6 @@ export class DashboardComponent implements OnInit {
     });*/
 
   }
-
-
-
-
 
   public updateOptions() {
     this.salesChart.data.datasets[0].data = this.data;

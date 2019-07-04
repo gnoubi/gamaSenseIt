@@ -1,7 +1,7 @@
 import { SensorVersion } from './SensorVersion';
 import { MesuredParameter } from './MesuredParameter';
 import { DataFormat, DataParameter } from './Enums'
-//
+
 // export  const metatData1: MesuredParameter[] = [
 //     {varName:"p1", id:1,parameter : DataParameter.PRESSURE, dataFormat:DataFormat.INTEGER,unit:"cb"},
 //     {varName:"p2", id:1,parameter : DataParameter.PRESSURE, dataFormat:DataFormat.INTEGER,unit:"cb"},

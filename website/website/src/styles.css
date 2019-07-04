@@ -7,6 +7,10 @@
 
 /* @import '~@angular/material/prebuilt-themes/purple-green.css'; */
 
+.green-qameleo {
+  background-color: #00A465;
+}
+
 .multi-line {
   white-space: pre-line;
 }
