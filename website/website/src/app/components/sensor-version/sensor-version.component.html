@@ -51,6 +51,14 @@
                               placeholder="Name"
                               formControlName="name"
                               required>
+                              <button mat-icon-button
+                                matSuffix
+                                type="button"
+                                *ngIf="newSensor.get('name').value != ''"
+                                aria-label="Clear"
+                                (click)="newSensor.patchValue({name: ['']})">
+                                <mat-icon>close</mat-icon>
+                              </button>
                             <mat-hint>
                               <div *ngIf="!inputName.value?.length">
                                 This field must be filled.
@@ -64,6 +72,14 @@
                               placeholder="Display Name"
                               formControlName="displayName"
                               required>
+                            <button mat-icon-button
+                              matSuffix
+                              type="button"
+                              *ngIf="newSensor.get('displayName').value != ''"
+                              aria-label="Clear"
+                              (click)="newSensor.patchValue({displayName: ['']})">
+                              <mat-icon>close</mat-icon>
+                            </button>
                             <mat-hint>
                               <div *ngIf="!inputDisplayName.value?.length">
                                 This field must be filled.
@@ -77,13 +93,20 @@
                               placeholder="Display Name Subtitle (place)"
                               formControlName="subDisplayName"
                               required>
+                            <button mat-icon-button
+                              matSuffix
+                              type="button"
+                              *ngIf="newSensor.get('subDisplayName').value != ''"
+                              aria-label="Clear"
+                              (click)="newSensor.patchValue({subDisplayName: ['']})">
+                              <mat-icon>close</mat-icon>
+                            </button>
                             <mat-hint>
                               <div *ngIf="!inputPlace.value?.length">
                                 This field must be filled.
                               </div>
                             </mat-hint>
                           </mat-form-field>
-
                           <mat-form-field class="form-max-lg">
                             <input matInput
                               type="text"
@@ -92,6 +115,14 @@
                               placeholder="Type of Sensor"
                               formControlName="type"
                               required>
+                            <button mat-icon-button
+                              matSuffix
+                              type="button"
+                              *ngIf="newSensor.get('type').value != ''"
+                              aria-label="Clear"
+                              (click)="newSensor.patchValue({type: ['']})">
+                              <mat-icon>close</mat-icon>
+                            </button>
                             <mat-hint>
                               <div *ngIf="!inputType.value?.length">
                                 This field must be filled.
@@ -127,12 +158,28 @@
                                     type="number"
                                     placeholder="Latitude"
                                     formControlName="latitude">
+                                  <button mat-icon-button
+                                    matSuffix
+                                    type="button"
+                                    *ngIf="newSensor.get('latitude').value != ''"
+                                    aria-label="Clear"
+                                    (click)="newSensor.patchValue({latitude: ['']})">
+                                    <mat-icon>close</mat-icon>
+                                  </button>
                                 </mat-form-field>
                                 <mat-form-field class="form-max-lg">
                                   <input matInput
                                     type="number"
                                     placeholder="Longitude"
                                     formControlName="longitude">
+                                  <button mat-icon-button
+                                    matSuffix
+                                    type="button"
+                                    *ngIf="newSensor.get('longitude').value != ''"
+                                    aria-label="Clear"
+                                    (click)="newSensor.patchValue({longitude: ['']})">
+                                    <mat-icon>close</mat-icon>
+                                  </button>
                                 </mat-form-field>
                               </mat-expansion-panel>
                               <mat-expansion-panel
@@ -225,6 +272,14 @@
                               #inputTypeName
                               formControlName="name"
                               required>
+                            <button mat-icon-button
+                              matSuffix
+                              type="button"
+                              *ngIf="newSensorMetadata.get('name').value != ''"
+                              aria-label="Clear"
+                              (click)="newSensorMetadata.patchValue({name: ['']})">
+                              <mat-icon>close</mat-icon>
+                            </button>
                             <mat-hint>
                               <div *ngIf="!inputTypeName.value?.length">
                                 This field must be filled.
@@ -238,33 +293,43 @@
                               #inputVersion
                               formControlName="version"
                               required>
+                            <button mat-icon-button
+                              matSuffix
+                              type="button"
+                              *ngIf="newSensorMetadata.get('version').value != ''"
+                              aria-label="Clear"
+                              (click)="newSensorMetadata.patchValue({version: ['']})">
+                              <mat-icon>close</mat-icon>
+                            </button>
                             <mat-hint>
                               <div *ngIf="!inputVersion.value?.length">
                                 This field must be filled.
                               </div>
                             </mat-hint>
                           </mat-form-field>
-                          <mat-form-field class="form-separator">
+                          <mat-form-field class="form-max-lg">
                             <input matInput
                               type="text"
                               placeholder="Separator"
                               #inputSelector
                               formControlName="separator"
                               required>
+                              <button class="text-primary"
+                                mat-icon-button
+                                matSuffix
+                                type="button"
+                                placement="bottom"
+                                ngbTooltip="Validate the change"
+                                (click)="refreshMetadataOrder()">
+                                <i class="fas fa-check"></i>
+                              </button>
                             <mat-hint>
                               <div *ngIf="!inputSelector.value?.length">
                                 This field must be filled.
                               </div>
                             </mat-hint>
                           </mat-form-field>
-                          <button class="text-primary"
-                            mat-icon-button
-                            type="button"
-                            placement="bottom"
-                            ngbTooltip="Validate the change"
-                            (click)="refreshMetadataOrder()">
-                            <i class="fas fa-check"></i>
-                          </button>
+
                           <label class="color-gray mt-3">
                             Measured Parameters
                           </label>
@@ -318,6 +383,14 @@
                               placeholder="Description"
                               formControlName="description"
                               required>
+                            <button mat-icon-button
+                              matSuffix
+                              type="button"
+                              *ngIf="newSensorMetadata.get('description').value != ''"
+                              aria-label="Clear"
+                              (click)="newSensorMetadata.patchValue({description: ['']})">
+                              <mat-icon>close</mat-icon>
+                            </button>
                             <mat-hint>
                               <div *ngIf="!inputDescription.value?.length">
                                 This field must be filled.
@@ -325,17 +398,67 @@
                             </mat-hint>
                           </mat-form-field>
                         </form>
-                        <!-- <div>
-                      		<form method="POST" enctype="multipart/form-data" action="/">
-                      			<table>
-                      				<tr><td>File to upload:</td><td><input type="file" name="file" /></td></tr>
-                      				<tr><td></td><td><input type="submit" value="Upload" /></td></tr>
-                      			</table>
-                      		</form>
-                      	</div> -->
-
-                        <!-- </div>
+                        <label class="color-gray mt-3">Documentation</label>
+                        <!-- PREMIERE VERSION AVEC ZONE DRAG & DROP
+                        <input #fileInput
+                          type="file"
+                          ng2FileSelect
+                          [uploader]="uploader"/>
+                        <div class="drop-box"
+                          ng2FileDrop
+                          [ngClass]="{'dragover': isDropOver}"
+                          [uploader]="uploader"
+                          (fileOver)="fileOverAnother($event)"
+                          (click)="fileClicked()">
+                          <span class="drag-in-title">Import or drag file here</span>
                         </div> -->
+
+                        <!-- DEUXIEME VERSION AVEC PROGRESS BAR
+                        https://grokonez.com/java-integration/angular-6-upload-get-multipartfile-spring-boot-example
+                        <div class="mt-3">
+                          <div class="progress"
+                            *ngIf="currentFileUpload" >
+                            <div class="progress-bar progress-bar-info progress-bar-striped"
+                              role="progressbar"
+                              attr.aria-valuenow="{{progress.percentage}}"
+                              aria-valuemin="0"
+                              aria-valuemax="100"
+                              [ngStyle]="{width:progress.percentage+'%'}">
+                              {{progress.percentage}}%
+                            </div>
+                          </div>
+                          <label class="btn btn-default">
+                            <input type="file" (change)="selectFile($event)">
+                          </label>
+                          <button class="btn btn-success"
+                            [disabled]="!selectedFiles"
+                            (click)="upload()">
+                            Upload
+                          </button>
+                        </div>
+                        <button class="button btn-info"
+                          *ngIf="showFile"
+                          (click)="showFiles(false)">
+                          Hide Files
+                        </button>
+                        <button class="button btn-info"
+                          *ngIf="!showFile"
+                          (click)="showFiles(true)">
+                          Show Files
+                        </button>
+                        <div [hidden]="!showFile">
+                          <div class="panel panel-primary">
+                            <div class="panel-heading">List of Files</div>
+                            <div *ngFor="let file of fileUploads | async">
+                              <div class="panel-body">
+                                <a href="file"></a>
+                              </div>
+                            </div>
+                          </div>
+                        </div> -->
+
+                      <!-- </div>
+                      </div> -->
                       </div>
                       <div class="modal-footer">
                         <div class="col" align="center">
