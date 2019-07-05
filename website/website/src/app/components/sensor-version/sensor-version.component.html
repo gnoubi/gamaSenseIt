@@ -196,7 +196,7 @@
                                 Input address
                               </mat-expansion-panel>
                               <mat-expansion-panel
-                                (opened)="panelOpenState = true"
+                                (opened)="panelOpenState = true; map.invalidateSize()"
                                 (closed)="panelOpenState = false">
                                 <mat-expansion-panel-header>
                                   <mat-panel-title class="color-gray">

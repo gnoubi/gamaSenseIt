@@ -91,10 +91,11 @@
                   Place: à calculer d'après les coordonnées GPS ?<br>
                   Longitude: {{displaySensor.longitude}}<br>
                   Latitude: {{displaySensor.latitude}}<br>
-                  <a mat-button
-                    matTooltip="Non implémenté"
+                  <a class="btn btn-white"
+                    mat-button
                     routerLinkActive="active"
-                    [routerLink]="['/maps']">
+                    [routerLink]="['/maps',displaySensor.latitude+'&'+displaySensor.longitude]">
+                    <i class="fas fa-map-marker-alt"></i>
                     Show on Map
                   </a><br>
                   Display Name: {{displaySensor.displayName}}<br>

@@ -1,9 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
+import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 
-declare let L; // import * as L from 'leaflet' : ERROR 77,78
+import { Sensor } from '../../Sensor';
+import { SensorVersionService } from '../../pages/sensor-version/sensor-version-service';
+
+declare let L;
 
 @Component({
   selector: 'app-maps',
@@ -13,6 +17,8 @@ declare let L; // import * as L from 'leaflet' : ERROR 77,78
 
 export class MapsComponent implements OnInit {
 
+  lat: number;
+  lng: number;
   SearchCapteurForm: FormGroup;
   sensorMap: any;
   tabSensor;
@@ -33,7 +39,11 @@ export class MapsComponent implements OnInit {
   ];
   //Fin test
 
-  constructor(private fb: FormBuilder) {
+  constructor(
+    private router: Router,
+    private fb: FormBuilder,
+    private sensorService: SensorVersionService)
+  {
     this.SearchCapteurForm = this.fb.group({
       name: ['', Validators.required],
     });
@@ -61,67 +71,57 @@ export class MapsComponent implements OnInit {
     let mapboxUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       mapboxAttribution = " UMMISCO Dashboard Sensor's Maps";
 
-    let SoilSensor = L.marker([14.731812, -17.433000], {icon: myIcon}).bindPopup('This is Soil Sensor '),
-      Humidity = L.marker([14.741995, -17.433543], {icon: myIcon}).bindPopup('This is humidity sensor '),
-      Temperature = L.marker([14.731095, -17.435143], {icon: myIcon}).bindPopup('This is Temperature sensor'),
-      Rain = L.marker([14.721995, -17.437343], {icon: myIcon}).bindPopup('This is Rain Detection Sensor');
-    var sensors = L.layerGroup([SoilSensor, Humidity, Temperature, Rain]);
+    let soilSensor = L.marker([14.731812, -17.433000], {icon: myIcon}).bindPopup('This is Soil Sensor '),
+      humidity = L.marker([14.741995, -17.433543], {icon: myIcon}).bindPopup('This is humidity sensor '),
+      temperature = L.marker([14.731095, -17.435143], {icon: myIcon}).bindPopup('This is temperature sensor'),
+      rain = L.marker([14.721995, -17.437343], {icon: myIcon}).bindPopup('This is rain Detection Sensor');
+    var sensors = L.layerGroup([soilSensor, humidity, temperature, rain]);
     var field = L.tileLayer(mapboxUrl, { id: 'mapbox.satellite', attribution: mapboxAttribution }),
       streets = L.tileLayer(mapboxUrl, { id: 'mapbox.streets', attribution: mapboxAttribution });
 
+    // Ajout des positions des capteurs du serveur local
+    this.sensorService.getSensors().subscribe(
+      (data: Sensor[]) => {
+        for (let sensor of data) {
+          L.marker([
+            JSON.parse(JSON.stringify(sensor)).latitude,
+            JSON.parse(JSON.stringify(sensor)).longitude
+          ], {icon: myIcon}).bindPopup(sensor.sensorMetadataName).
+          addTo(this.map);
+          // utiliser bindPopup si bindTooltip ne fonctionne pas avec les ecrans tactiles
+        }
+      }
+    );
+
+    let index_lat = 0;
+    let index_lng = 0;
+    if (this.router.url !== '/maps' && this.router.url.includes('&')) {
+      index_lat = this.router.url.lastIndexOf('/') + 1;
+      index_lng = this.router.url.lastIndexOf('&') + 1;
+    }
+    if (index_lat > 0) {
+      this.lat = Number(this.router.url.slice(index_lat,index_lng-1));
+    } else {
+      this.lat = 0;
+    }
+    if (index_lng > 0) {
+      this.lng = Number(this.router.url.slice(index_lng));
+    } else {
+      this.lng = 0;
+    }
     this.map = L.map('mapid', {
-      center: [14.731995, -17.433143],
-      zoom: 15,
+      center: [this.lat, this.lng],
+      zoom: 5,
       layers: [field, sensors]
     });
-
-    let popup = L.popup();
-
-    // function onMapClick(e) {
-    //   popup
-    //     .setLatLng(e.latlng)
-    //     .setContent("You clicked the map at " + e.latlng.toString())
-    //     .openOn(this.map);
-    // }
-
     this.map.on('click', (e) => {
       L.popup()
       .setLatLng(e.latlng)
-      .setContent("You clicked the map at " + e.latlng.toString())
+      .setContent('latitude: ' + e.latlng.lat + '<br>longitude: ' + e.latlng.lng)
       .openOn(this.map);
     });
 
-    var baseMaps = {
-      "Field": field,
-    };
-
-    var overlayMaps = {
-      "Sensors": sensors
-    };
-
-    //L.control.layers(baseMaps, overlayMaps).addTo(map);
-
-    /*const mymap = L.map('mapid').setView([14.731995, -17.433143], 15);
-    let tilestreets = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: " UMMISCO Dashboard Sensor's Maps",
-      maxZoom: 19
-    });
-    tilestreets.addTo(mymap);
-    let marker = L.marker([14.731995, -17.433143]).addTo(mymap);
-    marker.bindPopup("<b>Sensor Name!</b><br> Sensor Description.");
-
-    let popup = L.popup();
-
-    function onMapClick(e) {
-      popup
-        .setLatLng(e.latlng)
-        .setContent("You clicked the map at " + e.latlng.toString())
-        .openOn(mymap);
-    }
-
-    mymap.on('click', onMapClick);*/
   }
-
 
   autoCompletInit() {
     this.filteredOptions = this.myControl.valueChanges
@@ -141,11 +141,4 @@ export class MapsComponent implements OnInit {
 
     return this.fruits.filter(option => option.name.toLowerCase().indexOf(filterValue) === 0);
   }
-
-  // loadSensor() {
-  //   this.sensorService.getData()
-  //     .subscribe(
-  //       data => { this.sensorMap = data }
-  //     );
-  // }
 }

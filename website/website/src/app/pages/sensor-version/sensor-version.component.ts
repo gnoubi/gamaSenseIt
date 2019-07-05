@@ -59,10 +59,12 @@ export class SensorVersionPage implements OnInit {
 
   refreshSensors(): void {
     this.sensors = this.sensorService.loadSensors();
+    this.operationSensor = "";
   }
 
   refreshSensorTypes(): void {
     this.sensorTypes = this.sensorService.loadSensorTypes();
+    this.operationType = "";
   }
 
   removeSensor(idSensor: number): void {

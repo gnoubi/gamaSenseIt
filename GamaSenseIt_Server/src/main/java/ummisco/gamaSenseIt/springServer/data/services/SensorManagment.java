@@ -45,8 +45,8 @@ public class SensorManagment implements ISensorManagment {
 
   @Override
   public void saveDefaultSensorInit() {
-
- /*   GeometryFactory gf = new GeometryFactory();
+/*
+    GeometryFactory gf = new GeometryFactory();
 
     SensorMetadata mtype = new SensorMetadata(DEFAULT_SENSOR_TYPE_NAME, DEFAULT_SENSOR_VERSION);
     SensorMetadata qamelio = new SensorMetadata("Qamelio", "1", ":",DEFAULT_DESCRIPTION);
@@ -65,7 +65,7 @@ public class SensorManagment implements ISensorManagment {
     addParameterToSensorMetadata(qamelio, h1);
     addParameterToSensorMetadata(qamelio, t1);
 
-    Point p = gf.createPoint(new Coordinate(0, 0));
+    Point p = gf.createPoint(new Coordinate(45, 3));
     Sensor s1 = new Sensor(DEFAULT_SENSOR_NAME, DEFAULT_SENSOR_DISPLAY_NAME, DEFAULT_SENSOR_PLACE, p, mtype);
     String slogan = "La recherche scientifique au service de la qualité de l'air que vous respirez.";
     String subDisplayName = "IRD";
@@ -82,8 +82,8 @@ public class SensorManagment implements ISensorManagment {
     addParameterToSensorMetadata(smd, p1);
 
     Sensor sx = new Sensor("node_1", DEFAULT_SENSOR_DISPLAY_NAME, DEFAULT_SENSOR_PLACE, p, smd);
-    sensorRepo.save(sx);*/
-
+    sensorRepo.save(sx);
+*/
   }
 
   @Override

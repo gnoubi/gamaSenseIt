@@ -3,12 +3,13 @@ import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { remove } from 'lodash';
 
+import { Sensor } from '../../Sensor';
 import { SensorVersion } from '../../SensorVersion';
 import { SensorVersionService } from '../../pages/sensor-version/sensor-version-service';
 import { SensorVersionFormService } from './sensor-version-form-service';
 import { MesuredParameter } from '../../MesuredParameter';
 
-declare let L; // import * as L from 'leaflet' : ERROR 77,78
+declare let L;
 
 @Component({
   selector: 'app-sensor-version',
@@ -64,21 +65,34 @@ export class SensorVersionComponent implements OnInit {
     let mapboxUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       mapboxAttribution = " UMMISCO New Sensor's Map";
 
-    let SoilSensor = L.marker([14.731812, -17.433000], {icon: myIcon}).bindPopup('This is Soil Sensor ');
-    let sensors = L.layerGroup([SoilSensor]);
+    this.sensorService.getSensors().subscribe(
+      (data: Sensor[]) => {
+        for (let sensor of data) {
+
+          L.marker([
+            JSON.parse(JSON.stringify(sensor)).latitude,
+            JSON.parse(JSON.stringify(sensor)).longitude
+          ], {icon: myIcon}).bindTooltip(sensor.sensorMetadataName).
+          addTo(this.map);
+          // utiliser bindPopup si bindTooltip ne fonctionne pas avec les ecrans tactiles
+        }
+      }
+    );
     let field = L.tileLayer(mapboxUrl,
       { id: 'mapbox.satellite', attribution: mapboxAttribution });
 
     this.map = L.map('mapid', {
-      center: [14.731995, -17.433143],
-      zoom: 10,
-      layers: [field, sensors]
+      center: [50, 0],
+      zoom: 4,
+      layers: [field],
+      zoomControl:false
     });
+
     this.map.on('click', (e) => {
       L.popup()
       .setLatLng(e.latlng)
-      .setContent("Lat = " + Math.round(e.latlng.lat*this.ROUND)/this.ROUND +
-        ", Lng = " + Math.round(e.latlng.lng*this.ROUND)/this.ROUND)
+      .setContent('latitude: ' + Math.round(e.latlng.lat*this.ROUND)/this.ROUND +
+        '<br>longitude: ' + Math.round(e.latlng.lng*this.ROUND)/this.ROUND)
       .openOn(this.map);
       this.coord = e.latlng;
     });

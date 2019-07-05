@@ -10,6 +10,7 @@ export const AdminLayoutRoutes: Routes = [
     { path: 'dashboard',      component: DashboardComponent },
     { path: 'user-profile',   component: SensorVersionPage },
     { path: 'maps',           component: MapsComponent },
+    { path: 'maps/:lat&:lng', component: MapsComponent },
     { path: 'diagramme',      component: DiagrammeComponent },
     { path: 'qrcode',         component: QrcodeComponent }
 ];
