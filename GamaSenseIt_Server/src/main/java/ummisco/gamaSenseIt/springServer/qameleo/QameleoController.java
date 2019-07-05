@@ -51,13 +51,23 @@ public class QameleoController {
 
     HashMap<DataParameter, Double> res = new HashMap<DataParameter, Double>();
     Calendar start = Calendar.getInstance();
+    Calendar startHour = Calendar.getInstance();
     Calendar enddate = Calendar.getInstance();
     enddate.add(Calendar.DAY_OF_MONTH, 1);
     start.add(Calendar.DAY_OF_MONTH, -1);
+    startHour.add(Calendar.HOUR_OF_DAY, -1);
 
     for (ParameterMetadata p : parameters) {
       long idParam = p.getId();
-      Double mean = getMeanValue(sensorID, idParam, start.getTime(), enddate.getTime());
+      Double mean = null;
+      if(p.getParameter().equals(DataParameter.TEMPERATURE)||p.getParameter().equals(DataParameter.HUMIDITY))
+      {
+    	  mean = getMeanValue(sensorID, idParam, startHour.getTime(), enddate.getTime());	
+      }
+      else
+      {
+      	  mean = getMeanValue(sensorID, idParam, start.getTime(), enddate.getTime());	  	  
+      }
       if (mean != null)
         res.put(p.getParameter(), mean);
       else
