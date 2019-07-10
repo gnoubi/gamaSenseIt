@@ -1,11 +1,13 @@
 import { Component, OnInit, Input } from '@angular/core';
-import {Observable} from 'rxjs';
+import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import Chart from 'chart.js';
 
 import { SensorVersion } from '../../SensorVersion';
 import { StockCapteurArr } from '../../stock-capteur';
 import { FormControl } from '@angular/forms';
+import { SensorVersionService } from '../sensor-version/sensor-version-service';
+import { Sensor } from '../../Sensor';
 
 @Component({
   selector: 'app-diagramme',
@@ -20,19 +22,21 @@ export class DiagrammeComponent implements OnInit {
     return Math.round(Math.random() * 100);
   };
 
-  sensors: SensorVersion[] = StockCapteurArr;
+  sensorTypes: SensorVersion[] ;
+  sensors: Sensor[];
+  //sensors: SensorVersion[] = StockCapteurArr;
   sensorsCheck; myLine; dataUpdate;
   myBar; myPie;
   element; canvas;
   myControl: FormControl = new FormControl();
   filteredOptions: Observable<any>;
-  searchText:any;
+  searchText: any = '';
   displaySensor; j = 0; k = 0; l = 0;
   dataMesure: [68, 80, 32, 15, 50, 100, 20];
-  checkValue=[];
+  checkValue = [];
   ctx: HTMLElement;
-  monthsLabel : ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
-  daysLabel :  ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  monthsLabel: ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
+  daysLabel: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
   datasetSensor = [{
     label: 'My First dataset',
@@ -164,13 +168,13 @@ export class DiagrammeComponent implements OnInit {
       backgroundColor: [
         "rgba(" + red + "," + green + "," + blue + ",0.5)",
         "rgba(" + this.randomScalingFactor() + "," +
-          this.randomScalingFactor() + "," + this.randomScalingFactor() + ",0.5)",
+        this.randomScalingFactor() + "," + this.randomScalingFactor() + ",0.5)",
         "rgba(" + this.randomScalingFactor() + "," +
-          this.randomScalingFactor() + "," + this.randomScalingFactor() + ",0.5)",
+        this.randomScalingFactor() + "," + this.randomScalingFactor() + ",0.5)",
         "rgba(" + this.randomScalingFactor() + "," +
-          this.randomScalingFactor() + "," + this.randomScalingFactor() + ",0.5)",
+        this.randomScalingFactor() + "," + this.randomScalingFactor() + ",0.5)",
         "rgba(" + this.randomScalingFactor() + "," +
-          this.randomScalingFactor() + "," + this.randomScalingFactor() + ",0.5)",
+        this.randomScalingFactor() + "," + this.randomScalingFactor() + ",0.5)",
       ],
       data: [
         this.randomScalingFactor(),
@@ -384,7 +388,7 @@ export class DiagrammeComponent implements OnInit {
     this.myPie = new Chart(this.ctx, this.configpie);
   }
 
-  days(){
+  days() {
     /*if(this.typeGraph == 'line'){
       this.myLine.data.labels =this.daysLabel ;
       this.myLine.update();
@@ -398,7 +402,7 @@ export class DiagrammeComponent implements OnInit {
   }
 
 
-  months(){/*
+  months() {/*
     if(this.typeGraph == 'line'){
       this.myLine.data.labels =this.monthsLabel ;
       this.myLine.update();
@@ -414,21 +418,17 @@ export class DiagrammeComponent implements OnInit {
   // test case a cocher
 
   fruits = [
-    { name: 'apple',    selected: false },
-    { name: 'orange',   selected: false },
-    { name: 'pear',     selected: false },
+    { name: 'apple', selected: false },
+    { name: 'orange', selected: false },
+    { name: 'pear', selected: false },
     { name: 'naartjie', selected: false }
   ];
-  fruit:any;
+  fruit: any;
 
-  selection=[];
+  selection = [];
 
-  selectedFruits(value:any,check:boolean) {
-
-    //console.log('on chaange');
-    //value.selected = !value.selected;
-    //console.log(value.selected)  //  return filterFilter(this.fruits, { selected: true });*/
-    if (check){
+  selectedSensor(value: any, check: boolean) {
+    if (check) {
       for (let item of this.checkValue) {
         if (item.sensor.name === value.name) {
           item.selected = !item.selected;
@@ -444,18 +444,19 @@ export class DiagrammeComponent implements OnInit {
   };
 
 
-  constructor() { }
+  constructor( private sensorService: SensorVersionService) { }
 
   ngOnInit() {
     this.autoCompletInit();
+    this.sensors = this.sensorService.loadSensors();
     this.initValueChecked();
 
   }
 
-  initValueChecked(){
-    for(let sensor of this.sensors){
-        let value = {sensor,selected:false};
-        this.checkValue.push(value);
+  initValueChecked() {
+    for (let sensor of this.sensors) {
+      let value = { sensor, selected: false };
+      this.checkValue.push(value);
     }
   }
   autoCompletInit() {

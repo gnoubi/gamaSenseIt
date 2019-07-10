@@ -30,65 +30,18 @@
       </div>
     </div>
     <div class="col-xl-4">
-      <div class="card shadow">
-        <div class="card-header">
-          <!--<div class="row align-items-center">
-            <form class="">
-              <mat-form-field floatLabel="never">
-                <input placeholder="Sensor's Name" type="text" matInput [formControl]="myControl"
-                  [matAutocomplete]="auto">
-                <mat-autocomplete #auto="matAutocomplete">
-                  <mat-option *ngFor="let option of fruits" value="{{option.name}}">
-                    {{ option.name }}
-                  </mat-option>->
-                  <div>
-                    <ul>
-                      <li *ngFor="let fruit of fruits;">
-                        <label>
-                          <input type="checkbox" name="selectedFruits[]" value="{{fruit.name}}"
-                            ng-model="fruit.selected">
-                          {{fruit.name}}
-                        </label>
-                      </li>
-                    </ul>
-                  </div>
-                </mat-autocomplete>
-              </mat-form-field>
-            </form>
-            <-</div>
-          </div>-->
-        </div>
+      <div class="card shadow bg-gradient-dark">
         <div class="card-body">
-          <!--
-          <table>
-            <tbody>
-              <tr *ngFor="let fruit of checkValue">
-                <td>
-                  <label>
-                    <input type="checkbox" name="selectedFruits[]" value="{{fruit.sensor}}" ng-model="fruit.selected"
-                      (change)="selectedFruits(fruit)">
-                    {{fruit.sensor.name}}
-                  </label>
-                </td>
-              </tr>
-            </tbody>
-          </table>-->
           <div>
-            <input class="form-control"
-              type="search"
-              placeholder="Search by sensor name"
-              [(ngModel)]="searchText"
-              [ngModelOptions]="{standalone:true}">
+            <input type="text" placeholder="Search by sensor name" class="form-control" [(ngModel)]="searchText">
           </div>
           <br>
           <div class="slist">
-            <div class=" border border-1 border-info rounded m-2"
-              *ngFor="let item of sensors | searchSensor:searchText">
+            <div *ngFor="let item of sensors | searchSensor:searchText ; let i = index"
+              class=" border border-1 border-info bg-light rounded m-2 form-group">
               <label>
-                <input type="checkbox"
-                  value="{{item}}"
-                  (change)="selectedFruits(item,$event.target.checked)">
-                <h5>{{item.name+" "+item.version}}</h5>
+                <input type="checkbox" value="{{item}}" (change)="selectedSensor(item,$event.target.checked)">
+                &nbsp;{{item.name+" "+item.version}}
                 {{item.documentation}}
               </label>
             </div>
@@ -98,9 +51,7 @@
             <button class="btn btn-outline-success">
               Visualiser
             </button>
-            <button class="btn btn-primary"
-              type="button"
-              (click)="resetGraph()">
+            <button class="btn btn-primary" type="button" (click)="resetGraph()">
               Reset Graph
             </button>
           </div>
@@ -129,12 +80,12 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let fruit of checkValue">
-              <td *ngIf="fruit.selected==true">{{fruit.sensor.name}}</td>
-              <td *ngIf="fruit.selected==true">{{fruit.sensor.name}}</td>
-              <td *ngIf="fruit.selected==true">Latitude</td>
-              <td *ngIf="fruit.selected==true">Longitude</td>
-              <td *ngIf="fruit.selected==true">SensorType</td>
+            <tr *ngFor="let item of checkValue">
+              <td *ngIf="item.selected==true">{{item.sensor.name}}</td>
+              <td *ngIf="item.selected==true">{{item.sensor.name}}</td>
+              <td *ngIf="item.selected==true">{{item.sensor.name}}</td>
+              <td *ngIf="item.selected==true">{{item.sensor.name}}</td>
+              <td *ngIf="item.selected==true">{{item.sensor.name}}</td>
             </tr>
             <tr>
           </tbody>

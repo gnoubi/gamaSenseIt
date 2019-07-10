@@ -20,8 +20,8 @@ export class MapsComponent implements OnInit {
   lat: number;
   lng: number;
   SearchCapteurForm: FormGroup;
-  sensorMap: any;
-  tabSensor;
+  //sensorMap: Sensor;
+  tabSensor:Sensor[];
   map;
   myControl:FormControl = new FormControl();
   filteredOptions: Observable<any>;
@@ -53,13 +53,13 @@ export class MapsComponent implements OnInit {
 
     let sensorName = this.SearchCapteurForm.get('name').value;
     // creer un moteur de recherche par le biais de leaflet
-    this.map.flyTo([43.6316, 3.89706], 15);
+    //this.map.flyTo([43.6316, 3.89706], 15);
 
-    /*for( this.sensor in this.sensorMap){
-        if (this.sensor.name == sensorName ){
-          this.map('mapid').flyTo([this.sensor.latitude, this.sensor.longitude], 15);
+    for( let sensor of this.tabSensor){
+        if (sensor.name == sensorName ){
+          this.map('mapid').flyTo([sensor.latitude, sensor.longitude], 10);
         }
-    }*/
+    }
   }
 
   ngOnInit() {
@@ -67,15 +67,17 @@ export class MapsComponent implements OnInit {
       iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/images/marker-icon.png'
     });
     this.autoCompletInit();
+    this.tabSensor = this.sensorService.loadSensors();
 
     let mapboxUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       mapboxAttribution = " UMMISCO Dashboard Sensor's Maps";
 
-    let soilSensor = L.marker([14.731812, -17.433000], {icon: myIcon}).bindPopup('This is Soil Sensor '),
+    /*let soilSensor = L.marker([14.731812, -17.433000], {icon: myIcon}).bindPopup('This is Soil Sensor '),
       humidity = L.marker([14.741995, -17.433543], {icon: myIcon}).bindPopup('This is humidity sensor '),
       temperature = L.marker([14.731095, -17.435143], {icon: myIcon}).bindPopup('This is temperature sensor'),
       rain = L.marker([14.721995, -17.437343], {icon: myIcon}).bindPopup('This is rain Detection Sensor');
-    var sensors = L.layerGroup([soilSensor, humidity, temperature, rain]);
+    var sensors = L.layerGroup([soilSensor, humidity, temperature, rain]);*/
+    var sensors = L.layerGroup([]);
     var field = L.tileLayer(mapboxUrl, { id: 'mapbox.satellite', attribution: mapboxAttribution }),
       streets = L.tileLayer(mapboxUrl, { id: 'mapbox.streets', attribution: mapboxAttribution });
 

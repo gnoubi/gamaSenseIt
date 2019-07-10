@@ -17,7 +17,7 @@ import { SensorVersionPage } from '../../pages/sensor-version/sensor-version.com
 import { ComponentsModule } from '../../components/components.module';
 import { DiagrammeComponent } from '../../pages/diagramme/diagramme.component';
 import { SensorVersionService } from '../../pages/sensor-version/sensor-version-service';
-import { SearchPipe } from './search.pipe';
+import { SearchPipe } from '../../pages/diagramme/search.pipe';
 
 // import { ToastrModule } from 'ngx-toastr';
 
