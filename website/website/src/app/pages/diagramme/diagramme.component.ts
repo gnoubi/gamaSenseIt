@@ -1,13 +1,14 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, from } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import Chart from 'chart.js';
 
 import { SensorVersion } from '../../SensorVersion';
 import { StockCapteurArr } from '../../stock-capteur';
-import { FormControl } from '@angular/forms';
+import { FormControl, CheckboxControlValueAccessor } from '@angular/forms';
 import { SensorVersionService } from '../sensor-version/sensor-version-service';
 import { Sensor } from '../../Sensor';
+import { MapsComponent } from '../maps/maps.component';
 
 @Component({
   selector: 'app-diagramme',
@@ -16,15 +17,16 @@ import { Sensor } from '../../Sensor';
 })
 export class DiagrammeComponent implements OnInit {
 
+
+
+  constructor(private sensorService: SensorVersionService, /*private mapSensor: MapsComponent*/) { }
+
   @Input() typeGraph = '';
 
-  randomScalingFactor = function () {
-    return Math.round(Math.random() * 100);
-  };
-
-  sensorTypes: SensorVersion[] ;
-  sensors: Sensor[];
-  //sensors: SensorVersion[] = StockCapteurArr;
+  sensorTypes: SensorVersion[];
+  // sensors: Sensor[];
+ // sensorMap: Sensor[];
+  sensors: SensorVersion[] = StockCapteurArr;
   sensorsCheck; myLine; dataUpdate;
   myBar; myPie;
   element; canvas;
@@ -35,9 +37,26 @@ export class DiagrammeComponent implements OnInit {
   dataMesure: [68, 80, 32, 15, 50, 100, 20];
   checkValue = [];
   ctx: HTMLElement;
+
+  // tslint:disable-next-line: member-ordering
+  fruits = [
+    { name: 'apple', selected: false },
+    { name: 'orange', selected: false },
+    { name: 'pear', selected: false },
+    { name: 'naartjie', selected: false }
+  ];
+  /*  fruit: any;*/
+
+  selection = [];
   monthsLabel: ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
   daysLabel: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
+  // tslint:disable-next-line: only-arrow-functions
+  randomScalingFactor = function () {
+    return Math.round(Math.random() * 100);
+  };
+
+  // tslint:disable-next-line: member-ordering
   datasetSensor = [{
     label: 'My First dataset',
     backgroundColor: 'rgba(255, 99, 132, 0.5)',
@@ -68,6 +87,7 @@ export class DiagrammeComponent implements OnInit {
     ],
   }];
 
+  // tslint:disable-next-line: member-ordering
   datasetSensorB = [{
     label: 'My First dataset',
     backgroundColor: 'rgba(255, 99, 132, 0.5)',
@@ -98,130 +118,9 @@ export class DiagrammeComponent implements OnInit {
     ],
   }];
 
-  /*typeGraphChange() {
-    this.myLine.type = this.typeGraph;
-    console.log(this.myLine.type);
-    this.myLine.update();
-  }*/
-
-
-  /* Get Data to Form */
-
-  /* addSensor (displaySensor){
-     var dataMesure;
-     var $red = this.randomScalingFactor()*255;
-     var $green = this.randomScalingFactor()*255;
-     var $blue = this.randomScalingFactor()*255;
-
-     for( let i of displaySensor.measuredParameters){
-       dataMesure.push(i.DataParameter.PRESSURE)
-     }
-
-     var dataSensor= {
-       label:displaySensor.id,
-       backgroundColor:"rgba("+$red+","+$green+","+$blue+",0.5)",
-       borderColor:"rgba("+$red+","+$green+","+$blue+",1)",
-       data:dataMesure,
-       fill:false
-     }
-     this.sensorsCheck.push(dataSensor);
-   }*/
-
-  addSensoTest() {
-
-    var red = this.randomScalingFactor() * 255 / 100;
-    var green = this.randomScalingFactor() * 255 / 100;
-    var blue = this.randomScalingFactor() * 255 / 100;
-
-    var dataSensorL = {
-      label: 'another dataset' + this.j,
-      backgroundColor: "rgba(" + red + "," + green + "," + blue + ",0.5)",
-      borderColor: "rgba(" + red + "," + green + "," + blue + ",1)",
-      data: [
-        this.randomScalingFactor(),
-        this.randomScalingFactor(),
-        this.randomScalingFactor(),
-        this.randomScalingFactor(),
-        this.randomScalingFactor(),
-        this.randomScalingFactor(),
-        this.randomScalingFactor()
-      ],
-      fill: false
-    }
-    var dataSensorB = {
-      label: 'another dataset' + this.k,
-      backgroundColor: "rgba(" + red + "," + green + "," + blue + ",0.5)",
-      borderColor: "rgba(" + red + "," + green + "," + blue + ",1)",
-      data: [
-        this.randomScalingFactor(),
-        this.randomScalingFactor(),
-        this.randomScalingFactor(),
-        this.randomScalingFactor(),
-        this.randomScalingFactor(),
-        this.randomScalingFactor(),
-        this.randomScalingFactor()
-      ],
-      fill: false
-    }
-    var dataSensorP = {
-      label: 'another dataset' + this.l,
-      backgroundColor: [
-        "rgba(" + red + "," + green + "," + blue + ",0.5)",
-        "rgba(" + this.randomScalingFactor() + "," +
-        this.randomScalingFactor() + "," + this.randomScalingFactor() + ",0.5)",
-        "rgba(" + this.randomScalingFactor() + "," +
-        this.randomScalingFactor() + "," + this.randomScalingFactor() + ",0.5)",
-        "rgba(" + this.randomScalingFactor() + "," +
-        this.randomScalingFactor() + "," + this.randomScalingFactor() + ",0.5)",
-        "rgba(" + this.randomScalingFactor() + "," +
-        this.randomScalingFactor() + "," + this.randomScalingFactor() + ",0.5)",
-      ],
-      data: [
-        this.randomScalingFactor(),
-        this.randomScalingFactor(),
-        this.randomScalingFactor(),
-        this.randomScalingFactor(),
-        this.randomScalingFactor(),
-      ],
-    }
-    if (this.typeGraph == 'line') {
-      this.myLine.data.datasets.push(dataSensorL);
-      this.myLine.update();
-      this.j++;
-    } else if (this.typeGraph == 'bar') {
-      this.myBar.data.datasets.push(dataSensorB);
-      this.myBar.update();
-      this.k++;
-    }
-    else if (this.typeGraph == 'pie') {
-      //other config
-      this.myPie.data.datasets.push(dataSensorP);
-      this.myPie.update();
-      this.l++;
-    }
-  }
-
-  resetGraph() {
-    if (this.typeGraph == 'line') {
-      this.myLine.data.datasets = [];
-      this.myLine.update();
-      this.j = 0;
-    }
-    else if (this.typeGraph == 'bar') {
-      this.myBar.data.datasets = [];
-      this.myBar.update();
-      this.k = 0;
-    }
-    else if (this.typeGraph == 'pie') {
-      this.myPie.data.datasets = [];
-      this.myPie.update();
-      this.l = 0;
-    }
-
-  }
-
   /*Chart JS */
 
+  // tslint:disable-next-line: member-ordering
   config = {
     type: 'line',
     data: {
@@ -265,6 +164,7 @@ export class DiagrammeComponent implements OnInit {
     }
   };
 
+  // tslint:disable-next-line: member-ordering
   configbar = {
     type: 'bar',
     data: {
@@ -308,6 +208,7 @@ export class DiagrammeComponent implements OnInit {
     }
   };
 
+  // tslint:disable-next-line: member-ordering
   configpie = {
     type: 'pie',
     data: {
@@ -341,6 +242,128 @@ export class DiagrammeComponent implements OnInit {
     }
   };
 
+
+
+  /*typeGraphChange() {
+    this.myLine.type = this.typeGraph;
+    console.log(this.myLine.type);
+    this.myLine.update();
+  }*/
+
+
+  /* Get Data to Form */
+
+  /* addSensor (displaySensor){
+     var dataMesure;
+     var $red = this.randomScalingFactor()*255;
+     var $green = this.randomScalingFactor()*255;
+     var $blue = this.randomScalingFactor()*255;
+
+     for( let i of displaySensor.measuredParameters){
+       dataMesure.push(i.DataParameter.PRESSURE)
+     }
+
+     var dataSensor= {
+       label:displaySensor.id,
+       backgroundColor:"rgba("+$red+","+$green+","+$blue+",0.5)",
+       borderColor:"rgba("+$red+","+$green+","+$blue+",1)",
+       data:dataMesure,
+       fill:false
+     }
+     this.sensorsCheck.push(dataSensor);
+   }*/
+
+  addSensoTest() {
+
+    const red = this.randomScalingFactor() * 255 / 100;
+    const green = this.randomScalingFactor() * 255 / 100;
+    const blue = this.randomScalingFactor() * 255 / 100;
+
+    const dataSensorL = {
+      label: 'another dataset' + this.j,
+      backgroundColor: 'rgba(' + red + ',' + green + ',' + blue + ',0.5)',
+      borderColor: 'rgba(' + red + ',' + green + ',' + blue + ',1)',
+      data: [
+        this.randomScalingFactor(),
+        this.randomScalingFactor(),
+        this.randomScalingFactor(),
+        this.randomScalingFactor(),
+        this.randomScalingFactor(),
+        this.randomScalingFactor(),
+        this.randomScalingFactor()
+      ],
+      fill: false
+    };
+    const dataSensorB = {
+      label: 'another dataset' + this.k,
+      backgroundColor: 'rgba(' + red + ',' + green + ',' + blue + ',0.5)',
+      borderColor: 'rgba(' + red + ',' + green + ',' + blue + ',1)',
+      data: [
+        this.randomScalingFactor(),
+        this.randomScalingFactor(),
+        this.randomScalingFactor(),
+        this.randomScalingFactor(),
+        this.randomScalingFactor(),
+        this.randomScalingFactor(),
+        this.randomScalingFactor()
+      ],
+      fill: false
+    };
+    const dataSensorP = {
+      label: 'another dataset' + this.l,
+      backgroundColor: [
+        'rgba(' + red + ',' + green + ',' + blue + ',0.5)',
+        'rgba(' + this.randomScalingFactor() + ',' +
+        this.randomScalingFactor() + ',' + this.randomScalingFactor() + ',0.5)',
+        'rgba(' + this.randomScalingFactor() + ',' +
+        this.randomScalingFactor() + ',' + this.randomScalingFactor() + ',0.5)',
+        'rgba(' + this.randomScalingFactor() + ',' +
+        this.randomScalingFactor() + ',' + this.randomScalingFactor() + ',0.5)',
+        'rgba(' + this.randomScalingFactor() + ',' +
+        this.randomScalingFactor() + ',' + this.randomScalingFactor() + ',0.5)',
+      ],
+      data: [
+        this.randomScalingFactor(),
+        this.randomScalingFactor(),
+        this.randomScalingFactor(),
+        this.randomScalingFactor(),
+        this.randomScalingFactor(),
+      ],
+    };
+    // tslint:disable-next-line: triple-equals
+    if (this.typeGraph == 'line') {
+      this.myLine.data.datasets.push(dataSensorL);
+      this.myLine.update();
+      this.j++;
+    } else if (this.typeGraph == 'bar') {
+      this.myBar.data.datasets.push(dataSensorB);
+      this.myBar.update();
+      this.k++;
+    } else if (this.typeGraph == 'pie') {
+      // other config
+      this.myPie.data.datasets.push(dataSensorP);
+      this.myPie.update();
+      this.l++;
+    }
+  }
+
+  resetGraph() {
+    if (this.typeGraph == 'line') {
+      this.myLine.data.datasets = [];
+      this.myLine.update();
+      this.j = 0;
+    } else if (this.typeGraph == 'bar') {
+      this.myBar.data.datasets = [];
+      this.myBar.update();
+      this.k = 0;
+    } else if (this.typeGraph == 'pie') {
+      this.myPie.data.datasets = [];
+      this.myPie.update();
+      this.l = 0;
+    }
+
+  }
+
   line() {
     this.typeGraph = 'line';
     this.element = document.getElementById('chart');
@@ -348,8 +371,8 @@ export class DiagrammeComponent implements OnInit {
       this.element.removeChild(this.element.firstChild);
     }
     this.canvas = document.createElement('canvas');
-    this.canvas.setAttribute("id", "myChart");
-    this.canvas.className = "chart-canvas";
+    this.canvas.setAttribute('id', 'myChart');
+    this.canvas.className = 'chart-canvas';
     this.element.appendChild(this.canvas);
 
     this.ctx = document.getElementById('myChart');
@@ -358,14 +381,14 @@ export class DiagrammeComponent implements OnInit {
   }
   bar() {
     this.typeGraph = 'bar';
-    //this.ctx=null;
+    // this.ctx=null;
     this.element = document.getElementById('chart');
     while (this.element.firstChild) {
       this.element.removeChild(this.element.firstChild);
     }
     this.canvas = document.createElement('canvas');
-    this.canvas.setAttribute("id", "myChart");
-    this.canvas.className = "chart-canvas";
+    this.canvas.setAttribute('id', 'myChart');
+    this.canvas.className = 'chart-canvas';
     this.element.appendChild(this.canvas);
 
     this.ctx = document.getElementById('myChart');
@@ -374,14 +397,14 @@ export class DiagrammeComponent implements OnInit {
   }
   pie() {
     this.typeGraph = 'pie';
-    //this.ctx=null;
+    // this.ctx=null;
     this.element = document.getElementById('chart');
     while (this.element.firstChild) {
       this.element.removeChild(this.element.firstChild);
     }
     this.canvas = document.createElement('canvas');
-    this.canvas.setAttribute("id", "myChart");
-    this.canvas.className = "chart-canvas";
+    this.canvas.setAttribute('id', 'myChart');
+    this.canvas.className = 'chart-canvas';
     this.element.appendChild(this.canvas);
 
     this.ctx = document.getElementById('myChart');
@@ -415,49 +438,43 @@ export class DiagrammeComponent implements OnInit {
     }*/
   }
 
-  // test case a cocher
-
-  fruits = [
-    { name: 'apple', selected: false },
-    { name: 'orange', selected: false },
-    { name: 'pear', selected: false },
-    { name: 'naartjie', selected: false }
-  ];
-  fruit: any;
-
-  selection = [];
-
   selectedSensor(value: any, check: boolean) {
     if (check) {
-      for (let item of this.checkValue) {
+      for (const item of this.checkValue) {
         if (item.sensor.name === value.name) {
           item.selected = !item.selected;
         }
       }
     } else {
-      for (let item of this.checkValue) {
+      for (const item of this.checkValue) {
         if (item.sensor.name === value.name) {
           item.selected = !item.selected;
         }
       }
     }
-  };
-
-
-  constructor( private sensorService: SensorVersionService) { }
-
+  }
   ngOnInit() {
     this.autoCompletInit();
-    this.sensors = this.sensorService.loadSensors();
+    // this.sensors = this.sensorService.loadSensorTypes();
     this.initValueChecked();
+    // this.mapSensor.getsensorChecked();
 
   }
 
   initValueChecked() {
-    for (let sensor of this.sensors) {
-      let value = { sensor, selected: false };
+    for (const sensor of this.sensors) {
+      const value = { sensor, selected: false };
       this.checkValue.push(value);
     }
+    /*for (const sensor of this.sensorMap) {
+      for (const item of this.sensors) {
+        si le capteur choisi sur la carte se trove dans la liste des capteurs on l'ajoute a la liste
+        des donn2es a visualiser
+        if(sensor.idSensor == item.metadata...){
+  
+        }
+      }
+    }*/
   }
   autoCompletInit() {
     this.filteredOptions = this.myControl.valueChanges

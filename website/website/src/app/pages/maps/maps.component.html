@@ -8,12 +8,12 @@
               <div class="row">
                 <div class="col">
                   <!--Autocompletion & ajout a la liste des capteurs a afficher-->
-                  <form role="form" [formGroup]="SearchCapteurForm">
+                  <form [formGroup]="SearchCapteurForm">
                     <mat-form-field floatLabel="never">
-                      <input matInput type="text" placeholder="Sensor's Name" [formControl]="myControl"
+                      <input matInput type="text" placeholder="Sensor's Name" matInput [formControl]="myControl"
                         [matAutocomplete]="auto">
-                      <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
-                        <mat-option *ngFor="let option of filteredOptions | async;" value="{{option.name}}">
+                      <mat-autocomplete #auto="matAutocomplete">
+                        <mat-option *ngFor="let option of fruits" value="{{option.name}}">
                           {{ option.name }}
                         </mat-option>
                       </mat-autocomplete>
@@ -46,3 +46,35 @@
     </div>
   </div>
 </div>
+<br>
+<div class="container">
+  <div class="mb-3">
+    <div class="card shadow">
+      <div class="card-header bg-transparent">
+        <h3 class="mb-0">Selected Sensors</h3>
+      </div>
+      <div class="table-responsive">
+        <!-- Projects table -->
+        <table class="table align-items-center table-flush">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Display Name</th>
+              <th scope="col">Latitude</th>
+              <th scope="col">Longitude</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of sensorChecked">
+              <td *ngIf="item.selected==true">{{item.sensor.name}}</td>
+              <td *ngIf="item.selected==true">{{item.sensor.displayName}}</td>
+              <td *ngIf="item.selected==true">{{item.sensor.latitude}}</td>
+              <td *ngIf="item.selected==true">{{item.sensor.longitude}}</td>
+            </tr>
+            <tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div> 

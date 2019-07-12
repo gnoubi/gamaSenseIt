@@ -20,45 +20,50 @@ export class MapsComponent implements OnInit {
   lat: number;
   lng: number;
   SearchCapteurForm: FormGroup;
-  //sensorMap: Sensor;
-  tabSensor:Sensor[];
+  // sensorMap: Sensor;
+  tabSensor: Sensor[];
   map;
-  myControl:FormControl = new FormControl();
+  myControl: FormControl = new FormControl();
   filteredOptions: Observable<any>;
 
   // test autocompletion
   fruits = [
-    { name: 'apple',    selected: true },
-    { name: 'orange',   selected: false },
-    { name: 'pear',     selected: true },
+    { name: 'apple', selected: true },
+    { name: 'orange', selected: false },
+    { name: 'pear', selected: true },
     { name: 'naartjie', selected: false },
-    { name: 'apple1',    selected: true },
-    { name: 'orange1',   selected: false },
-    { name: 'pear1',     selected: true },
+    { name: 'apple1', selected: true },
+    { name: 'orange1', selected: false },
+    { name: 'pear1', selected: true },
     { name: 'naartjie1', selected: false }
   ];
-  //Fin test
+  sensorChecked: any[];
+  // Fin test
 
   constructor(
     private router: Router,
     private fb: FormBuilder,
-    private sensorService: SensorVersionService)
-  {
+    private sensorService: SensorVersionService) {
     this.SearchCapteurForm = this.fb.group({
       name: ['', Validators.required],
     });
   }
 
+  getsensorChecked() {
+    return this.sensorChecked;
+  }
+
   onSearchSensor() {
 
-    let sensorName = this.SearchCapteurForm.get('name').value;
+    const sensorName = this.myControl.value;
+    console.log(sensorName);
     // creer un moteur de recherche par le biais de leaflet
-    //this.map.flyTo([43.6316, 3.89706], 15);
+    // this.map.flyTo([43.6316, 3.89706], 15);
 
-    for( let sensor of this.tabSensor){
-        if (sensor.name == sensorName ){
-          this.map('mapid').flyTo([sensor.latitude, sensor.longitude], 10);
-        }
+    for (const sensor of this.tabSensor) {
+      if (sensor.name === sensorName) {
+        this.map('mapid').flyTo([sensor.latitude, sensor.longitude], 10);
+      }
     }
   }
 
@@ -68,41 +73,47 @@ export class MapsComponent implements OnInit {
     });
     this.autoCompletInit();
     this.tabSensor = this.sensorService.loadSensors();
+    this.initSensorChecked();
 
-    let mapboxUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-      mapboxAttribution = " UMMISCO Dashboard Sensor's Maps";
+    // tslint:disable-next-line: one-variable-per-declaration
+    const mapboxUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      mapboxAttribution = ' UMMISCO Dashboard Sensor\'s Maps';
 
-    /*let soilSensor = L.marker([14.731812, -17.433000], {icon: myIcon}).bindPopup('This is Soil Sensor '),
-      humidity = L.marker([14.741995, -17.433543], {icon: myIcon}).bindPopup('This is humidity sensor '),
-      temperature = L.marker([14.731095, -17.435143], {icon: myIcon}).bindPopup('This is temperature sensor'),
-      rain = L.marker([14.721995, -17.437343], {icon: myIcon}).bindPopup('This is rain Detection Sensor');
-    var sensors = L.layerGroup([soilSensor, humidity, temperature, rain]);*/
-    var sensors = L.layerGroup([]);
-    var field = L.tileLayer(mapboxUrl, { id: 'mapbox.satellite', attribution: mapboxAttribution }),
+    // tslint:disable-next-line: one-variable-per-declaration
+    const soilSensor = L.marker([14.731812, -17.433000], { icon: myIcon }).bindPopup("This is Soil Sensor <br> <button (click)='visualuser()'>Visualiser</button>"),
+      humidity = L.marker([14.741995, -17.433543], { icon: myIcon }).bindPopup('This is humidity sensor '),
+      temperature = L.marker([14.731095, -17.435143], { icon: myIcon }).bindPopup('This is temperature sensor'),
+      rain = L.marker([14.721995, -17.437343], { icon: myIcon }).bindPopup('This is rain Detection Sensor');
+    const sensors = L.layerGroup([soilSensor, humidity, temperature, rain]);
+    // const sensors = L.layerGroup([]);
+    // tslint:disable-next-line: one-variable-per-declaration
+    const field = L.tileLayer(mapboxUrl, { id: 'mapbox.satellite', attribution: mapboxAttribution }),
       streets = L.tileLayer(mapboxUrl, { id: 'mapbox.streets', attribution: mapboxAttribution });
 
     // Ajout des positions des capteurs du serveur local
     this.sensorService.getSensors().subscribe(
       (data: Sensor[]) => {
-        for (let sensor of data) {
+        for (const sensor of data) {
           L.marker([
             JSON.parse(JSON.stringify(sensor)).latitude,
             JSON.parse(JSON.stringify(sensor)).longitude
-          ], {icon: myIcon}).bindPopup(sensor.sensorMetadataName).
-          addTo(this.map);
+          ], { icon: myIcon }).bindPopup(sensor.sensorMetadataName).
+            addTo(this.map);
           // utiliser bindPopup si bindTooltip ne fonctionne pas avec les ecrans tactiles
         }
       }
     );
 
+    // tslint:disable-next-line: variable-name
     let index_lat = 0;
+    // tslint:disable-next-line: variable-name
     let index_lng = 0;
     if (this.router.url !== '/maps' && this.router.url.includes('&')) {
       index_lat = this.router.url.lastIndexOf('/') + 1;
       index_lng = this.router.url.lastIndexOf('&') + 1;
     }
     if (index_lat > 0) {
-      this.lat = Number(this.router.url.slice(index_lat,index_lng-1));
+      this.lat = Number(this.router.url.slice(index_lat, index_lng - 1));
     } else {
       this.lat = 0;
     }
@@ -118,9 +129,9 @@ export class MapsComponent implements OnInit {
     });
     this.map.on('click', (e) => {
       L.popup()
-      .setLatLng(e.latlng)
-      .setContent('latitude: ' + e.latlng.lat + '<br>longitude: ' + e.latlng.lng)
-      .openOn(this.map);
+        .setLatLng(e.latlng)
+        .setContent('latitude: ' + e.latlng.lat + '<br>longitude: ' + e.latlng.lng)
+        .openOn(this.map);
     });
 
   }
@@ -143,4 +154,17 @@ export class MapsComponent implements OnInit {
 
     return this.fruits.filter(option => option.name.toLowerCase().indexOf(filterValue) === 0);
   }
+
+  initSensorChecked() {
+    for (const item of this.tabSensor) {
+      const value = { sensor: item, selected: false };
+      this.sensorChecked.push(value);
+    }
+  }
+
+  visualiser(){
+    console.log('je visualise')
+  }
+
 }
+// export const  sensorCheckedOnMap: Sensor[] = [];

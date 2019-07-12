@@ -15,10 +15,9 @@ export enum DataFormat {
 };
 
 export function dataFormatToString(val:DataParameter): string {
-  switch(val)
-  {
-    case 0: {return "INTEGER"}
-    case 1: {return "DOUBLE"}
-    case 2: {return "STRING"}
+  switch (val) {
+    case 0: {return 'INTEGER'}
+    case 1: {return 'DOUBLE'}
+    case 2: {return 'STRING'}
   }
 }
