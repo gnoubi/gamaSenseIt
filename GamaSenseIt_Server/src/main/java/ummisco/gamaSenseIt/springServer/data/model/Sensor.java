@@ -26,6 +26,8 @@ public class Sensor {
   private String subDisplayName;
   private double longitude;
   private double latitude;
+  private boolean isHidden;
+  private String hiddenMessage;
 
   @ManyToOne
   private SensorMetadata sensorType;
@@ -52,6 +54,7 @@ public class Sensor {
     this.name = sensorName;
     this.displayName = displayName;
     this.sensorType = sensorType;
+    this.isHidden = false;
   }
 
   public Sensor(String sensorName, String displayName, String subDisplayName, double locationX, double locationY,
@@ -63,6 +66,7 @@ public class Sensor {
     this.longitude = locationX;
     this.latitude = locationY;
     this.sensorType = sensorType;
+    this.isHidden = false;
   }
 
   public Sensor(String sensorName, String displayName, String subDisplayName, double locationX, double locationY,
@@ -74,6 +78,7 @@ public class Sensor {
     this.longitude = locationX;
     this.latitude = locationY;
     this.sensorType = sensorType;
+    this.isHidden = false;
   }
 
   public Long getIdSensor() {
@@ -144,4 +149,19 @@ public class Sensor {
     this.subDisplayName = subDisplayName;
   }
 
+  public boolean isHidden() {
+	return isHidden;
+  }
+	
+  public void setHidden(boolean isHidden) {
+	this.isHidden = isHidden;
+  }
+
+  public String getHiddenMessage() {
+		return hiddenMessage;
+  }
+	
+  public void setHiddenMessage(String hiddenMessage) {
+		this.hiddenMessage = hiddenMessage;
+  }
 }
