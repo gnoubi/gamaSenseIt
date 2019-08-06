@@ -30,7 +30,7 @@ export class SensorVersionFormService {
       s: Sensor): Observable<any>
     {
       let link = API_URLS.ADD_SENSOR;
-      link += '?&name=' + sensorName +
+      link += '?name=' + sensorName +
               '&displayName=' + sensorDisplayName +
               '&subDisplayName=' + sensorSubDisplayName+
               '&longitude=' + sensorLongitude +

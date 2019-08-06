@@ -5,7 +5,7 @@ import Chart from 'chart.js';
 
 import { SensorVersion } from '../../SensorVersion';
 import { StockCapteurArr } from '../../stock-capteur';
-import { FormControl, CheckboxControlValueAccessor } from '@angular/forms';
+import { FormControl, CheckboxControlValueAccessor, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { SensorVersionService } from '../sensor-version/sensor-version-service';
 import { Sensor } from '../../Sensor';
 import { MapsComponent } from '../maps/maps.component';
@@ -16,35 +16,44 @@ import { MapsComponent } from '../maps/maps.component';
   styleUrls: ['./diagramme.component.scss']
 })
 export class DiagrammeComponent implements OnInit {
+  checkValues: any;
 
 
 
-  constructor(private sensorService: SensorVersionService, /*private mapSensor: MapsComponent*/) { }
+  constructor(private sensorService: SensorVersionService, private fb: FormBuilder, /*private mapSensor: MapsComponent*/) {
+    this.SearchCapteurForm = this.fb.group({
+      name: ['', Validators.required],
+    });
+  }
 
   @Input() typeGraph = '';
 
   sensorTypes: SensorVersion[];
+  sensors: Sensor[];
+  sensorChoosed = [];
   // sensors: Sensor[];
- // sensorMap: Sensor[];
-  sensors: SensorVersion[] = StockCapteurArr;
+  // sensorMap: Sensor[];
+  //  sensors: SensorVersion[] = StockCapteurArr;
   sensorsCheck; myLine; dataUpdate;
   myBar; myPie;
   element; canvas;
   myControl: FormControl = new FormControl();
   filteredOptions: Observable<any>;
   searchText: any = '';
+  // searchText: any;
   displaySensor; j = 0; k = 0; l = 0;
   dataMesure: [68, 80, 32, 15, 50, 100, 20];
   checkValue = [];
+  SearchCapteurForm: FormGroup;
   ctx: HTMLElement;
 
   // tslint:disable-next-line: member-ordering
-  fruits = [
-    { name: 'apple', selected: false },
-    { name: 'orange', selected: false },
-    { name: 'pear', selected: false },
-    { name: 'naartjie', selected: false }
-  ];
+  // fruits = [
+  // { name: 'apple', selected: false },
+  // { name: 'orange', selected: false },
+  // { name: 'pear', selected: false },
+  // { name: 'naartjie', selected: false }
+  // ];
   /*  fruit: any;*/
 
   selection = [];
@@ -179,7 +188,7 @@ export class DiagrammeComponent implements OnInit {
       maintainAspectRatio: false,
       title: {
         display: true,
-        text: ' Line Chart'
+        text: ' Bar Chart'
       },
       tooltips: {
         mode: 'index',
@@ -238,6 +247,10 @@ export class DiagrammeComponent implements OnInit {
       ]
     },
     options: {
+      title: {
+        display: true,
+        text: ' Pie Chart'
+      },
       responsive: true
     }
   };
@@ -348,15 +361,15 @@ export class DiagrammeComponent implements OnInit {
   }
 
   resetGraph() {
-    if (this.typeGraph == 'line') {
+    if (this.typeGraph === 'line') {
       this.myLine.data.datasets = [];
       this.myLine.update();
       this.j = 0;
-    } else if (this.typeGraph == 'bar') {
+    } else if (this.typeGraph === 'bar') {
       this.myBar.data.datasets = [];
       this.myBar.update();
       this.k = 0;
-    } else if (this.typeGraph == 'pie') {
+    } else if (this.typeGraph === 'pie') {
       this.myPie.data.datasets = [];
       this.myPie.update();
       this.l = 0;
@@ -438,50 +451,37 @@ export class DiagrammeComponent implements OnInit {
     }*/
   }
 
-  selectedSensor(value: any, check: boolean) {
-    if (check) {
-      for (const item of this.checkValue) {
-        if (item.sensor.name === value.name) {
-          item.selected = !item.selected;
-        }
-      }
-    } else {
-      for (const item of this.checkValue) {
-        if (item.sensor.name === value.name) {
-          item.selected = !item.selected;
-        }
-      }
-    }
-  }
-  ngOnInit() {
-    this.autoCompletInit();
-    // this.sensors = this.sensorService.loadSensorTypes();
-    this.initValueChecked();
-    // this.mapSensor.getsensorChecked();
-
-  }
-
   initValueChecked() {
-    for (const sensor of this.sensors) {
+    console.log('init value checked');
+
+    // tslint:disable-next-line: prefer-for-of
+    /*for (let i = 0; i < this.sensors.length; i++) {
+      console.log('element choisi ' + this.sensors[i]);
+      const sensor = this.sensors[i];
+      console.log('sensor ' + sensor);
       const value = { sensor, selected: false };
+      console.log(value);
       this.checkValue.push(value);
-    }
-    /*for (const sensor of this.sensorMap) {
-      for (const item of this.sensors) {
-        si le capteur choisi sur la carte se trove dans la liste des capteurs on l'ajoute a la liste
-        des donn2es a visualiser
-        if(sensor.idSensor == item.metadata...){
-  
-        }
-      }
+      console.log('valeur ajoutee de plus' + this.checkValue);
     }*/
+
+    // tslint:disable-next-line: forin
+    for (const item in this.sensors) {
+      console.log('item ' + item)
+      const value = { sensor: item, selected: false };
+      this.checkValue.push(item);
+
+    }
+
+    console.log(this.checkValue);
+
   }
   autoCompletInit() {
     this.filteredOptions = this.myControl.valueChanges
       .pipe(
         startWith(''),
         map(value => typeof value === 'string' ? value : value.name),
-        map(name => name ? this._filter(name) : this.fruits.slice())
+        map(name => name ? this._filter(name) : this.sensors.slice())
       );
   }
 
@@ -491,9 +491,116 @@ export class DiagrammeComponent implements OnInit {
 
   private _filter(name: string): any {
     const filterValue = name.toLowerCase();
-    return this.fruits.filter(
+    return this.sensors.filter(
       option => option.name.toLowerCase().indexOf(filterValue) === 0
     );
   }
+
+  selectedSensor(value: Sensor, check: boolean) {
+    console.log('selected Sensor Action ' + check + ' ' + value.name);
+    // console.log('checkvalue ' + this.checkValue);
+    if (check) {
+      /*for (const item of this.checkValue) {
+        if (item.sensor.name === value.name) {
+          item.selected = !item.selected;
+        }
+      }*/
+      this.checkValue.push(value);
+    } else {
+      /* Ca doit etre supprimer du tableau */
+      /*for (const item of this.checkValue) {
+        if (item.sensor.name === value.name) {
+          item.selected = !item.selected;
+        }
+      }*/
+      this.onDeleteOnTable(value);
+    }
+  }
+
+  onAddSensor() {
+    let tabValue;
+    let val: any;
+    let i;
+    console.log('Add Sensor');
+    const value = this.myControl.value;
+    // console.log(value);
+    tabValue = value.split(' ');
+    // console.log(tabValue[0]);
+    // console.log(tabValue[1]);
+    // console.log(value.version);
+    for (const sensorItem of this.sensorTypes) {
+      if (sensorItem.name === tabValue[0] && sensorItem.version === tabValue[1]) {
+        val = sensorItem;
+        // this.checkValue.push(val);
+      }
+    }
+
+    for (const item of this.checkValue) {
+      if (item.name === val.name && item.version === val.version) {
+        i = 0;
+      } else {
+        i = 1;
+      }
+    }
+
+    if (i === 0) {
+      console.log('Valeur deja ajoutee dans le tableau');
+    } else {
+      this.checkValue.push(val);
+    }
+  }
+
+  onChooseSensorType() {
+    let val;
+    let receivedValue;
+    let i = 0;
+    const value = this.myControl.value;
+    receivedValue = value.split(' ').join(' -- ');
+    console.log(receivedValue);
+    console.log(this.sensors);
+    for (const sensorItem of this.sensors) {
+      if (sensorItem.sensorMetadataName === receivedValue) {
+        val = sensorItem;
+        /*if (val in this.sensorChoosed) {
+         console.log('Valeur deja ajoutee dans le tableau');
+        } else {
+         this.sensorChoosed.push(val);
+        }*/
+        for (const item of this.sensorChoosed) {
+          if (val === item) {
+            i = 1;
+          }
+        }
+        if (i === 1) {
+          console.log('Valeur deja ajoutee dans le tableau');
+        } else {
+          this.sensorChoosed.push(val);
+        }
+      }
+    }
+    console.log(this.sensorChoosed);
+  }
+
+  onDeleteOnTable(item) {
+    let i;
+    for (let l = 0; l < this.checkValue.length; l++) {
+      if (item === this.checkValue[l]) {
+        i = l;
+      }
+    }
+    this.checkValue.splice(i, 1);
+  }
+
+  ngOnInit() {
+    this.sensorTypes = this.sensorService.loadSensorTypes();
+    this.sensors = this.sensorService.loadSensors();
+    console.log(this.sensorTypes);
+    this.autoCompletInit();
+    // this.mapSensor.getsensorChecked();
+    // this.initValueChecked();
+
+
+  }
+
 
 }

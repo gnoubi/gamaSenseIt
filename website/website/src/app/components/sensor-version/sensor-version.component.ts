@@ -8,6 +8,7 @@ import { SensorVersion } from '../../SensorVersion';
 import { SensorVersionService } from '../../pages/sensor-version/sensor-version-service';
 import { SensorVersionFormService } from './sensor-version-form-service';
 import { MesuredParameter } from '../../MesuredParameter';
+import { SensorVersionPage } from '../../pages/sensor-version/sensor-version.component';
 
 declare let L;
 
@@ -28,16 +29,17 @@ export class SensorVersionComponent implements OnInit {
   typeList: SensorVersion[];
   metadata: MesuredParameter[];
   idList: number[];
-  openMap: boolean = true;
+  openMap = true;
   map;
   coord;
+  sensorUpdate ;
 
   constructor(
     private fb: FormBuilder,
     private sensorFormService: SensorVersionFormService,
     private sensorService: SensorVersionService,
-    private modalService: NgbModal)
-  {
+    private  sensorVersionPage: SensorVersionPage,
+    private modalService: NgbModal) {
     this.newSensor = this.fb.group({
       name: [''],
       displayName: [''],
@@ -62,12 +64,14 @@ export class SensorVersionComponent implements OnInit {
     const myIcon = L.icon({
       iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/images/marker-icon.png'
     });
-    let mapboxUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-      mapboxAttribution = " UMMISCO New Sensor's Map";
+    // tslint:disable-next-line: one-variable-per-declaration
+    const mapboxUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      // tslint:disable-next-line: prefer-const
+      mapboxAttribution = ' UMMISCO New Sensor\'s Map';
 
     this.sensorService.getSensors().subscribe(
       (data: Sensor[]) => {
-        for (let sensor of data) {
+        for (const sensor of data) {
 
           L.marker([
             JSON.parse(JSON.stringify(sensor)).latitude,
@@ -78,21 +82,21 @@ export class SensorVersionComponent implements OnInit {
         }
       }
     );
-    let field = L.tileLayer(mapboxUrl,
+    const field = L.tileLayer(mapboxUrl,
       { id: 'mapbox.satellite', attribution: mapboxAttribution });
 
     this.map = L.map('mapid', {
       center: [50, 0],
       zoom: 4,
       layers: [field],
-      zoomControl:false
+      zoomControl: false
     });
 
     this.map.on('click', (e) => {
       L.popup()
       .setLatLng(e.latlng)
-      .setContent('latitude: ' + Math.round(e.latlng.lat*this.ROUND)/this.ROUND +
-        '<br>longitude: ' + Math.round(e.latlng.lng*this.ROUND)/this.ROUND)
+      .setContent('latitude: ' + Math.round(e.latlng.lat * this.ROUND) / this.ROUND +
+        '<br>longitude: ' + Math.round(e.latlng.lng * this.ROUND) / this.ROUND)
       .openOn(this.map);
       this.coord = e.latlng;
     });
@@ -105,27 +109,35 @@ export class SensorVersionComponent implements OnInit {
     let sensorSubDisplayName: string;
     let sensorLongitude: number;
     let sensorLatitude: number;
-    let s = this.newSensor.value;
+    const s = this.newSensor.value;
+    this.sensorUpdate = this.sensorVersionPage.sensorUpdate;
 
-    if (this.newSensor.get('name').value != "") {
+    console.log('formualaire valeur de s ' + s);
+
+    if (this.newSensor.get('name').value != '') {
       sensorName = this.newSensor.get('name').value;
     } else {
-      sensorName = "UNKNOWN_SENSOR_NAME";
+      sensorName = 'UNKNOWN_SENSOR_NAME';
     }
-    if (this.newSensor.get('displayName').value != "") {
+
+    console.log('SensorName value ' + sensorName);
+
+    if (this.newSensor.get('displayName').value != '') {
       sensorDisplayName = this.newSensor.get('displayName').value;
     } else {
-      sensorDisplayName = "UNKNOWN_DISPLAY_NAME";
+      sensorDisplayName = 'UNKNOWN_DISPLAY_NAME';
     }
+    console.log('sensorDisplayname ' + sensorDisplayName);
+
     if (this.newSensor.get('type').value != 1) {
       sensorType = this.newSensor.get('type').value;
     } else {
       sensorType = 1;
     }
-    if (this.newSensor.get('subDisplayName').value != "") {
+    if (this.newSensor.get('subDisplayName').value != '') {
       sensorSubDisplayName = this.newSensor.get('subDisplayName').value;
     } else {
-      sensorSubDisplayName = "UNKNOWN_PLACE";
+      sensorSubDisplayName = 'UNKNOWN_PLACE';
     }
     // inputs has priority on map
     if (typeof(this.newSensor.get('longitude').value) === 'number' &&
@@ -171,29 +183,29 @@ export class SensorVersionComponent implements OnInit {
     let sensorMetadataName: string;
     let sensorMetadataVersion: string;
     let sensorMetadataSeparator: string;
-    let measuredDataOrder = this.newSensorMetadata.get('measuredDataOrder').value;
+    const measuredDataOrder = this.newSensorMetadata.get('measuredDataOrder').value;
     let sensorDescription: string;
-    let m = this.newSensorMetadata.value;
+    const m = this.newSensorMetadata.value;
 
     if (this.newSensorMetadata.get('name').value) {
       sensorMetadataName = this.newSensorMetadata.get('name').value;
     } else {
-      sensorMetadataName = "UNKNOWN_SENSOR_TYPE";
+      sensorMetadataName = 'UNKNOWN_SENSOR_TYPE';
     }
     if (this.newSensorMetadata.get('version').value) {
       sensorMetadataVersion = this.newSensorMetadata.get('version').value;
     } else {
-      sensorMetadataVersion = "UNKNOWN_SENSOR_VERSION";
+      sensorMetadataVersion = 'UNKNOWN_SENSOR_VERSION';
     }
     if (this.newSensorMetadata.get('separator').value) {
       sensorMetadataSeparator = this.newSensorMetadata.get('separator').value;
     } else {
       sensorMetadataSeparator = ':';
     }
-    if (this.newSensorMetadata.get('description').value != "") {
+    if (this.newSensorMetadata.get('description').value != '') {
       sensorDescription = this.newSensorMetadata.get('description').value;
     } else {
-      sensorDescription = "UNKNOWN_DESCRIPTION";
+      sensorDescription = 'UNKNOWN_DESCRIPTION';
     }
 
     this.sensorFormService.addSensorMetadata(
@@ -212,7 +224,7 @@ export class SensorVersionComponent implements OnInit {
 
   resetSensorMetadataForm(): void {
     this.newSensorMetadata.reset({
-      name:[''],
+      name: [''],
       version: [''],
       separator: [''],
       measuredDataOrder: [''],
@@ -224,13 +236,13 @@ export class SensorVersionComponent implements OnInit {
   // TODO
   addMetadataParam(): void {
     console.log('Metadata Param function  ');
-    let name = '';
-    let measuredParam = '';
+    const name = '';
+    const measuredParam = '';
   }
 
   onMetadata(id): void {
     if ( this.idList.includes(id) ) {
-      this.idList = remove(this.idList, (value) => {return value !== id});
+      this.idList = remove(this.idList, (value) =>value !== id);
     } else {
       this.idList.push(id);
     }
@@ -242,40 +254,40 @@ export class SensorVersionComponent implements OnInit {
 
   changeIcon(id): string {
     if (this.idList.includes(id)) {
-      return "green-qameleo icon icon-shape no-outline text-white";
+      return 'green-qameleo icon icon-shape no-outline text-white';
     }
-    return "bg-gray icon icon-shape no-outline text-white";
+    return 'bg-gray icon icon-shape no-outline text-white';
   }
 
   refreshMetadataOrder(): void {
-    let regex = new RegExp(',',"gi");
+    const regex = new RegExp(',','gi');
     this.newSensorMetadata.patchValue({
       measuredDataOrder: this.idList.toString().
-        replace(regex,this.newSensorMetadata.get('separator').value) +
+        replace(regex, this.newSensorMetadata.get('separator').value) +
       this.newSensorMetadata.get('separator').value
     });
   }
 
   onMoveLeft(id: number): void {
-    let index: number = this.idIndex(id);
-    let previousId: number = this.idList[index-1];
-    this.idList.splice(index-1, 1, id);
+    const index: number = this.idIndex(id);
+    const previousId: number = this.idList[index - 1];
+    this.idList.splice(index - 1, 1, id);
     this.idList.splice(index, 1, previousId);
     this.refreshMetadataOrder();
   }
 
   onMoveRight(id: number): void {
-    let index: number = this.idIndex(id);
-    let nextId: number = this.idList[index+1];
-    this.idList.splice(index+1, 1, id);
+    const index: number = this.idIndex(id);
+    const nextId: number = this.idList[index + 1];
+    this.idList.splice(index + 1, 1, id);
     this.idList.splice(index, 1, nextId);
     this.refreshMetadataOrder();
   }
 
   idIndex(id: number): number {
-    let index: number = this.idList.indexOf(id);
+    const index: number = this.idList.indexOf(id);
     if (index === -1) {
-      console.log("[ERROR] id not in idList");
+      console.log('[ERROR] id not in idList');
     }
     return index;
   }

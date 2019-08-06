@@ -233,6 +233,204 @@
                     </div>
                   </div>
                 </div>
+                <!-- Test Update
+
+                  <div ng-if="sensorUpdate!=''" class="modal-body">
+                        <h3 class="modal-title text-center">
+                          Add a New Sensor
+                        </h3>
+                        <form class="was-validated"
+                          role="form"
+                          [formGroup]="newSensor">
+                          <mat-form-field class="form-max-lg">
+                            <input matInput
+                              type="text"
+                              #inputName
+                              placeholder="Name"
+                              formControlName="name"
+                              required [(ngModel)]= sensorUpdate.name>
+                              <button mat-icon-button
+                                matSuffix
+                                type="button"
+                                *ngIf="newSensor.get('name').value != ''"
+                                aria-label="Clear"
+                                (click)="newSensor.patchValue({name: ['']})">
+                                <mat-icon>close</mat-icon>
+                              </button>
+                            <mat-hint>
+                              <div *ngIf="!inputName.value?.length">
+                                This field must be filled.
+                              </div>
+                            </mat-hint>
+                          </mat-form-field>
+                          <mat-form-field class="form-max-lg">
+                            <input matInput
+                              type="text"
+                              #inputDisplayName
+                              placeholder="Display Name"
+                              formControlName="displayName"
+                              required [(ngModel)]= sensorUpdate.displayName>
+                            <button mat-icon-button
+                              matSuffix
+                              type="button"
+                              *ngIf="newSensor.get('displayName').value != ''"
+                              aria-label="Clear"
+                              (click)="newSensor.patchValue({displayName: ['']})">
+                              <mat-icon>close</mat-icon>
+                            </button>
+                            <mat-hint>
+                              <div *ngIf="!inputDisplayName.value?.length">
+                                This field must be filled.
+                              </div>
+                            </mat-hint>
+                          </mat-form-field>
+                          <mat-form-field class="form-max-lg">
+                            <input matInput
+                              type="text"
+                              #inputPlace
+                              placeholder="Display Name Subtitle (place)"
+                              formControlName="subDisplayName"
+                              required [(ngModel)]= sensorUpdate.subDisplayName>
+                            <button mat-icon-button
+                              matSuffix
+                              type="button"
+                              *ngIf="newSensor.get('subDisplayName').value != ''"
+                              aria-label="Clear"
+                              (click)="newSensor.patchValue({subDisplayName: ['']})">
+                              <mat-icon>close</mat-icon>
+                            </button>
+                            <mat-hint>
+                              <div *ngIf="!inputPlace.value?.length">
+                                This field must be filled.
+                              </div>
+                            </mat-hint>
+                          </mat-form-field>
+                          <mat-form-field class="form-max-lg">
+                            <input matInput
+                              type="text"
+                              #inputType
+                              list="type"
+                              placeholder="Type of Sensor"
+                              formControlName="type"
+                              required>
+                            <button mat-icon-button
+                              matSuffix
+                              type="button"
+                              *ngIf="newSensor.get('type').value != ''"
+                              aria-label="Clear"
+                              (click)="newSensor.patchValue({type: ['']})">
+                              <mat-icon>close</mat-icon>
+                            </button>
+                            <mat-hint>
+                              <div *ngIf="!inputType.value?.length">
+                                This field must be filled.
+                              </div>
+                            </mat-hint>
+                            <datalist
+                              id="type">
+                              <option *ngFor="let sensor of typeList;"
+                                value="{{sensor.idType}}">
+                                ({{sensor.idType}}) {{sensor.name}} --
+                                 {{sensor.version}}
+                              </option>
+                            </datalist>
+                          </mat-form-field>
+                          <label class="mt-3 color-gray">
+                            Localisation
+                          </label>
+                          <div>
+                            <mat-accordion>
+                              <mat-expansion-panel>
+                                <mat-expansion-panel-header>
+                                  <mat-panel-title class="color-gray">
+                                    Use GPS Coordinates
+                                  </mat-panel-title>
+                                  <mat-panel-description>
+                                    <mat-icon class="icon-gps">
+                                      gps_fixed
+                                    </mat-icon>
+                                  </mat-panel-description>
+                                </mat-expansion-panel-header>
+                                <mat-form-field class="form-max-lg">
+                                  <input matInput
+                                    type="number"
+                                    placeholder="Latitude"
+                                    formControlName="latitude" [(ngModel)]= sensorUpdate.latitude>
+                                  <button mat-icon-button
+                                    matSuffix
+                                    type="button"
+                                    *ngIf="newSensor.get('latitude').value != ''"
+                                    aria-label="Clear"
+                                    (click)="newSensor.patchValue({latitude: ['']})">
+                                    <mat-icon>close</mat-icon>
+                                  </button>
+                                </mat-form-field>
+                                <mat-form-field class="form-max-lg">
+                                  <input matInput
+                                    type="number"
+                                    placeholder="Longitude"
+                                    formControlName="longitude" [(ngModel)]= sensorUpdate.longitude>
+                                  <button mat-icon-button
+                                    matSuffix
+                                    type="button"
+                                    *ngIf="newSensor.get('longitude').value != ''"
+                                    aria-label="Clear"
+                                    (click)="newSensor.patchValue({longitude: ['']})">
+                                    <mat-icon>close</mat-icon>
+                                  </button>
+                                </mat-form-field>
+                              </mat-expansion-panel>
+                              <mat-expansion-panel
+                                (opened)="panelOpenState = true"
+                                (closed)="panelOpenState = false">
+                                <mat-expansion-panel-header>
+                                  <mat-panel-title class="color-gray">
+                                    Use address
+                                  </mat-panel-title>
+                                  <mat-panel-description>
+                                    <i class="fas fa-lg fa-map-signs icon-sign"></i>
+                                  </mat-panel-description>
+                                </mat-expansion-panel-header>
+                                Input address
+                              </mat-expansion-panel>
+                              <mat-expansion-panel
+                                (opened)="panelOpenState = true; map.invalidateSize()"
+                                (closed)="panelOpenState = false">
+                                <mat-expansion-panel-header>
+                                  <mat-panel-title class="color-gray">
+                                    Use Map
+                                  </mat-panel-title>
+                                  <mat-panel-description>
+                                    <i class="fas fa-lg fa-map-marked-alt icon-map"></i>
+                                  </mat-panel-description>
+                                </mat-expansion-panel-header>
+                                <div id="mapid"></div>
+                              </mat-expansion-panel>
+                            </mat-accordion>
+                          </div>
+                        </form>
+                      </div>
+                      <div class="modal-footer">
+                        <div class="col text-center">
+                          <button class="btn btn-warning text-white"
+                            mat-button
+                            type="button"
+                            (click)="resetSensorForm()">
+                            Reset
+                          </button>
+                          <button class="btn btn-primary text-white"
+                            mat-button
+                            type="button"
+                            (click)="onAddNewSensor()">
+                            Add
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                  Fin test
+                -->
                 <button class="btn btn-white"
                  mat-button
                  type="button"
