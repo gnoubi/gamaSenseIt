@@ -7,6 +7,7 @@ import { API_URLS } from '../../config/api.url.config';
 import { MesuredParameter } from '../../MesuredParameter';
 import { Sensor } from '../../Sensor';
 import { SensorVersion } from '../../SensorVersion';
+import { SensorData } from '../../sensorData';
 
 @Injectable()
 export class SensorVersionService {
@@ -15,6 +16,21 @@ export class SensorVersionService {
 
   getData(): Observable<any> {
       return this.http.get(API_URLS.SENSOR_DATA);
+  }
+
+  loadData(): SensorData[] {
+    let sensorData: SensorData[] = [];
+    this.getData().subscribe(
+      (data: SensorData[]) => {
+         for (const item of data ) {
+          sensorData.push(JSON.parse(JSON.stringify(item)));
+        }
+      },
+      error => {
+        console.log('error was occured in load Data');
+      }
+    );
+    return sensorData;
   }
 
   getSensorById(sensorId): Observable<any> {

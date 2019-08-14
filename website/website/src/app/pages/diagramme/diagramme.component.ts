@@ -8,7 +8,10 @@ import { StockCapteurArr } from '../../stock-capteur';
 import { FormControl, CheckboxControlValueAccessor, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { SensorVersionService } from '../sensor-version/sensor-version-service';
 import { Sensor } from '../../Sensor';
+import { SensorDataGraph } from '../../SensorDataGraph';
 import { MapsComponent } from '../maps/maps.component';
+import { SensorData } from '../../sensorData';
+
 
 @Component({
   selector: 'app-diagramme',
@@ -16,8 +19,7 @@ import { MapsComponent } from '../maps/maps.component';
   styleUrls: ['./diagramme.component.scss']
 })
 export class DiagrammeComponent implements OnInit {
-  checkValues: any;
-
+  sensorsData: SensorData[];
 
 
   constructor(private sensorService: SensorVersionService, private fb: FormBuilder, /*private mapSensor: MapsComponent*/) {
@@ -27,11 +29,11 @@ export class DiagrammeComponent implements OnInit {
   }
 
   @Input() typeGraph = '';
+  typeData = 'TEMP';
 
   sensorTypes: SensorVersion[];
   sensors: Sensor[];
   sensorChoosed = [];
-  // sensors: Sensor[];
   // sensorMap: Sensor[];
   //  sensors: SensorVersion[] = StockCapteurArr;
   sensorsCheck; myLine; dataUpdate;
@@ -40,92 +42,27 @@ export class DiagrammeComponent implements OnInit {
   myControl: FormControl = new FormControl();
   filteredOptions: Observable<any>;
   searchText: any = '';
-  // searchText: any;
   displaySensor; j = 0; k = 0; l = 0;
   dataMesure: [68, 80, 32, 15, 50, 100, 20];
   checkValue = [];
   SearchCapteurForm: FormGroup;
   ctx: HTMLElement;
+  sensorGraph: SensorDataGraph[] = [];
 
-  // tslint:disable-next-line: member-ordering
-  // fruits = [
-  // { name: 'apple', selected: false },
-  // { name: 'orange', selected: false },
-  // { name: 'pear', selected: false },
-  // { name: 'naartjie', selected: false }
-  // ];
-  /*  fruit: any;*/
-
-  selection = [];
+  selection = [];/*
   monthsLabel: ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
-  daysLabel: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  daysLabel: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];*/
 
   // tslint:disable-next-line: only-arrow-functions
-  randomScalingFactor = function () {
+  randomScalingFactor = function() {
     return Math.round(Math.random() * 100);
   };
 
   // tslint:disable-next-line: member-ordering
-  datasetSensor = [{
-    label: 'My First dataset',
-    backgroundColor: 'rgba(255, 99, 132, 0.5)',
-    borderColor: 'rgba(255, 99, 132, 1)',
-    data: [
-      this.randomScalingFactor(),
-      this.randomScalingFactor(),
-      this.randomScalingFactor(),
-      this.randomScalingFactor(),
-      this.randomScalingFactor(),
-      this.randomScalingFactor(),
-      this.randomScalingFactor()
-    ],
-    fill: false,
-  }, {
-    label: 'My Second dataset',
-    fill: false,
-    backgroundColor: 'rgba(54, 162, 235, 0.5)',
-    borderColor: 'rgba(54, 162, 235, 1)',
-    data: [
-      this.randomScalingFactor(),
-      this.randomScalingFactor(),
-      this.randomScalingFactor(),
-      this.randomScalingFactor(),
-      this.randomScalingFactor(),
-      this.randomScalingFactor(),
-      this.randomScalingFactor()
-    ],
-  }];
+  datasetSensor = [];
 
   // tslint:disable-next-line: member-ordering
-  datasetSensorB = [{
-    label: 'My First dataset',
-    backgroundColor: 'rgba(255, 99, 132, 0.5)',
-    borderColor: 'rgba(255, 99, 132, 1)',
-    data: [
-      this.randomScalingFactor(),
-      this.randomScalingFactor(),
-      this.randomScalingFactor(),
-      this.randomScalingFactor(),
-      this.randomScalingFactor(),
-      this.randomScalingFactor(),
-      this.randomScalingFactor()
-    ],
-    fill: false,
-  }, {
-    label: 'My Second dataset',
-    fill: false,
-    backgroundColor: 'rgba(54, 162, 235, 0.5)',
-    borderColor: 'rgba(54, 162, 235, 1)',
-    data: [
-      this.randomScalingFactor(),
-      this.randomScalingFactor(),
-      this.randomScalingFactor(),
-      this.randomScalingFactor(),
-      this.randomScalingFactor(),
-      this.randomScalingFactor(),
-      this.randomScalingFactor()
-    ],
-  }];
+  datasetSensorB = [];
 
   /*Chart JS */
 
@@ -133,7 +70,7 @@ export class DiagrammeComponent implements OnInit {
   config = {
     type: 'line',
     data: {
-      labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+      labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15'],
       datasets: this.datasetSensor,
     },
     options: {
@@ -159,7 +96,7 @@ export class DiagrammeComponent implements OnInit {
           display: true,
           scaleLabel: {
             display: true,
-            labelString: 'Month'
+            labelString: '15 last measurements'
           }
         }],
         yAxes: [{
@@ -177,7 +114,7 @@ export class DiagrammeComponent implements OnInit {
   configbar = {
     type: 'bar',
     data: {
-      labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+      labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15'],
       datasets: this.datasetSensorB,
     },
     options: {
@@ -203,7 +140,7 @@ export class DiagrammeComponent implements OnInit {
           display: true,
           scaleLabel: {
             display: true,
-            labelString: 'Month'
+            labelString: '15 Last Measurement'
           }
         }],
         yAxes: [{
@@ -221,23 +158,7 @@ export class DiagrammeComponent implements OnInit {
   configpie = {
     type: 'pie',
     data: {
-      datasets: [{
-        data: [
-          this.randomScalingFactor(),
-          this.randomScalingFactor(),
-          this.randomScalingFactor(),
-          this.randomScalingFactor(),
-          this.randomScalingFactor(),
-        ],
-        backgroundColor: [
-          'rgba(255, 99, 132, 1)',
-          'rgba(54, 162, 235, 1)',
-          'rgba(255, 206, 86, 1)',
-          'rgba(75, 192, 192, 1)',
-          'rgba(153, 102, 255, 1)'
-        ],
-        label: 'Dataset 1'
-      }],
+      datasets: [],
       labels: [
         'Red',
         'Orange',
@@ -286,44 +207,28 @@ export class DiagrammeComponent implements OnInit {
      this.sensorsCheck.push(dataSensor);
    }*/
 
-  addSensoTest() {
+  addSensoTest(item: SensorDataGraph) {
 
     const red = this.randomScalingFactor() * 255 / 100;
     const green = this.randomScalingFactor() * 255 / 100;
     const blue = this.randomScalingFactor() * 255 / 100;
 
     const dataSensorL = {
-      label: 'another dataset' + this.j,
+      label: item.name,
       backgroundColor: 'rgba(' + red + ',' + green + ',' + blue + ',0.5)',
       borderColor: 'rgba(' + red + ',' + green + ',' + blue + ',1)',
-      data: [
-        this.randomScalingFactor(),
-        this.randomScalingFactor(),
-        this.randomScalingFactor(),
-        this.randomScalingFactor(),
-        this.randomScalingFactor(),
-        this.randomScalingFactor(),
-        this.randomScalingFactor()
-      ],
+      data: item.TEMP,
       fill: false
     };
     const dataSensorB = {
-      label: 'another dataset' + this.k,
+      label: item.name,
       backgroundColor: 'rgba(' + red + ',' + green + ',' + blue + ',0.5)',
       borderColor: 'rgba(' + red + ',' + green + ',' + blue + ',1)',
-      data: [
-        this.randomScalingFactor(),
-        this.randomScalingFactor(),
-        this.randomScalingFactor(),
-        this.randomScalingFactor(),
-        this.randomScalingFactor(),
-        this.randomScalingFactor(),
-        this.randomScalingFactor()
-      ],
+      data: item.TEMP,
       fill: false
     };
     const dataSensorP = {
-      label: 'another dataset' + this.l,
+      label: item.name ,
       backgroundColor: [
         'rgba(' + red + ',' + green + ',' + blue + ',0.5)',
         'rgba(' + this.randomScalingFactor() + ',' +
@@ -335,28 +240,96 @@ export class DiagrammeComponent implements OnInit {
         'rgba(' + this.randomScalingFactor() + ',' +
         this.randomScalingFactor() + ',' + this.randomScalingFactor() + ',0.5)',
       ],
-      data: [
-        this.randomScalingFactor(),
-        this.randomScalingFactor(),
-        this.randomScalingFactor(),
-        this.randomScalingFactor(),
-        this.randomScalingFactor(),
-      ],
+      data: item.TEMP,
     };
     // tslint:disable-next-line: triple-equals
-    if (this.typeGraph == 'line') {
+    if (this.typeGraph === 'line') {
+      switch (this.typeData) {
+        case 'PM1':
+          dataSensorL.data = item.PM1;
+          break;
+        case 'PM2_5':
+          dataSensorL.data = item.PM2_5;
+          break;
+        case 'PM10':
+          dataSensorL.data = item.PM10;
+          break;
+        case 'TEMP':
+          dataSensorL.data = item.TEMP;
+          break;
+        case 'PRESS':
+          dataSensorL.data = item.PRESS;
+          break;
+        case 'HUM':
+          dataSensorL.data = item.HUM;
+          break;
+        case 'CO2':
+          dataSensorL.data = item.CO2;
+          break;
+        default:
+          dataSensorL.data = item.TEMP;
+          break;
+      }
       this.myLine.data.datasets.push(dataSensorL);
       this.myLine.update();
-      this.j++;
-    } else if (this.typeGraph == 'bar') {
+    } else if (this.typeGraph === 'bar') {
+      switch (this.typeData) {
+        case 'PM1':
+          dataSensorB.data = item.PM1;
+          break;
+        case 'PM2_5':
+          dataSensorB.data = item.PM2_5;
+          break;
+        case 'PM10':
+          dataSensorB.data = item.PM10;
+          break;
+        case 'TEMP':
+          dataSensorB.data = item.TEMP;
+          break;
+        case 'PRESS':
+          dataSensorB.data = item.PRESS;
+          break;
+        case 'HUM':
+          dataSensorB.data = item.HUM;
+          break;
+        case 'CO2':
+          dataSensorB.data = item.CO2;
+          break;
+        default:
+          dataSensorB.data = item.TEMP;
+          break;
+      }
       this.myBar.data.datasets.push(dataSensorB);
       this.myBar.update();
-      this.k++;
-    } else if (this.typeGraph == 'pie') {
-      // other config
+    } else if (this.typeGraph === 'pie') {
+      switch (this.typeData) {
+        case 'PM1':
+          dataSensorP.data = item.PM1;
+          break;
+        case 'PM2_5':
+          dataSensorP.data = item.PM2_5;
+          break;
+        case 'PM10':
+          dataSensorP.data = item.PM10;
+          break;
+        case 'TEMP':
+          dataSensorP.data = item.TEMP;
+          break;
+        case 'PRESS':
+          dataSensorP.data = item.PRESS;
+          break;
+        case 'HUM':
+          dataSensorP.data = item.HUM;
+          break;
+        case 'CO2':
+          dataSensorP.data = item.CO2;
+          break;
+        default:
+          dataSensorP.data = item.TEMP;
+          break;
+      }
       this.myPie.data.datasets.push(dataSensorP);
       this.myPie.update();
-      this.l++;
     }
   }
 
@@ -364,15 +337,12 @@ export class DiagrammeComponent implements OnInit {
     if (this.typeGraph === 'line') {
       this.myLine.data.datasets = [];
       this.myLine.update();
-      this.j = 0;
     } else if (this.typeGraph === 'bar') {
       this.myBar.data.datasets = [];
       this.myBar.update();
-      this.k = 0;
     } else if (this.typeGraph === 'pie') {
       this.myPie.data.datasets = [];
       this.myPie.update();
-      this.l = 0;
     }
 
   }
@@ -452,7 +422,6 @@ export class DiagrammeComponent implements OnInit {
   }
 
   initValueChecked() {
-    console.log('init value checked');
 
     // tslint:disable-next-line: prefer-for-of
     /*for (let i = 0; i < this.sensors.length; i++) {
@@ -467,7 +436,7 @@ export class DiagrammeComponent implements OnInit {
 
     // tslint:disable-next-line: forin
     for (const item in this.sensors) {
-      console.log('item ' + item)
+      console.log('item ' + item);
       const value = { sensor: item, selected: false };
       this.checkValue.push(item);
 
@@ -498,21 +467,11 @@ export class DiagrammeComponent implements OnInit {
 
   selectedSensor(value: Sensor, check: boolean) {
     console.log('selected Sensor Action ' + check + ' ' + value.name);
-    // console.log('checkvalue ' + this.checkValue);
+
     if (check) {
-      /*for (const item of this.checkValue) {
-        if (item.sensor.name === value.name) {
-          item.selected = !item.selected;
-        }
-      }*/
       this.checkValue.push(value);
     } else {
-      /* Ca doit etre supprimer du tableau */
-      /*for (const item of this.checkValue) {
-        if (item.sensor.name === value.name) {
-          item.selected = !item.selected;
-        }
-      }*/
+
       this.onDeleteOnTable(value);
     }
   }
@@ -523,15 +482,10 @@ export class DiagrammeComponent implements OnInit {
     let i;
     console.log('Add Sensor');
     const value = this.myControl.value;
-    // console.log(value);
     tabValue = value.split(' ');
-    // console.log(tabValue[0]);
-    // console.log(tabValue[1]);
-    // console.log(value.version);
     for (const sensorItem of this.sensorTypes) {
       if (sensorItem.name === tabValue[0] && sensorItem.version === tabValue[1]) {
         val = sensorItem;
-        // this.checkValue.push(val);
       }
     }
 
@@ -561,11 +515,6 @@ export class DiagrammeComponent implements OnInit {
     for (const sensorItem of this.sensors) {
       if (sensorItem.sensorMetadataName === receivedValue) {
         val = sensorItem;
-        /*if (val in this.sensorChoosed) {
-         console.log('Valeur deja ajoutee dans le tableau');
-        } else {
-         this.sensorChoosed.push(val);
-        }*/
         for (const item of this.sensorChoosed) {
           if (val === item) {
             i = 1;
@@ -591,14 +540,46 @@ export class DiagrammeComponent implements OnInit {
     this.checkValue.splice(i, 1);
   }
 
+  tracerGraph() {
+    // let i = 0;
+    for (const item of this.checkValue) {
+      if (this.sensorGraph.length === 0) {
+        const variable = new SensorDataGraph(item.name);
+        this.sensorGraph.push(variable);
+      }
+      for (const el of this.sensorGraph) {
+        if (el.name !== item.name) {
+          const variable = new SensorDataGraph(item.name);
+          this.sensorGraph.push(variable);
+        }
+      }
+    }
+    for (const item of this.sensorGraph) {
+      for (let i = this.sensorsData.length - 1; i > 0; i--/*const value of this.sensorsData*/) {
+        if (item.name === this.sensorsData[i].sensorName) {
+          item.addMesure(this.sensorsData[i].measuredParameter, this.sensorsData[i].value);
+        }
+      }
+    }
+    console.log(this.sensorGraph);
+    for (const item of this.sensorGraph) {
+      this.addSensoTest(item);
+    }
+
+  }
+  updateGraph() {
+
+  }
+
+
   ngOnInit() {
     this.sensorTypes = this.sensorService.loadSensorTypes();
     this.sensors = this.sensorService.loadSensors();
-    console.log(this.sensorTypes);
+    this.sensorsData = this.sensorService.loadData();
+    // console.log(this.sensorsData);
     this.autoCompletInit();
+    this.line();
     // this.mapSensor.getsensorChecked();
-    // this.initValueChecked();
-
 
   }
 

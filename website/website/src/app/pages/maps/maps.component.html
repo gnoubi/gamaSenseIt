@@ -13,7 +13,7 @@
                       <input matInput type="text" placeholder="Sensor's Name" matInput [formControl]="myControl"
                         [matAutocomplete]="auto">
                       <mat-autocomplete #auto="matAutocomplete">
-                        <mat-option *ngFor="let option of fruits" value="{{option.name}}">
+                        <mat-option *ngFor="let option of tabSensor" value="{{option.name}}">
                           {{ option.name }}
                         </mat-option>
                       </mat-autocomplete>
