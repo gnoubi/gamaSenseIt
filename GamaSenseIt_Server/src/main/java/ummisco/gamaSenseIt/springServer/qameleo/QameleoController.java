@@ -44,6 +44,11 @@ public class QameleoController {
     if (!sns.isPresent())
       return null;
     Sensor s = sns.get();
+    if(s.isHidden())
+    {
+    	return new QameleoData(s.getName(),s.getDisplayName(),s.getSubDisplayName(),s.getHiddenMessage());
+    }
+    
     Optional<Set<ParameterMetadata>> ps = s.getParameters();
     if (!ps.isPresent())
       return null;

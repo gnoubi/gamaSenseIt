@@ -13,13 +13,20 @@ public class QameleoData {
   double humidity;
   String displayName;
   String subDisplayName;
+  boolean hidden;
+  String hiddenMessage;
+
+  
+  public QameleoData(String sensorName,String dname,String sdname, String hidden) {
+	    this(sensorName, 0, 0, 0,0, 0,dname,sdname,true,hidden);
+	  }
 
   public QameleoData(String sensorName,String dname,String sdname, Map<DataParameter, Double> data) {
     this(sensorName, data.get(DataParameter.PM1), data.get(DataParameter.PM2_5), data.get(DataParameter.PM10),
-        data.get(DataParameter.TEMPERATURE), data.get(DataParameter.HUMIDITY),dname,sdname);
+        data.get(DataParameter.TEMPERATURE), data.get(DataParameter.HUMIDITY),dname,sdname,false,"");
   }
 
-  public QameleoData(String sensorName, double pm1, double pm25, double pm10, double temperature, double humidity, String name, String sName) {
+  public QameleoData(String sensorName, double pm1, double pm25, double pm10, double temperature, double humidity, String name, String sName, boolean hidden, String hiddenMessage) {
     super();
     this.sensorName = sensorName;
     this.pm1 = pm1;
@@ -29,6 +36,8 @@ public class QameleoData {
     this.humidity = humidity;
     this.displayName = name;
     this.subDisplayName = sName;
+    this.hidden= hidden;
+    this.hiddenMessage= hiddenMessage;
   }
 
   public String getSensorName() {
@@ -94,5 +103,24 @@ public String getSubDisplayName() {
 public void setSubDisplayName(String subDisplayName) {
 	this.subDisplayName = subDisplayName;
 }
+
+public boolean isHidden() {
+	return hidden;
+}
+
+public void setHidden(boolean hidden) {
+	this.hidden = hidden;
+}
+
+public String getHiddenMessage() {
+	return hiddenMessage;
+}
+
+public void setHiddenMessage(String hiddenMessage) {
+	this.hiddenMessage = hiddenMessage;
+}
+
+
+
 
 }
