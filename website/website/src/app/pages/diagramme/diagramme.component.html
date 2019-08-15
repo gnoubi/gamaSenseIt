@@ -87,31 +87,29 @@
     </div>
     <div class="col-xl-4">
       <div class="card shadow bg-gradient-dark">
-        <div class="card-header mb-0 p-2">
+        <div class="card-body">
           <div class="row">
             <br>
-              <div class="col">
-                <!--Autocompletion & ajout a la liste des capteurs a afficher-->
-                <form [formGroup]="SearchCapteurForm">
-                  <mat-form-field floatLabel="never">
-                    <input matInput type="text" placeholder="Sensor's Type Name" matInput [formControl]="myControl"
-                      [matAutocomplete]="auto">
-                    <mat-autocomplete #auto="matAutocomplete">
-                      <mat-option *ngFor="let option of sensorTypes" value="{{option.name + ' '+option.version}}">
-                        {{ option.name + ' ' + option.version }}
-                      </mat-option>
-                    </mat-autocomplete>
-                  </mat-form-field>
-                </form>
-              </div>
-              <div class="col-auto">
-                <button class="btn btn-info" type="button" (click)="onChooseSensorType()">
-                  <i class="fas fa-search rounded-circle shadow "></i>
-                </button>
-              </div>
+            <div class="col">
+              <!--Autocompletion & ajout a la liste des capteurs a afficher-->
+              <form [formGroup]="SearchCapteurForm">
+                <mat-form-field floatLabel="never">
+                  <input matInput type="text" placeholder="Sensor's Type Name" matInput [formControl]="myControl"
+                    [matAutocomplete]="auto">
+                  <mat-autocomplete #auto="matAutocomplete">
+                    <mat-option *ngFor="let option of sensorTypes" value="{{option.name + ' '+option.version}}">
+                      {{ option.name + ' ' + option.version }}
+                    </mat-option>
+                  </mat-autocomplete>
+                </mat-form-field>
+              </form>
             </div>
-        </div>
-        <div class="card-body">
+            <div class="col-auto">
+              <button class="btn btn-info" type="button" (click)="onChooseSensorType()">
+                <i class="fas fa-search rounded-circle shadow "></i>
+              </button>
+            </div>
+          </div>
           <div class="slist">
             <div *ngFor="let item of sensorChoosed "
               class=" border border-1 border-info bg-light rounded m-2 form-group">
