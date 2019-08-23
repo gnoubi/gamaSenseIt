@@ -49,13 +49,13 @@
             <button class="btn btn-light" (click)="bar()">Bar Graph</button>-->
             <div class="col-auto">
 
-              <button class="btn btn-light ">PM1</button>
-              <button class="btn btn-light ">PM2_5</button>
-              <button class="btn btn-light ">PM10</button>
-              <button class="btn btn-light ">TEMP</button>
-              <button class="btn btn-light ">HUM</button>
-              <button class="btn btn-light ">PRESS</button>
-              <button class="btn btn-light ">CO2</button>
+              <button class="btn btn-light " (click)="typeData='PM1';tracerGraph()">PM1</button>
+              <button class="btn btn-light " (click)="typeData='PM2_5';tracerGraph()">PM2_5</button>
+              <button class="btn btn-light " (click)="typeData='PM10';tracerGraph()">PM10</button>
+              <button class="btn btn-light " (click)="typeData='TEMP';tracerGraph()">TEMP</button>
+              <button class="btn btn-light " (click)="typeData='HUM';tracerGraph()">HUM</button>
+              <button class="btn btn-light " (click)="typeData='PRESS';tracerGraph()">PRESS</button>
+              <button class="btn btn-light " (click)="typeData='CO2';tracerGraph()">CO2</button>
             </div>
           </div>
         </div>

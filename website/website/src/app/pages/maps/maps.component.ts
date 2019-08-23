@@ -62,7 +62,14 @@ export class MapsComponent implements OnInit {
 
     for (const sensor of this.tabSensor) {
       if (sensor.name === sensorName) {
-        this.map('mapid').flyTo([sensor.latitude, sensor.longitude], 10);
+        console.log(sensor.latitude + " " + sensor.longitude);
+        this.map.flyTo([sensor.latitude, sensor.longitude], 10);
+      } else {
+        if (sensorName.toLowerCase() in sensor.subDisplayName.toLowerCase().split(' ')) {
+          console.log('adresse')
+          console.log(sensor.latitude + " " + sensor.longitude);
+        }
+
       }
     }
   }
@@ -162,7 +169,7 @@ export class MapsComponent implements OnInit {
     }
   }
 
-  visualiser(){
+  visualiser() {
     console.log('je visualise')
   }
 

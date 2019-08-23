@@ -54,7 +54,7 @@ export class DiagrammeComponent implements OnInit {
   daysLabel: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];*/
 
   // tslint:disable-next-line: only-arrow-functions
-  randomScalingFactor = function() {
+  randomScalingFactor = function () {
     return Math.round(Math.random() * 100);
   };
 
@@ -228,7 +228,7 @@ export class DiagrammeComponent implements OnInit {
       fill: false
     };
     const dataSensorP = {
-      label: item.name ,
+      label: item.name,
       backgroundColor: [
         'rgba(' + red + ',' + green + ',' + blue + ',0.5)',
         'rgba(' + this.randomScalingFactor() + ',' +
@@ -542,6 +542,8 @@ export class DiagrammeComponent implements OnInit {
 
   tracerGraph() {
     // let i = 0;
+    this.resetGraph();
+    this.sensorGraph = [];
     for (const item of this.checkValue) {
       if (this.sensorGraph.length === 0) {
         const variable = new SensorDataGraph(item.name);
@@ -555,7 +557,7 @@ export class DiagrammeComponent implements OnInit {
       }
     }
     for (const item of this.sensorGraph) {
-      for (let i = this.sensorsData.length - 1; i > 0; i--/*const value of this.sensorsData*/) {
+      for (let i = this.sensorsData.length - 1; i > 0; i--) {
         if (item.name === this.sensorsData[i].sensorName) {
           item.addMesure(this.sensorsData[i].measuredParameter, this.sensorsData[i].value);
         }
@@ -567,6 +569,7 @@ export class DiagrammeComponent implements OnInit {
     }
 
   }
+
   updateGraph() {
 
   }
