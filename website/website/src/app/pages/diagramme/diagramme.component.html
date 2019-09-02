@@ -112,9 +112,9 @@
           </div>
           <div class="slist">
             <div *ngFor="let item of sensorChoosed "
-              class=" border border-1 border-info bg-light rounded m-2 form-group">
+              class=" border border-1 border-info bg-light rounded m-2 form-group custom-control custom-control-alternative custom-checkbox">
               <label>
-                <input type="checkbox" value="{{item.name}}" (change)="selectedSensor(item,$event.target.checked)">
+                <input  type="checkbox" value="{{item.name}}" (change)="selectedSensor(item,$event.target.checked)">
                 &nbsp;{{item.name+" "+item.subDisplayName}} <br>
                 {{item.sensorMetadataName}}
               </label>

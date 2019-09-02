@@ -37,10 +37,10 @@ import { SearchPipe } from '../../pages/diagramme/search.pipe';
 
     DashboardComponent,
     UserProfileComponent,
-    MapsComponent,
+//    MapsComponent,
     QrcodeComponent,
     SensorVersionPage,
-    DiagrammeComponent,
+   // DiagrammeComponent,
     SearchPipe
   ],
   exports: [

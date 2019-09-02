@@ -8,44 +8,34 @@ declare interface RouteInfo {
     class: string;
 }
 export const ROUTES: RouteInfo[] = [
-  { path: '/dashboard',
+  { path: '/userDashboard',
     title: 'Dashboard',
     icon: 'fas fa-desktop text-primary',
     class: ''
   },
-  { path: '/qrcode',
+  { path: '/qrcode1',
     title: 'Scan QR codes',
     icon: 'fas fa-qrcode text-info',
     class: ''
   },
-  { path: '/maps',
+  { path: '/userMaps',
     title: "Sensor's Maps",
-    icon:'fas fa-map-marker-alt text-success',
+    icon: 'fas fa-map-marker-alt text-success',
     class: ''
   },
-  { path: '/user-profile',
-    title: 'User profile',
-    icon:'fas fa-user-alt text-dark',
-    class: ''
-  },/*
   { path: '/login',
     title: 'Login',
-    icon:'fas fa-user-lock text-primary',
-    class: ''
-  },*/
-  { path: '/register',
-    title: 'Register',
-    icon:'fas fa-user-plus text-danger',
+    icon: 'fas fa-user-lock text-primary',
     class: ''
   }
 ];
 
 @Component({
-  selector: 'app-sidebar',
-  templateUrl: './sidebar.component.html',
-  styleUrls: ['./sidebar.component.scss']
+  selector: 'app-sidebar-user',
+  templateUrl: './sidebar-user.component.html',
+  styleUrls: ['./sidebar-user.component.css']
 })
-export class SidebarComponent implements OnInit {
+export class SidebarUserComponent implements OnInit {
 
   public menuItems: any[];
   public isCollapsed = true;
@@ -61,3 +51,4 @@ export class SidebarComponent implements OnInit {
     );
   }
 }
+

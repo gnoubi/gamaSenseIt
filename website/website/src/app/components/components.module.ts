@@ -24,6 +24,10 @@ import { QrQameleoFooterComponent } from './qr-qameleo-footer/qr-qameleo-footer.
 import { QrcodeReaderService } from './upload-qrcode/qrcode-reader.service';
 import { UploadQrcodeComponent } from './upload-qrcode/upload-qrcode.component';
 import { SensorVersionService } from '../pages/sensor-version/sensor-version-service';
+import { NavbarUserComponent } from './navbar-user/navbar-user.component';
+import { SidebarUserComponent } from './sidebar-user/sidebar-user.component';
+import { DiagrammeComponent } from '../pages/diagramme/diagramme.component';
+import { MapsComponent } from '../pages/maps/maps.component';
 
 @NgModule({
   imports: [
@@ -48,7 +52,11 @@ import { SensorVersionService } from '../pages/sensor-version/sensor-version-ser
     SidebarComponent,
     SensorVersionComponent,
     QrQameleoFooterComponent,
-    UploadQrcodeComponent
+    UploadQrcodeComponent,
+    NavbarUserComponent,
+    SidebarUserComponent,
+    DiagrammeComponent,
+    MapsComponent
   ],
   exports: [
     FooterComponent,
@@ -65,7 +73,11 @@ import { SensorVersionService } from '../pages/sensor-version/sensor-version-ser
     MatButtonModule,
     MatTabsModule,
     MatExpansionModule,
-    MatTooltipModule
+    MatTooltipModule,
+    NavbarUserComponent,
+    SidebarUserComponent,
+    DiagrammeComponent,
+    MapsComponent
   ],
   providers:[
     SensorVersionFormService,

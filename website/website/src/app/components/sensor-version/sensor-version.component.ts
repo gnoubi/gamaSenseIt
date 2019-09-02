@@ -33,6 +33,7 @@ export class SensorVersionComponent implements OnInit {
   map;
   coord;
   sensorUpdate ;
+  activeVS = false;
 
   constructor(
     private fb: FormBuilder,

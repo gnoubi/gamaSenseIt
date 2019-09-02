@@ -61,15 +61,19 @@ export class MapsComponent implements OnInit {
     // this.map.flyTo([43.6316, 3.89706], 15);
 
     for (const sensor of this.tabSensor) {
+      const tabAdress = sensor.subDisplayName.toLowerCase().split(' ');
+      // console.log(tabAdress);
       if (sensor.name === sensorName) {
-        console.log(sensor.latitude + " " + sensor.longitude);
-        this.map.flyTo([sensor.latitude, sensor.longitude], 10);
+        console.log(sensor.latitude + ' ' + sensor.longitude);
+        this.map.flyTo([sensor.latitude, sensor.longitude], 15);
       } else {
-        if (sensorName.toLowerCase() in sensor.subDisplayName.toLowerCase().split(' ')) {
-          console.log('adresse')
-          console.log(sensor.latitude + " " + sensor.longitude);
+        for (const item of tabAdress) {
+          if (sensorName.toLowerCase() === item ) {
+            console.log('adresse');
+            console.log(sensor.latitude + ' ' + sensor.longitude);
+            this.map.flyTo([sensor.latitude, sensor.longitude], 10);
+          }
         }
-
       }
     }
   }
