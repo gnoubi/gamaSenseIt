@@ -150,7 +150,7 @@
                           </div>
                           <div class="custom-control custom-control-alternative custom-checkbox">
                             <input class="custom-control-input" id=" customCheckaActiveVS" type="checkbox"
-                              (click)="activeVS = !activeVS">
+                              (change)="changeValue($event.target.checked)">
                             <label class="custom-control-label" for=" customCheckaActiveVS">
                               <span class="text-muted">Generate Virtual's Sensor</span>
                             </label>
@@ -171,19 +171,19 @@
                                 <mat-expansion-panel>
                                   <mat-expansion-panel-header>
                                     <mat-panel-title class="color-gray">
-                                      type Of Equations
+                                      Type Of Equations
                                     </mat-panel-title>
                                     <mat-panel-description>
-                                      <mat-icon class="icon-gps">
+                                      <!--<mat-icon class="icon-gps">
                                         gps_fixed
-                                      </mat-icon>
+                                      </mat-icon>-->
                                     </mat-panel-description>
                                   </mat-expansion-panel-header>
                                   <mat-form-field class="form-max-lg">
 
                                     <div class="custom-control custom-control-alternative custom-checkbox">
-                                      <input class="custom-control-input" id=" LoR" type="checkbox"
-                                        (change)="activeVS = !activeVS">
+                                      <input class="custom-control-input" id=" LoR" type="radio"
+                                        >
                                       <label class="custom-control-label" for="LoR">
                                         <span class="text-muted">LoR</span>
                                       </label>

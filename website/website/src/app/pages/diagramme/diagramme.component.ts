@@ -541,16 +541,22 @@ export class DiagrammeComponent implements OnInit {
   }
 
   tracerGraph() {
-    // let i = 0;
+    let i = 1;
     this.resetGraph();
     this.sensorGraph = [];
     for (const item of this.checkValue) {
       if (this.sensorGraph.length === 0) {
         const variable = new SensorDataGraph(item.name);
         this.sensorGraph.push(variable);
-      }
-      for (const el of this.sensorGraph) {
-        if (el.name !== item.name) {
+      } else {
+        for (const el of this.sensorGraph) {
+          if (el.name !== item.name) {
+            i *= 1;
+          } else {
+            i *= 0;
+          }
+        }
+        if (i === 1) {
           const variable = new SensorDataGraph(item.name);
           this.sensorGraph.push(variable);
         }

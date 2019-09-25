@@ -292,4 +292,12 @@ export class SensorVersionComponent implements OnInit {
     }
     return index;
   }
+
+  changeValue( check: boolean) {
+    if (check) {
+      this.activeVS = true;
+    } else {
+      this.activeVS = false;
+    }
+  }
 }

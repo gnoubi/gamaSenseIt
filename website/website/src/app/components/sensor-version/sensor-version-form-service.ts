@@ -30,13 +30,13 @@ export class SensorVersionFormService {
       s: Sensor): Observable<any>
     {
       let link = API_URLS.ADD_SENSOR;
-      link += '?name=' + sensorName +
+      link += '/?name=' + sensorName +
               '&displayName=' + sensorDisplayName +
-              '&subDisplayName=' + sensorSubDisplayName+
+              '&subDisplayName=' + sensorSubDisplayName +
               '&longitude=' + sensorLongitude +
               '&latitude=' + sensorLatitude +
               '&sensorMetadata=' + sensorType;
-      return this.http.post(link,s,httpOptions);
+      return this.http.post(link, s , httpOptions);
     }
 
     addSensorMetadata(
