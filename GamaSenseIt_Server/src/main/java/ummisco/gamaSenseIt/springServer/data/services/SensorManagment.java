@@ -1,5 +1,6 @@
 package ummisco.gamaSenseIt.springServer.data.services;
 
+import java.time.Duration;
 // import java.text.NumberFormat;
 // import java.util.Calendar;
 import java.util.Date;
@@ -120,6 +121,11 @@ public class SensorManagment implements ISensorManagment {
     // }
 
     Date capturedate = new Date(capturedateS * 1000);
+    
+    long diff = Math.abs(date.getTime() - capturedate.getTime());
+    long diffDays = (diff / (1000 * 60 * 60 * 24));
+    if(diffDays > 3)
+    	capturedate = date;
 
     /*
      * System.out.println(
